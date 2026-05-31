@@ -324,16 +324,22 @@ button, input, select, textarea {
   font-size: 1.15rem;
 }
 
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  white-space: nowrap;
 }
 
 .admin-table th {
   background-color: #f8fafc;
-  padding: 14px 30px;
-  font-size: 0.8rem;
+  padding: 12px 16px;
+  font-size: 0.75rem;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--admin-text-secondary);
@@ -341,8 +347,8 @@ button, input, select, textarea {
 }
 
 .admin-table td {
-  padding: 18px 30px;
-  font-size: 0.85rem;
+  padding: 16px 16px;
+  font-size: 0.8rem;
   border-bottom: 1px solid var(--admin-border);
   color: var(--admin-text-secondary);
 }

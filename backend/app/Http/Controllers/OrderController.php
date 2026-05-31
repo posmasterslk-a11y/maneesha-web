@@ -121,7 +121,7 @@ class OrderController extends Controller
      */
     public function listOrders()
     {
-        $orders = Order::with('orderItems')->orderBy('created_at', 'desc')->get();
+        $orders = Order::with('orderItems')->orderBy('created_at', 'desc')->paginate(10);
         return response()->json($orders);
     }
 
@@ -156,6 +156,21 @@ class OrderController extends Controller
             'recentOrders' => $recentOrders,
             'districtStats' => $districtStats,
             'activeVisitors' => $activeVisitors
+        ]);
+    }
+
+    /**
+     * Get statistics specifically for the orders page cards
+     */
+    public function orderStats()
+    {
+        return response()->json([
+            'totalOrders' => Order::count(),
+            'pendingOrders' => Order::where('status', 'pending')->count(),
+            'dispatchedOrders' => Order::whereIn('status', ['dispatched', 'delivered'])->count(),
+            'bankDepositOrders' => Order::where('payment_method', 'bank_deposit')->count(),
+            'payhereOrders' => Order::where('payment_method', 'payhere')->count(),
+            'codOrders' => Order::where('payment_method', 'cod')->count()
         ]);
     }
 

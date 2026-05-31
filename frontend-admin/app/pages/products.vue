@@ -55,6 +55,13 @@
       <p>No products yet. Add your first product!</p>
     </div>
 
+    <AdminPagination 
+      v-if="products.length > 0"
+      :current-page="currentPage" 
+      :last-page="lastPage" 
+      @page-change="fetchProducts" 
+    />
+
     <!-- Add/Edit Modal -->
     <div :class="['modal-overlay', { open: isModalOpen }]" @click.self="closeModal">
       <div class="pm-modal">
@@ -220,11 +227,13 @@ import { ref, onMounted } from 'vue'
 const API = 'http://localhost:8000/api'
 const token = () => localStorage.getItem('maneesha-admin-token') || ''
 
-const products   = ref([])
-const categories = ref([])
-const loading    = ref(true)
-const saving     = ref(false)
-const errorMsg   = ref('')
+const products    = ref([])
+const categories  = ref([])
+const currentPage = ref(1)
+const lastPage    = ref(1)
+const loading     = ref(true)
+const saving      = ref(false)
+const errorMsg    = ref('')
 
 const isModalOpen = ref(false)
 const isEditing   = ref(false)
@@ -257,11 +266,14 @@ const authHeaders = () => ({
   'Accept': 'application/json',
 })
 
-const fetchProducts = async () => {
+const fetchProducts = async (page = 1) => {
   loading.value = true
   try {
-    const r = await fetch(`${API}/admin/products`, { headers: authHeaders() })
-    products.value = await r.json()
+    const r = await fetch(`${API}/admin/products?page=${page}`, { headers: authHeaders() })
+    const data = await r.json()
+    products.value = data.data
+    currentPage.value = data.current_page
+    lastPage.value = data.last_page
   } catch (e) {
     errorMsg.value = 'Failed to load products.'
   }
@@ -269,7 +281,7 @@ const fetchProducts = async () => {
 }
 
 const fetchCategories = async () => {
-  const r = await fetch(`${API}/admin/categories`, { headers: authHeaders() })
+  const r = await fetch(`${API}/admin/categories?all=true`, { headers: authHeaders() })
   categories.value = await r.json()
 }
 
@@ -380,10 +392,10 @@ const saveProduct = async () => {
       return
     }
 
-    await fetchProducts()
+    await fetchProducts(currentPage.value)
     closeModal()
   } catch (e) {
-    errorMsg.value = 'Network error. Check backend is running.'
+    errorMsg.value = 'Failed to save product.'
   }
 
   saving.value = false
@@ -391,18 +403,22 @@ const saveProduct = async () => {
 
 // ── Delete ─────────────────────────────────────────────────────────────────
 const deleteProduct = async (id) => {
-  if (!confirm('Delete this product? This cannot be undone.')) return
-  await fetch(`${API}/admin/products/${id}`, {
-    method: 'DELETE', headers: authHeaders()
-  })
-  await fetchProducts()
+  if (!confirm('Are you sure you want to delete this product?')) return
+  try {
+    await fetch(`${API}/admin/products/${id}`, {
+      method: 'DELETE', headers: authHeaders()
+    })
+    await fetchProducts(currentPage.value)
+  } catch (e) {
+    alert('Failed to delete product')
+  }
 }
 
 const formatNumber = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2 })
 
 onMounted(() => {
-  fetchProducts()
   fetchCategories()
+  fetchProducts(1)
 })
 </script>
 

@@ -31,8 +31,8 @@ class ProductController extends Controller
                   ->orWhere('short_description', 'like', '%' . $request->search . '%');
             });
         }
-
-        $products = $query->orderBy('sort_order')->get()->map(fn($p) => $this->formatProduct($p));
+        $products = $query->orderBy('sort_order')->paginate(12);
+        $products->through(fn($p) => $this->formatProduct($p));
 
         return response()->json($products);
     }
@@ -51,8 +51,8 @@ class ProductController extends Controller
     /** GET /api/admin/products — full list for admin */
     public function adminIndex()
     {
-        $products = Product::with(['category', 'variants'])->orderBy('sort_order')->get()
-            ->map(fn($p) => $this->formatProduct($p));
+        $products = Product::with(['category', 'variants'])->orderBy('sort_order')->paginate(10);
+        $products->through(fn($p) => $this->formatProduct($p));
 
         return response()->json($products);
     }

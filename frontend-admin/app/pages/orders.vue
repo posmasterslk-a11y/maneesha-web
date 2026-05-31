@@ -59,8 +59,9 @@
         </div>
       </div>
 
-      <table class="admin-table">
-        <thead>
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
           <tr>
             <th>Ref ID</th>
             <th>Customer Credentials</th>
@@ -74,19 +75,21 @@
         <tbody>
           <tr v-for="order in filteredOrders" :key="order.id">
             <td>
-              <strong>#{{ order.order_number }}</strong><br />
-              <small class="time-badge"><i class="fa-regular fa-clock"></i> {{ new Date(order.created_at).toLocaleString() }}</small>
+              <div class="cell-flex">
+                <strong>#{{ order.order_number }}</strong>
+                <small class="time-badge text-muted"><i class="fa-regular fa-clock"></i> {{ new Date(order.created_at).toLocaleString() }}</small>
+              </div>
             </td>
-            <td @click="openCustomerModal(order)" class="customer-cell">
-              <strong>{{ order.customer_name }}</strong><br />
-              <small><i class="fa-solid fa-phone"></i> {{ order.customer_phone }}</small>
-              <div class="view-hint"><small>Click to view full details</small></div>
+            <td @click="openCustomerModal(order)" class="customer-cell cursor-pointer">
+              <div class="cell-flex">
+                <strong>{{ order.customer_name }}</strong>
+                <small class="text-muted"><i class="fa-solid fa-phone"></i> {{ order.customer_phone }}</small>
+              </div>
             </td>
             <td>
-              <div v-for="(item, idx) in order.order_items" :key="idx" class="item-spec-bullet">
-                <i class="fa-solid fa-shirt text-gold"></i>
-                <span>{{ item.product_name }} ({{ item.size }}) &times; {{ item.quantity }}</span>
-              </div>
+              <button @click="openItemsModal(order)" class="btn-modern btn-modern-outline">
+                <i class="fa-solid fa-list-ul"></i> View Items ({{ order.order_items?.length || 0 }})
+              </button>
             </td>
             <td><strong>LKR {{ formatNumber(order.total) }}</strong></td>
             <td>
@@ -138,14 +141,66 @@
               </div>
             </td>
           </tr>
-          <tr v-if="filteredOrders.length === 0">
-            <td colspan="7" class="text-center py-5">
-              <i class="fa-solid fa-boxes-packing empty-table-icon"></i>
-              <p>No orders have been registered in this system yet.</p>
-            </td>
-          </tr>
         </tbody>
       </table>
+      </div>
+
+      <div v-if="filteredOrders.length === 0" class="empty-state">
+        <i class="fa-solid fa-inbox"></i>
+        <p>No orders found for the selected criteria.</p>
+      </div>
+
+      <AdminPagination 
+        v-if="orders.length > 0"
+        :current-page="currentPage" 
+        :last-page="lastPage" 
+        @page-change="loadOrders" 
+      />
+    </div>
+
+    <!-- Items Modal -->
+    <div :class="['modal-overlay', { open: isItemsModalOpen }]" @click.self="closeItemsModal">
+      <div class="om-modal">
+        <div class="om-left om-left-items">
+          <div class="om-icon-wrap"><i class="fa-solid fa-list-check"></i></div>
+          <h3 class="om-side-title">Order Items</h3>
+          <p class="om-side-desc">Review the items purchased in this order.</p>
+        </div>
+        <div class="om-right">
+          <div class="pm-header">
+            <div>
+              <p class="pm-header-label">Items Review</p>
+              <h4 class="pm-title">Order #{{ selectedOrderItemsOrder?.order_number }}</h4>
+            </div>
+            <button @click="closeItemsModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="om-body items-modal-body">
+            <table class="admin-table items-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, idx) in selectedOrderItems" :key="idx">
+                  <td><strong>{{ item.product_name }}</strong></td>
+                  <td>{{ item.size }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>LKR {{ formatNumber(item.price) }}</td>
+                  <td><strong>LKR {{ formatNumber(item.price * item.quantity) }}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pm-footer">
+            <button @click="closeItemsModal" class="btn-admin btn-admin-secondary">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Bank Slip Modal -->
@@ -249,36 +304,42 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import AdminPagination from '@/components/AdminPagination.vue'
 
 const API = 'http://localhost:8000/api'
 const orders = ref([])
-const activeTab = ref('all')
+const stats = ref({})
+const currentPage = ref(1)
+const lastPage = ref(1)
 const paymentFilter = ref('all')
 const isSlipModalOpen = ref(false)
 const selectedOrder = ref(null)
+
+const isItemsModalOpen = ref(false)
+const selectedOrderItems = ref([])
+const selectedOrderItemsOrder = ref(null)
+
+const openItemsModal = (order) => {
+  selectedOrderItems.value = order.order_items || []
+  selectedOrderItemsOrder.value = order
+  isItemsModalOpen.value = true
+}
+const closeItemsModal = () => {
+  isItemsModalOpen.value = false
+  selectedOrderItems.value = []
+  selectedOrderItemsOrder.value = null
+}
 
 const filteredOrders = computed(() => {
   let list = orders.value;
   if (paymentFilter.value !== 'all') {
     list = list.filter(o => o.payment_method === paymentFilter.value);
   }
-  // Ensure descending sort by created_at just to be safe
   return list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 })
 
 const isCustomerModalOpen = ref(false)
 const selectedCustomer = ref(null)
-
-const stats = computed(() => {
-  return {
-    totalOrders: orders.value.length,
-    pendingOrders: orders.value.filter(o => o.status === 'pending').length,
-    dispatchedOrders: orders.value.filter(o => o.status === 'dispatched' || o.status === 'delivered').length,
-    bankDepositOrders: orders.value.filter(o => o.payment_method === 'bank_deposit').length,
-    payhereOrders: orders.value.filter(o => o.payment_method === 'payhere').length,
-    codOrders: orders.value.filter(o => o.payment_method === 'cod').length,
-  }
-})
 
 const confirmDialog = ref({
   isOpen: false,
@@ -308,13 +369,23 @@ const authHeaders = () => {
   }
 }
 
-const loadOrders = async () => {
+const loadDashboardStats = async () => {
   try {
-    const res = await fetch(`${API}/admin/orders`, {
+    const res = await fetch(`${API}/admin/orders/stats`, { headers: authHeaders() })
+    if (res.ok) stats.value = await res.json()
+  } catch (err) { console.error('Failed to load stats', err) }
+}
+
+const loadOrders = async (page = 1) => {
+  try {
+    const res = await fetch(`${API}/admin/orders?page=${page}`, {
       headers: authHeaders()
     })
     if (res.ok) {
-      orders.value = await res.json()
+      const data = await res.json()
+      orders.value = data.data
+      currentPage.value = data.current_page
+      lastPage.value = data.last_page
     }
   } catch (err) {
     console.error('Failed to load orders', err)
@@ -340,7 +411,8 @@ const updateStatus = (order, newStatus) => {
         body: JSON.stringify({ status: newStatus })
       });
       if (res.ok) {
-        await loadOrders();
+        await loadOrders(currentPage.value);
+        await loadDashboardStats();
       }
     } catch(err) {
       console.error('Failed to update status', err);
@@ -380,7 +452,8 @@ const formatNumber = (num) => {
 }
 
 onMounted(() => {
-  loadOrders()
+  loadDashboardStats()
+  loadOrders(1)
 })
 </script>
 
@@ -399,6 +472,20 @@ onMounted(() => {
 
 .text-gold {
   color: var(--admin-gold);
+}
+
+.cell-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.text-muted {
+  color: var(--admin-text-muted);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .pay-method-badge {
@@ -503,9 +590,13 @@ body.dark-mode .modern-badge.cancelled { background: rgba(239, 68, 68, 0.15); co
 }
 .mt-2 { margin-top: 8px; }
 
-.empty-table-icon {
-  font-size: 3rem;
+.empty-state {
+  padding: 60px;
+  text-align: center;
   color: var(--admin-text-muted);
+}
+.empty-state i {
+  font-size: 3rem;
   margin-bottom: 15px;
   display: block;
 }
@@ -538,11 +629,6 @@ body.dark-mode .modern-badge.cancelled { background: rgba(239, 68, 68, 0.15); co
   margin-bottom: 20px;
 }
 
-.placeholder-receipt {
-  font-size: 4rem;
-  color: var(--admin-text-muted);
-}
-
 .receipt-image {
   max-width: 100%;
   max-height: 100%;
@@ -556,14 +642,6 @@ body.dark-mode .modern-badge.cancelled { background: rgba(239, 68, 68, 0.15); co
 
 .mr-2 {
   margin-right: 8px;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--admin-text-secondary);
-  cursor: pointer;
 }
 
 .flex-center-between {
@@ -636,81 +714,7 @@ body.dark-mode .customer-cell:hover {
   margin-top: 4px;
   opacity: 0.8;
 }
-.customer-detail-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  text-align: left;
-}
-.detail-item {
-  background: var(--bg-light-surface);
-  border: 1px solid var(--admin-border);
-  padding: 15px;
-  border-radius: var(--radius-sm);
-}
-body.dark-mode .detail-item {
-  background: var(--bg-dark-surface);
-  border-color: var(--bg-dark-border);
-}
-.detail-item.full-width {
-  grid-column: span 2;
-}
-.detail-label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--admin-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 5px;
-}
-.detail-value {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--admin-text-primary);
-}
-.gold-text {
-  color: var(--admin-gold);
-}
 
-/* Custom Confirm Modal styling */
-.confirm-modal {
-  max-width: 450px !important;
-  border-radius: var(--radius-lg);
-  padding: 10px;
-}
-
-.text-gold {
-  color: var(--admin-gold);
-}
-
-.py-4 {
-  padding-top: 30px;
-  padding-bottom: 30px;
-}
-
-.mb-2 {
-  margin-bottom: 10px;
-}
-
-.mb-3 {
-  margin-bottom: 15px;
-}
-
-.mb-4 {
-  margin-bottom: 25px;
-}
-
-.flex {
-  display: flex;
-}
-
-.justify-center {
-  justify-content: center;
-}
-
-.gap-3 {
-  gap: 15px;
-}
 /* ── Modern Orders Modals ────────────────────────────────────── */
 .om-modal {
   display: flex;
@@ -754,7 +758,6 @@ body.dark-mode .detail-item {
 .om-label-bank { color: #6366f1; }
 .om-label-customer { color: #f59e0b; }
 
-/* Shared pm- header/footer/close used here */
 .pm-header {
   padding: 24px 28px 16px;
   border-bottom: 1px solid var(--admin-border);
@@ -780,26 +783,18 @@ body.dark-mode .detail-item {
 .pm-save-btn {
   background: linear-gradient(135deg, #6366f1, #0ea5e9); min-width: 130px;
 }
-.pm-save-btn:hover { background: linear-gradient(135deg, #4f46e5, #0284c7); }
 .om-save-bank { background: linear-gradient(135deg, #10b981, #0ea5e9); }
-.om-save-bank:hover { background: linear-gradient(135deg, #059669, #0284c7); }
-.mr-auto { margin-right: auto; }
-.mr-1 { margin-right: 4px; }
 
-/* Receipt */
 .receipt-canvas {
   border-radius: 12px; overflow: hidden;
   background: var(--admin-bg); border: 1px solid var(--admin-border);
   margin: 12px 0; min-height: 180px;
   display: flex; align-items: center; justify-content: center;
 }
-.receipt-image { max-width: 100%; max-height: 320px; object-fit: contain; display: block; }
 .receipt-empty {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px; color: var(--admin-text-muted); font-size: 0.85rem; padding: 40px;
 }
-.receipt-empty i { font-size: 3rem; }
-.receipt-note { font-size: 0.8rem; color: var(--admin-text-secondary); text-align: center; }
 
 /* Confirm Dialog */
 .om-confirm {
@@ -817,6 +812,13 @@ body.dark-mode .detail-item {
 .om-confirm-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 10px; }
 .om-confirm-msg { color: var(--admin-text-secondary); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.5; }
 .om-confirm-actions { display: flex; gap: 12px; justify-content: center; }
+
+/* Items Modal */
+.om-left-items { background: linear-gradient(160deg, #10b981 0%, #059669 100%); }
+.items-modal-body { padding: 0 !important; }
+.items-table { border: none !important; border-radius: 0 !important; }
+.items-table th, .items-table td { padding: 12px 20px; font-size: 0.85rem; }
+.items-table th { background: var(--admin-bg); position: sticky; top: 0; z-index: 10; }
 
 /* Customer grid */
 .customer-detail-grid {

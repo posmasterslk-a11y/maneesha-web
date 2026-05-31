@@ -64,6 +64,13 @@
         </div>
       </div>
     </div>
+    
+    <!-- Load More -->
+    <div class="load-more-container" v-if="currentPage < lastPage">
+      <button @click="loadMore" class="btn-premium btn-gold mt-4" :disabled="loadingMore">
+        {{ loadingMore ? 'Loading...' : 'Load More' }}
+      </button>
+    </div>
 
     <div v-else class="empty-catalog glass-panel">
       <i class="fa-solid fa-folder-open"></i>
@@ -87,6 +94,9 @@ const activeCategory = ref('all')
 const products       = ref([])
 const categories     = ref([])
 const loading        = ref(true)
+const loadingMore    = ref(false)
+const currentPage    = ref(1)
+const lastPage       = ref(1)
 
 // Fetch categories for filter buttons
 const fetchCategories = async () => {
@@ -97,19 +107,43 @@ const fetchCategories = async () => {
 }
 
 // Fetch products (with optional category filter)
-const fetchProducts = async () => {
-  loading.value = true
+const fetchProducts = async (page = 1, append = false) => {
+  if (append) {
+    loadingMore.value = true
+  } else {
+    loading.value = true
+  }
+  
   try {
     let url = `${API}/products`
     const params = new URLSearchParams()
     if (activeCategory.value !== 'all') params.set('category', activeCategory.value)
     if (searchQuery.value.trim())        params.set('search', searchQuery.value.trim())
+    params.set('page', page)
     if (params.toString())               url += '?' + params.toString()
 
     const r = await fetch(url)
-    products.value = await r.json()
+    const data = await r.json()
+    
+    if (append) {
+      products.value = [...products.value, ...(data.data || data)]
+    } else {
+      products.value = data.data || data
+    }
+    
+    currentPage.value = data.current_page || 1
+    lastPage.value = data.last_page || 1
+    
   } catch (e) { console.error(e) }
+  
   loading.value = false
+  loadingMore.value = false
+}
+
+const loadMore = () => {
+  if (currentPage.value < lastPage.value) {
+    fetchProducts(currentPage.value + 1, true)
+  }
 }
 
 const setCategory = (slug) => {
@@ -129,10 +163,10 @@ const formatNumber = (num) => {
 let searchTimer = null
 watch(searchQuery, () => {
   clearTimeout(searchTimer)
-  searchTimer = setTimeout(fetchProducts, 400)
+  searchTimer = setTimeout(() => fetchProducts(1, false), 400)
 })
 
-watch(activeCategory, fetchProducts)
+watch(activeCategory, () => fetchProducts(1, false))
 
 onMounted(async () => {
   await fetchCategories()
@@ -140,7 +174,7 @@ onMounted(async () => {
   if (route.query.category) {
     activeCategory.value = route.query.category.toString()
   }
-  await fetchProducts()
+  await fetchProducts(1, false)
 })
 </script>
 
@@ -305,5 +339,10 @@ body.dark-mode .empty-catalog p {
 @keyframes shimmer {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }
 </style>

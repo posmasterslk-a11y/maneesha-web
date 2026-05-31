@@ -57,6 +57,13 @@
         <i class="fa-solid fa-tags"></i>
         <p>No categories yet. Add your first category!</p>
       </div>
+
+      <AdminPagination 
+        v-if="categories.length > 0"
+        :current-page="currentPage" 
+        :last-page="lastPage" 
+        @page-change="fetchCategories" 
+      />
     </div>
 
     <!-- Add/Edit Modal -->
@@ -145,6 +152,8 @@ const token = () => localStorage.getItem('maneesha-admin-token') || ''
 const authHeaders = () => ({ 'Authorization': `Bearer ${token()}`, 'Accept': 'application/json', 'Content-Type': 'application/json' })
 
 const categories  = ref([])
+const currentPage = ref(1)
+const lastPage    = ref(1)
 const loading     = ref(true)
 const saving      = ref(false)
 const errorMsg    = ref('')
@@ -163,11 +172,14 @@ const autoSlug = () => {
     .replace(/\s+/g, '-')
 }
 
-const fetchCategories = async () => {
+const fetchCategories = async (page = 1) => {
   loading.value = true
   try {
-    const r = await fetch(`${API}/admin/categories`, { headers: authHeaders() })
-    categories.value = await r.json()
+    const r = await fetch(`${API}/admin/categories?page=${page}`, { headers: authHeaders() })
+    const data = await r.json()
+    categories.value = data.data
+    currentPage.value = data.current_page
+    lastPage.value = data.last_page
   } catch (e) { console.error(e) }
   loading.value = false
 }
@@ -213,7 +225,7 @@ const saveCategory = async () => {
       return
     }
 
-    await fetchCategories()
+    await fetchCategories(currentPage.value)
     closeModal()
   } catch (e) {
     errorMsg.value = 'Network error. Check that the backend is running.'
@@ -225,10 +237,10 @@ const saveCategory = async () => {
 const deleteCategory = async (id) => {
   if (!confirm('Delete this category? Products in it will become uncategorized.')) return
   await fetch(`${API}/admin/categories/${id}`, { method: 'DELETE', headers: authHeaders() })
-  await fetchCategories()
+  await fetchCategories(currentPage.value)
 }
 
-onMounted(fetchCategories)
+onMounted(() => fetchCategories(1))
 </script>
 
 <style scoped>

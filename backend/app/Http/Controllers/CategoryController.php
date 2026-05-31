@@ -19,11 +19,15 @@ class CategoryController extends Controller
     }
 
     /** GET /api/admin/categories — full list for admin */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        return response()->json(
-            Category::withCount('products')->orderBy('sort_order')->get()
-        );
+        $query = Category::withCount('products')->orderBy('sort_order');
+        
+        if ($request->query('all')) {
+            return response()->json($query->get());
+        }
+
+        return response()->json($query->paginate(10));
     }
 
     /** POST /api/admin/categories */
