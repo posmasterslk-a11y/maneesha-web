@@ -1,0 +1,813 @@
+<template>
+  <div class="homepage">
+    <!-- Hero Banner Section -->
+    <section class="hero-section glass-panel">
+      <div class="hero-content container">
+        <span class="hero-subtitle animate-slide-left">Bespost tailor-made clothing</span>
+        <h1 class="luxury-title animate-fade-up">
+          Elegant Stitches <br />
+          Crafted For <span class="gold-gradient-text">Your Shape</span>
+        </h1>
+        <p class="hero-desc animate-fade-up">
+          At Maneesha Fashion, we hand-craft every cloth piece to order. Choose from our standard premium sizes or provide custom tailored specs for a custom fit.
+        </p>
+        <div class="hero-ctas animate-fade-up">
+          <NuxtLink to="/shop" class="btn-premium btn-gold">Explore Collection</NuxtLink>
+          <NuxtLink to="/orders" class="btn-premium secondary-btn">Track Order</NuxtLink>
+        </div>
+      </div>
+      
+      <!-- Luxury visual highlights / Dynamic Slider -->
+      <div class="hero-visual">
+        <div class="ambient-glow"></div>
+        <div v-if="heroSlides.length > 0" class="hero-slider">
+          <transition-group name="fade" tag="div" class="slide-wrapper">
+            <div 
+              v-for="(slide, index) in heroSlides" 
+              :key="slide.id"
+              v-show="currentSlide === index"
+              class="slide-content-wrapper"
+            >
+              <img 
+                :src="slide.main_image" 
+                :alt="slide.name" 
+                class="slider-image"
+              />
+              <div class="slider-overlay">
+                <h3 class="slider-product-name">{{ slide.name }}</h3>
+                <NuxtLink :to="`/shop?category=${slide.category_slug}`" class="btn-premium btn-gold btn-sm mt-2">Shop Now</NuxtLink>
+              </div>
+            </div>
+          </transition-group>
+        </div>
+        <div v-else class="visual-badge">
+          <i class="fa-solid fa-scissors"></i>
+          <span>100% Bespoke</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Showcase -->
+    <section class="categories-section container">
+      <div class="section-header">
+        <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
+        <p>Curated designs ready to be stitched by hand.</p>
+      </div>
+
+      <div class="categories-grid">
+        <div v-for="cat in categories" :key="cat.id" class="category-card glass-panel" @click="navigateToCategory(cat.slug)">
+          <div class="category-overlay"></div>
+          <div class="category-icon">
+            <i :class="cat.icon"></i>
+          </div>
+          <div class="category-info">
+            <h3 class="luxury-title">{{ cat.name }}</h3>
+            <span>{{ cat.products_count ?? cat.itemCount ?? 0 }} Designs</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products container">
+      <div class="section-header-row">
+        <div>
+          <h2 class="luxury-title">Featured <span class="gold-gradient-text">Creations</span></h2>
+          <p>Hand-selected popular styles ready to customize and buy.</p>
+        </div>
+        <NuxtLink to="/shop" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></NuxtLink>
+      </div>
+
+      <div class="products-grid">
+        <div v-for="prod in products" :key="prod.id" class="product-card glass-panel">
+          <div class="product-img-wrapper">
+            <div class="product-tag" v-if="prod.is_featured">Featured</div>
+            <!-- Real image or fallback gradient -->
+            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" />
+            <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">
+              <i class="fa-solid fa-shirt"></i>
+            </div>
+            <div class="hover-overlay">
+              <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">Customize &amp; Buy</NuxtLink>
+            </div>
+          </div>
+
+          <div class="product-details">
+            <span class="product-cat">{{ prod.category_name }}</span>
+            <h3 class="luxury-title">{{ prod.name }}</h3>
+            <p class="product-desc">{{ prod.short_description }}</p>
+            
+            <div class="price-row">
+              <div class="price-info">
+                <span class="price-label">Starts from</span>
+                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+              </div>
+              <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
+                <i class="fa-solid fa-circle-chevron-right"></i>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our Values / Stitching story -->
+    <section class="stitching-story glass-panel">
+      <div class="container story-grid">
+        <div class="story-text">
+          <span class="gold-gradient-text text-uppercase font-bold">The Craftsmanship</span>
+          <h2 class="luxury-title">Why Tailor-Made Beats Ready-Made</h2>
+          <p>Ready-made sizes assume everyone is identical. At Maneesha Fashion, we respect your individuality. When you purchase, select your exact size or choose 'Custom Stitch' to supply your exact measurements. Our senior tailors cut, stitch, and press your apparel separately for unmatched luxury comfort.</p>
+          
+          <div class="highlights-row">
+            <div class="hl-item">
+              <i class="fa-solid fa-ruler-combined"></i>
+              <div>
+                <h5>Perfect Fit</h5>
+                <p>Sizes change, tailored beauty remains.</p>
+              </div>
+            </div>
+            <div class="hl-item">
+              <i class="fa-solid fa-wallet"></i>
+              <div>
+                <h5>PayHere Integration</h5>
+                <p>Secure online gateways or simple cash on delivery.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="story-canvas">
+          <div class="stitching-diagram">
+            <div class="line vertical"></div>
+            <div class="line horizontal"></div>
+            <i class="fa-solid fa-ruler-horizontal diag-icon"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+const API = 'http://localhost:8000/api'
+const router = useRouter()
+
+const categories     = ref([])
+const products       = ref([])
+const heroSlides     = ref([])
+const currentSlide   = ref(0)
+let slideInterval    = null
+
+const loadingCats    = ref(true)
+const loadingProducts = ref(true)
+
+const categoryIcons = {
+  'sarees':           'fa-solid fa-person-dress',
+  'frocks':           'fa-solid fa-person-dress',
+  'blouses':          'fa-solid fa-shirt',
+  'lehengas':         'fa-solid fa-crown',
+  'tops-tunics':      'fa-solid fa-user-tie',
+  'wedding-collection': 'fa-solid fa-heart',
+}
+
+const fetchCategories = async () => {
+  try {
+    const r = await fetch(`${API}/categories`)
+    const data = await r.json()
+    categories.value = data.map(c => ({
+      ...c,
+      icon: categoryIcons[c.slug] || 'fa-solid fa-shirt',
+      itemCount: c.products_count ?? 0,
+    }))
+  } catch (e) { console.error('Failed to load categories', e) }
+  loadingCats.value = false
+}
+
+const fetchFeaturedProducts = async () => {
+  try {
+    const r = await fetch(`${API}/products?featured=1`)
+    products.value = await r.json()
+  } catch (e) { console.error('Failed to load products', e) }
+  loadingProducts.value = false
+}
+
+const fetchHeroSlides = async () => {
+  try {
+    const r = await fetch(`${API}/products?hero_slider=1`)
+    if (r.ok) {
+      heroSlides.value = await r.json()
+      if (heroSlides.value.length > 1) {
+        startSlider()
+      }
+    }
+  } catch (e) { console.error('Failed to load hero slides', e) }
+}
+
+const startSlider = () => {
+  if (slideInterval) clearInterval(slideInterval)
+  slideInterval = setInterval(() => {
+    currentSlide.value = (currentSlide.value + 1) % heroSlides.value.length
+  }, 5000)
+}
+
+const navigateToCategory = (slug) => {
+  router.push(`/shop?category=${slug}`)
+}
+
+const formatNumber = (num) => {
+  return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+onMounted(() => {
+  fetchCategories()
+  fetchFeaturedProducts()
+  fetchHeroSlides()
+})
+
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  if (slideInterval) clearInterval(slideInterval)
+})
+</script>
+
+<style scoped>
+/* Hero Styles */
+.hero-section {
+  position: relative;
+  min-height: 80vh;
+  margin: 0 20px 60px 20px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: center;
+}
+
+.hero-content {
+  padding: 60px 40px;
+  z-index: 10;
+}
+
+.hero-subtitle {
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 3px;
+  color: var(--primary-gold);
+  font-weight: 700;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.hero-section h1 {
+  font-size: 3.8rem;
+  line-height: 1.1;
+  margin-bottom: 25px;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  color: var(--text-dark-secondary);
+  max-width: 520px;
+  margin-bottom: 35px;
+}
+
+body.dark-mode .hero-desc {
+  color: var(--text-light-secondary);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 20px;
+}
+
+.secondary-btn {
+  background: transparent;
+  border: 1px solid var(--text-dark-primary);
+  color: var(--text-dark-primary);
+  box-shadow: none;
+}
+
+body.dark-mode .secondary-btn {
+  border: 1px solid var(--text-light-primary);
+  color: var(--text-light-primary);
+}
+
+.secondary-btn:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+body.dark-mode .secondary-btn:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.hero-visual {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #131518 0%, #08090a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ambient-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
+  filter: blur(40px);
+}
+
+.visual-badge {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px 36px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  animation: pulse-soft 4s infinite ease-in-out;
+  z-index: 2;
+}
+
+.visual-badge i {
+  font-size: 2.2rem;
+  color: var(--primary-gold);
+}
+
+.visual-badge span {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Slider Styles */
+.hero-slider {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.slide-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slider-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8; /* Increased opacity to show product better */
+  mask-image: linear-gradient(to right, transparent, black 25%);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 25%);
+}
+
+.slide-content-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.slider-overlay {
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+  text-align: right;
+  z-index: 10;
+}
+
+.slider-product-name {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  margin-bottom: 10px;
+}
+
+.mt-2 { margin-top: 10px; }
+.btn-sm { padding: 8px 16px; font-size: 0.9rem; }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1.5s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Section Common Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 45px;
+}
+
+.section-header h2 {
+  font-size: 2.3rem;
+  margin-bottom: 8px;
+}
+
+.section-header p {
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .section-header p {
+  color: var(--text-light-secondary);
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 45px;
+}
+
+.section-header-row h2 {
+  font-size: 2.3rem;
+  margin-bottom: 8px;
+}
+
+.section-header-row p {
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .section-header-row p {
+  color: var(--text-light-secondary);
+}
+
+.view-all-link {
+  font-weight: 600;
+  color: var(--primary-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-all-link:hover {
+  letter-spacing: 1px;
+}
+
+/* Category Grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  margin-bottom: 80px;
+}
+
+.category-card {
+  position: relative;
+  padding: 40px 30px;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.category-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--primary-gold);
+  transition: var(--transition-smooth);
+}
+
+.category-card:hover .category-icon {
+  background: var(--primary-gold);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.category-card h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.category-card span {
+  font-size: 0.8rem;
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .category-card span {
+  color: var(--text-light-secondary);
+}
+
+/* Products Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  margin-bottom: 80px;
+}
+
+.product-card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-img-wrapper {
+  position: relative;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  border-bottom: 1px solid var(--bg-light-border);
+}
+
+body.dark-mode .product-img-wrapper {
+  border-bottom: 1px solid var(--bg-dark-border);
+}
+
+.product-tag {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: var(--primary-gold);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  z-index: 10;
+}
+
+.product-visual-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.45);
+  transition: var(--transition-smooth);
+}
+
+.product-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-smooth);
+}
+
+.product-card:hover .product-real-img {
+  transform: scale(1.05);
+}
+
+.hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 12, 14, 0.4);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.product-img-wrapper:hover .hover-overlay {
+  opacity: 1;
+}
+
+.quick-view-btn {
+  padding: 10px 20px;
+  font-size: 0.8rem;
+}
+
+.product-details {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-cat {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: var(--primary-gold);
+  margin-bottom: 5px;
+}
+
+.product-details h3 {
+  font-size: 1.15rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.product-desc {
+  font-size: 0.8rem;
+  color: var(--text-dark-secondary);
+  margin-bottom: 20px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body.dark-mode .product-desc {
+  color: var(--text-light-secondary);
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 0.7rem;
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .price-label {
+  color: var(--text-light-secondary);
+}
+
+.product-price {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.add-to-cart-quick {
+  font-size: 1.8rem;
+  color: var(--primary-gold);
+}
+
+.add-to-cart-quick:hover {
+  color: var(--primary-gold-dark);
+  transform: translateX(3px);
+}
+
+/* Stitching Story */
+.stitching-story {
+  margin: 0 20px 80px 20px;
+  padding: 60px 40px;
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.story-text h2 {
+  font-size: 2.3rem;
+  margin: 15px 0 20px 0;
+}
+
+.story-text p {
+  font-size: 0.95rem;
+  color: var(--text-dark-secondary);
+  margin-bottom: 30px;
+}
+
+body.dark-mode .story-text p {
+  color: var(--text-light-secondary);
+}
+
+.highlights-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hl-item {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.hl-item i {
+  font-size: 1.4rem;
+  color: var(--primary-gold);
+  margin-top: 3px;
+}
+
+.hl-item h5 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.hl-item p {
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+.story-canvas {
+  height: 350px;
+  background: linear-gradient(135deg, #131518 0%, #08090a 100%);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.stitching-diagram {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  border: 1px dashed rgba(212,175,55,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.line {
+  position: absolute;
+  background: rgba(212,175,55,0.15);
+}
+
+.line.vertical {
+  width: 1px;
+  height: 100%;
+  top: 0;
+  left: 50%;
+}
+
+.line.horizontal {
+  height: 1px;
+  width: 100%;
+  left: 0;
+  top: 50%;
+}
+
+.diag-icon {
+  font-size: 3rem;
+  color: var(--primary-gold);
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  
+  .hero-visual {
+    height: 300px;
+  }
+  
+  .story-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .story-canvas {
+    height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.6rem;
+  }
+  
+  .hero-content {
+    padding: 40px 20px;
+  }
+  
+  .stitching-story {
+    padding: 40px 20px;
+  }
+  
+  .story-text h2 {
+    font-size: 1.8rem;
+  }
+}
+</style>
