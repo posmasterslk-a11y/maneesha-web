@@ -137,15 +137,59 @@
           </div>
         </div>
         
-        <div class="story-canvas">
+        <div class="story-canvas" v-if="!featuredCategory">
           <div class="stitching-diagram">
             <div class="line vertical"></div>
             <div class="line horizontal"></div>
             <i class="fa-solid fa-ruler-horizontal diag-icon"></i>
           </div>
         </div>
+        <div class="story-canvas featured-category-canvas glass-panel" v-else @click="navigateToCategory(featuredCategory.slug)" style="cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; background: rgba(212,175,55,0.05); border: 1px solid var(--primary-gold-light);">
+           <div class="featured-cat-card p-8">
+              <i :class="featuredCategory.icon" style="font-size: 3rem; color: var(--primary-gold); margin-bottom: 15px;"></i>
+              <h3 class="luxury-title" style="font-size: 2rem; margin-bottom: 10px;">{{ featuredCategory.name }}</h3>
+              <p v-if="featuredCategory.description" class="text-sm opacity-80 mb-6 max-w-sm mx-auto" style="color: var(--text-dark-secondary);">{{ featuredCategory.description }}</p>
+              <p v-else class="text-sm opacity-80 mb-6 max-w-sm mx-auto" style="color: var(--text-dark-secondary);">Discover our most premium featured collection curated just for you.</p>
+              <div><span class="btn-premium btn-gold">Explore {{ featuredCategory.name }} <i class="fa-solid fa-arrow-right ml-2"></i></span></div>
+           </div>
+        </div>
       </div>
     </section>
+
+    <!-- Meet the Designer Section -->
+    <section class="meet-designer-section container mb-20 glass-panel">
+      <div class="designer-grid">
+        <div class="designer-text">
+          <span class="gold-gradient-text text-uppercase font-bold">Behind The Brand</span>
+          <h2 class="luxury-title mt-2">Meet the <span class="gold-gradient-text">Designer</span></h2>
+          <p class="mt-4">
+            Every stitch, every cut, and every detail is guided by a passion for perfection. 
+            At Maneesha Fashion, we believe in bringing your dream outfits to life with a personal touch.
+          </p>
+          <div class="mt-6 flex gap-4">
+            <div class="stat-badge">
+              <i class="fa-solid fa-heart"></i>
+              <span>Crafted with Love</span>
+            </div>
+            <div class="stat-badge">
+              <i class="fa-solid fa-gem"></i>
+              <span>Premium Quality</span>
+            </div>
+          </div>
+        </div>
+        <div class="designer-images">
+          <div class="img-wrapper img-1">
+            <!-- Put the first photo as designer-1.jpeg -->
+            <img src="/images/designer-1.jpeg" alt="Maneesha Fashion Designer" />
+          </div>
+          <div class="img-wrapper img-2">
+            <!-- Put the second photo as designer-2.jpeg -->
+            <img src="/images/designer-2.jpeg" alt="Maneesha Fashion Studio" />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Popular / Most Viewed Products Section -->
     <section class="popular-products container mb-20" v-if="popularProducts.length > 0">
       <div class="section-header">
@@ -189,21 +233,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-const API = 'http://localhost:8000/api'
+const config = useRuntimeConfig()
+const API = config.public.apiBase
 const router = useRouter()
 
-const categories     = ref([])
-const products       = ref([])
-const popularProducts = ref([])
-const heroSlides     = ref([])
-const currentSlide   = ref(0)
-let slideInterval    = null
-
-const loadingCats    = ref(true)
-const loadingProducts = ref(true)
+// Add SEO Meta Tags
+useHead({
+  title: 'Maneesha Fashion - Elegant Stitches Crafted For Your Shape',
+  meta: [
+    { name: 'description', content: 'Maneesha Fashion offers a carefully curated collection of premium clothing. We specialize in bespoke standard sizes for a perfect fit, including sarees, lehengas, frocks, and wedding collections.' },
+    { name: 'keywords', content: 'Maneesha Fashion, premium clothing, bespoke clothing, online fashion store, Sri Lanka fashion, designer wear, lehengas, sarees, frocks' }
+  ]
+})
 
 const categoryIcons = {
   'sarees':           'fa-solid fa-person-dress',
@@ -214,40 +258,38 @@ const categoryIcons = {
   'wedding-collection': 'fa-solid fa-heart',
 }
 
-const fetchCategories = async () => {
-  try {
-    const r = await fetch(`${API}/categories`)
-    const data = await r.json()
-    categories.value = data.map(c => ({
-      ...c,
-      icon: categoryIcons[c.slug] || 'fa-solid fa-shirt',
-      itemCount: c.products_count ?? 0,
-    }))
-  } catch (e) { console.error('Failed to load categories', e) }
-  loadingCats.value = false
-}
+// Fetch all data in parallel using Nuxt SSR
+const [
+  { data: rawCategories },
+  { data: rawFeaturedProducts },
+  { data: rawPopularProducts },
+  { data: rawHeroSlides }
+] = await Promise.all([
+  useFetch(`${API}/categories`),
+  useFetch(`${API}/products?featured=1`),
+  useFetch(`${API}/products/popular`),
+  useFetch(`${API}/products?hero_slider=1`)
+])
 
-const fetchFeaturedProducts = async () => {
-  try {
-    const r = await fetch(`${API}/products?featured=1`)
-    const res = await r.json()
-    products.value = res.data || res
-  } catch (e) { console.error('Failed to load products', e) }
-  loadingProducts.value = false
-}
+const categories = computed(() => {
+  if (!rawCategories.value) return []
+  return rawCategories.value.map(c => ({
+    ...c,
+    icon: categoryIcons[c.slug] || 'fa-solid fa-shirt',
+    itemCount: c.products_count ?? 0,
+  }))
+})
 
-const fetchHeroSlides = async () => {
-  try {
-    const r = await fetch(`${API}/products?hero_slider=1`)
-    if (r.ok) {
-      const res = await r.json()
-      heroSlides.value = res.data || res
-      if (heroSlides.value.length > 1) {
-        startSlider()
-      }
-    }
-  } catch (e) { console.error('Failed to load hero slides', e) }
-}
+const featuredCategory = computed(() => {
+  return categories.value.find(c => c.is_featured) || null
+})
+
+const products = computed(() => rawFeaturedProducts.value?.data || rawFeaturedProducts.value || [])
+const popularProducts = computed(() => rawPopularProducts.value?.data || rawPopularProducts.value || [])
+const heroSlides = computed(() => rawHeroSlides.value?.data || rawHeroSlides.value || [])
+
+const currentSlide = ref(0)
+let slideInterval = null
 
 const startSlider = () => {
   if (slideInterval) clearInterval(slideInterval)
@@ -264,24 +306,12 @@ const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-const fetchPopularProducts = async () => {
-  try {
-    const r = await fetch(`${API}/products/popular`)
-    if (r.ok) {
-      const res = await r.json()
-      popularProducts.value = res.data || res
-    }
-  } catch (e) { console.error('Failed to load popular products', e) }
-}
-
 onMounted(() => {
-  fetchCategories()
-  fetchFeaturedProducts()
-  fetchPopularProducts()
-  fetchHeroSlides()
+  if (heroSlides.value.length > 1) {
+    startSlider()
+  }
 })
 
-import { onUnmounted } from 'vue'
 onUnmounted(() => {
   if (slideInterval) clearInterval(slideInterval)
 })
@@ -721,6 +751,106 @@ body.dark-mode .story-text p {
   
   .story-text h2 {
     font-size: 1.8rem;
+  }
+  
+  .designer-text h2 {
+    font-size: 1.8rem;
+  }
+}
+
+/* Designer Section */
+.meet-designer-section {
+  padding: 60px 40px;
+  border-radius: var(--radius-lg);
+  margin-top: 40px;
+}
+
+.designer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.designer-text h2 {
+  font-size: 2.3rem;
+  margin-bottom: 20px;
+}
+
+.designer-text p {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-dark-secondary);
+}
+body.dark-mode .designer-text p {
+  color: var(--text-light-secondary);
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  background: rgba(212,175,55,0.1);
+  border-radius: 30px;
+  border: 1px solid rgba(212,175,55,0.3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+}
+
+.designer-images {
+  position: relative;
+  height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.designer-images .img-wrapper {
+  position: absolute;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease;
+}
+
+.designer-images .img-wrapper:hover {
+  transform: scale(1.02);
+  z-index: 10;
+}
+
+.designer-images .img-1 {
+  width: 60%;
+  height: 80%;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  border: 3px solid rgba(255,255,255,0.1);
+}
+
+.designer-images .img-2 {
+  width: 55%;
+  height: 70%;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  border: 3px solid rgba(255,255,255,0.1);
+}
+
+.designer-images img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 991px) {
+  .designer-grid {
+    grid-template-columns: 1fr;
+  }
+  .designer-images {
+    height: 350px;
+    margin-top: 30px;
   }
 }
 </style>

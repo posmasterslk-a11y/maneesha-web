@@ -8,12 +8,17 @@ use App\Models\Category;
 class CategoryController extends Controller
 {
     /** GET /api/categories — public list */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::where('is_active', true)
+        $query = Category::where('is_active', true)
             ->withCount('products')
-            ->orderBy('sort_order')
-            ->get();
+            ->orderBy('sort_order');
+
+        if ($request->query('featured')) {
+            $query->where('is_featured', true);
+        }
+
+        $categories = $query->get();
 
         return response()->json($categories);
     }
@@ -37,6 +42,7 @@ class CategoryController extends Controller
             'name'        => 'required|string|max:100',
             'description' => 'nullable|string',
             'is_active'   => 'boolean',
+            'is_featured' => 'boolean',
             'sort_order'  => 'integer',
         ]);
 
@@ -62,6 +68,7 @@ class CategoryController extends Controller
             'name'        => 'sometimes|string|max:100',
             'description' => 'nullable|string',
             'is_active'   => 'boolean',
+            'is_featured' => 'boolean',
             'sort_order'  => 'integer',
         ]);
 

@@ -86,25 +86,27 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-const API = 'http://localhost:8000/api'
+const config = useRuntimeConfig()
+const API = config.public.apiBase
 const route = useRoute()
 
+useHead({
+  title: 'Shop Premium Collection - Maneesha Fashion',
+  meta: [
+    { name: 'description', content: 'Browse our entire collection of meticulously crafted clothing. Filter by categories such as sarees, blouses, frocks, lehengas, and find your perfect fit.' }
+  ]
+})
+
 const searchQuery    = ref('')
-const activeCategory = ref('all')
+const activeCategory = ref(route.query.category?.toString() || 'all')
 const products       = ref([])
-const categories     = ref([])
 const loading        = ref(true)
 const loadingMore    = ref(false)
 const currentPage    = ref(1)
 const lastPage       = ref(1)
 
-// Fetch categories for filter buttons
-const fetchCategories = async () => {
-  try {
-    const r = await fetch(`${API}/categories`)
-    categories.value = await r.json()
-  } catch (e) { console.error(e) }
-}
+// Fetch categories using Nuxt SSR
+const { data: categories } = await useFetch(`${API}/categories`)
 
 // Fetch products (with optional category filter)
 const fetchProducts = async (page = 1, append = false) => {
@@ -169,11 +171,6 @@ watch(searchQuery, () => {
 watch(activeCategory, () => fetchProducts(1, false))
 
 onMounted(async () => {
-  await fetchCategories()
-  // Pre-select category from URL param
-  if (route.query.category) {
-    activeCategory.value = route.query.category.toString()
-  }
   await fetchProducts(1, false)
 })
 </script>

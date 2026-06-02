@@ -95,27 +95,27 @@
                     <UIcon name="i-lucide-eye" class="w-4 h-4 opacity-75" />
                     <span>Active on Store</span>
                   </div>
-                  <UToggle v-model="formData.is_active" color="emerald" />
+                  <USwitch v-model="formData.is_active" color="emerald" />
                 </div>
                 <div class="flex items-center justify-between text-white">
                   <div class="flex items-center gap-2 text-sm font-medium">
                     <UIcon name="i-lucide-star" class="w-4 h-4 opacity-75" />
                     <span>Featured</span>
                   </div>
-                  <UToggle v-model="formData.is_featured" color="amber" />
+                  <USwitch v-model="formData.is_featured" color="amber" />
                 </div>
                 <div class="flex items-center justify-between text-white">
                   <div class="flex items-center gap-2 text-sm font-medium">
                     <UIcon name="i-lucide-image" class="w-4 h-4 opacity-75" />
                     <span>Hero Slider</span>
                   </div>
-                  <UToggle v-model="formData.in_hero_slider" color="primary" />
+                  <USwitch v-model="formData.in_hero_slider" color="primary" />
                 </div>
               </div>
             </div>
 
             <!-- Right Panel: Form -->
-            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 h-[85vh]">
+            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 overflow-hidden">
               <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start">
                 <div>
                   <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">{{ isEditing ? 'Editing Product' : 'New Product' }}</p>

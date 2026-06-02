@@ -75,18 +75,50 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted } from 'vue'
+import { ref, computed, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const addToCart = inject('addToCart')
 
-const product = ref(null)
+const slugParam = route.params.slug
+
+// Fetch product data using SSR
+const { data: productData, error } = await useFetch(`${config.public.apiBase}/products/${slugParam}`)
+
+if (error.value || !productData.value) {
+  if (process.client) {
+    router.push('/shop')
+  }
+}
+
+const product = ref(productData.value)
+const loading = ref(false)
+
+if (product.value) {
+  product.value.colorTheme = product.value.colorTheme || 'linear-gradient(135deg, #2b2d42 0%, #8d99ae 100%)'
+  
+  // Set SEO tags for the product page
+  useHead({
+    title: `${product.value.name} - Maneesha Fashion`,
+    meta: [
+      { name: 'description', content: product.value.short_description || product.value.description },
+      { property: 'og:title', content: `${product.value.name} - Maneesha Fashion` },
+      { property: 'og:description', content: product.value.short_description || product.value.description },
+      { property: 'og:image', content: product.value.main_image }
+    ]
+  })
+}
+
 const selectedSize = ref('')
+if (product.value?.variants && product.value.variants.length > 0) {
+  selectedSize.value = product.value.variants[0].size
+}
+
 const quantity = ref(1)
-const loading = ref(true)
 
 const activePrice = computed(() => {
   if (!product.value) return 0
@@ -111,28 +143,6 @@ const handleBuyNow = () => {
 const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
-
-onMounted(async () => {
-  const slugParam = route.params.slug
-  try {
-    const res = await fetch(`http://localhost:8000/api/products/${slugParam}`)
-    if (res.ok) {
-      const data = await res.json()
-      product.value = data
-      if (data.variants && data.variants.length > 0) {
-        selectedSize.value = data.variants[0].size
-      }
-      product.value.colorTheme = product.value.colorTheme || 'linear-gradient(135deg, #2b2d42 0%, #8d99ae 100%)'
-    } else {
-      router.push('/shop')
-    }
-  } catch (error) {
-    console.error(error)
-    router.push('/shop')
-  } finally {
-    loading.value = false
-  }
-})
 </script>
 
 <style scoped>

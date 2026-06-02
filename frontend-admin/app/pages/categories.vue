@@ -28,6 +28,7 @@
             { id: 'name', header: 'Name' },
             { id: 'slug', header: 'Slug' },
             { id: 'products', header: 'Products' },
+            { id: 'featured', header: 'Featured' },
             { id: 'status', header: 'Status' },
             { id: 'actions', header: 'Actions' }
           ]">
@@ -48,6 +49,11 @@
             
             <template #products-cell="{ row }">
               <UBadge color="emerald" variant="soft" size="sm">{{ row.original.products_count ?? 0 }} items</UBadge>
+            </template>
+
+            <template #featured-cell="{ row }">
+              <UIcon v-if="row.original.is_featured" name="i-lucide-star" class="w-5 h-5 text-amber-500" />
+              <span v-else class="text-gray-400">-</span>
             </template>
             
             <template #status-cell="{ row }">
@@ -93,12 +99,19 @@
                   <UIcon name="i-lucide-eye" class="w-4 h-4 opacity-80" />
                   <span>Active</span>
                 </div>
-                <UToggle v-model="formData.is_active" color="emerald" />
+                <USwitch v-model="formData.is_active" color="emerald" />
+              </div>
+              <div class="w-full pt-4 mt-2 border-t border-white/20 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm font-medium">
+                  <UIcon name="i-lucide-star" class="w-4 h-4 text-amber-300 opacity-100" />
+                  <span>Featured</span>
+                </div>
+                <USwitch v-model="formData.is_featured" color="amber" />
               </div>
             </div>
 
             <!-- Right Panel: Form -->
-            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 h-[85vh]">
+            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 overflow-hidden">
               <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start">
                 <div>
                   <p class="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">{{ isEditing ? 'Editing Category' : 'New Category' }}</p>
@@ -107,7 +120,7 @@
                 <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeModal" />
               </div>
 
-              <form @submit.prevent="saveCategory" class="flex flex-col flex-1">
+              <form @submit.prevent="saveCategory" class="flex flex-col flex-1 overflow-hidden">
                 <div class="p-6 space-y-4 flex-1 overflow-y-auto">
                   <UFormField label="Category Name *" required>
                     <UInput v-model="formData.name" placeholder="e.g. Sarees, Frocks, Blouses" @input="autoSlug" required />
@@ -162,7 +175,7 @@ const isModalOpen = ref(false)
 const isEditing   = ref(false)
 const editingId   = ref(null)
 
-const formData = ref({ name: '', slug: '', description: '', sort_order: 0, is_active: true })
+const formData = ref({ name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false })
 
 // Auto-generate slug from name
 const autoSlug = () => {
@@ -188,7 +201,7 @@ const fetchCategories = async (page = 1) => {
 const openAddModal = () => {
   isEditing.value = false
   editingId.value = null
-  formData.value  = { name: '', slug: '', description: '', sort_order: 0, is_active: true }
+  formData.value  = { name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false }
   errorMsg.value  = ''
   isModalOpen.value = true
 }
@@ -202,6 +215,7 @@ const editCategory = (cat) => {
     description: cat.description || '',
     sort_order:  cat.sort_order || 0,
     is_active:   cat.is_active,
+    is_featured: cat.is_featured,
   }
   errorMsg.value  = ''
   isModalOpen.value = true
