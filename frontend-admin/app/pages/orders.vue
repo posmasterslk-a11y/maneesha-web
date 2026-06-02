@@ -1,305 +1,294 @@
 <template>
-  <div class="admin-orders">
-    <div class="metrics-grid animate-fade-up">
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>Total Orders</span>
-          <h3>{{ stats.totalOrders }}</h3>
-        </div>
-        <div class="metric-icon blue"><i class="fa-solid fa-boxes-stacked"></i></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>Pending Orders</span>
-          <h3>{{ stats.pendingOrders }}</h3>
-        </div>
-        <div class="metric-icon yellow"><i class="fa-solid fa-clock-rotate-left"></i></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>Dispatched / Done</span>
-          <h3>{{ stats.dispatchedOrders }}</h3>
-        </div>
-        <div class="metric-icon green"><i class="fa-solid fa-truck-fast"></i></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>Bank Deposits</span>
-          <h3>{{ stats.bankDepositOrders }}</h3>
-        </div>
-        <div class="metric-icon purple"><i class="fa-solid fa-building-columns"></i></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>PayHere</span>
-          <h3>{{ stats.payhereOrders }}</h3>
-        </div>
-        <div class="metric-icon blue"><i class="fa-regular fa-credit-card"></i></div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-info">
-          <span>Cash on Delivery</span>
-          <h3>{{ stats.codOrders }}</h3>
-        </div>
-        <div class="metric-icon green"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-      </div>
-    </div>
+  <UDashboardPanel id="orders">
+    <template #header>
+      <UDashboardNavbar title="Orders">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <div class="table-panel animate-fade-up">
-      <div class="table-header">
-        <h3 class="luxury-title">All Orders</h3>
-        <div class="header-actions flex align-center">
-          <select v-model="paymentFilter" class="admin-select mr-2">
-            <option value="all">All Payment Methods</option>
-            <option value="bank_deposit">Bank Deposit</option>
-            <option value="cod">Cash on Delivery</option>
-            <option value="payhere">PayHere Gateway</option>
-          </select>
-          <button @click="loadOrders" class="btn-admin btn-admin-secondary"><i class="fa-solid fa-rotate mr-2"></i> Refresh</button>
-        </div>
-      </div>
+    <template #body>
+      <div class="flex flex-col gap-6">
+        <!-- Metrics Grid -->
+        <UPageGrid class="lg:grid-cols-6 gap-4 sm:gap-6 lg:gap-px">
+          <UPageCard title="Total Orders" icon="i-lucide-boxes" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-blue-500/10 ring ring-inset ring-blue-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none first:rounded-l-lg last:rounded-r-lg">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.totalOrders || 0 }}</span>
+          </UPageCard>
+          <UPageCard title="Pending" icon="i-lucide-clock" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-amber-500/10 ring ring-inset ring-amber-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.pendingOrders || 0 }}</span>
+          </UPageCard>
+          <UPageCard title="Done" icon="i-lucide-truck" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-emerald-500/10 ring ring-inset ring-emerald-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.dispatchedOrders || 0 }}</span>
+          </UPageCard>
+          <UPageCard title="Bank Deposits" icon="i-lucide-building-2" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-purple-500/10 ring ring-inset ring-purple-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.bankDepositOrders || 0 }}</span>
+          </UPageCard>
+          <UPageCard title="PayHere" icon="i-lucide-credit-card" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-blue-500/10 ring ring-inset ring-blue-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.payhereOrders || 0 }}</span>
+          </UPageCard>
+          <UPageCard title="COD" icon="i-lucide-banknote" variant="subtle"
+            :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-emerald-500/10 ring ring-inset ring-emerald-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
+            class="lg:rounded-none last:rounded-r-lg">
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.codOrders || 0 }}</span>
+          </UPageCard>
+        </UPageGrid>
 
-      <div class="table-responsive">
-        <table class="admin-table">
-          <thead>
-          <tr>
-            <th>Ref ID</th>
-            <th>Customer Credentials</th>
-            <th>Order Items</th>
-            <th>Grand Amount</th>
-            <th>Payment Channel</th>
-            <th>Current Status</th>
-            <th>Administrative Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="order in filteredOrders" :key="order.id">
-            <td>
-              <div class="cell-flex">
-                <strong>#{{ order.order_number }}</strong>
-                <small class="time-badge text-muted"><i class="fa-regular fa-clock"></i> {{ new Date(order.created_at).toLocaleString() }}</small>
-              </div>
-            </td>
-            <td @click="openCustomerModal(order)" class="customer-cell cursor-pointer">
-              <div class="cell-flex">
-                <strong>{{ order.customer_name }}</strong>
-                <small class="text-muted"><i class="fa-solid fa-phone"></i> {{ order.customer_phone }}</small>
-              </div>
-            </td>
-            <td>
-              <button @click="openItemsModal(order)" class="btn-modern btn-modern-outline">
-                <i class="fa-solid fa-list-ul"></i> View Items ({{ order.order_items?.length || 0 }})
-              </button>
-            </td>
-            <td><strong>LKR {{ formatNumber(order.total) }}</strong></td>
-            <td>
-              <span class="pay-method-badge">{{ formatPaymentMethod(order.payment_method) }}</span>
-              <button 
-                v-if="order.payment_method === 'bank_deposit' && order.bank_slip_path" 
-                @click="openSlipModal(order)"
-                class="btn-modern btn-modern-outline mt-2"
-              >
-                <i class="fa-regular fa-image"></i> Review Slip
-              </button>
-            </td>
-            <td>
-              <span :class="['modern-badge', order.status]">{{ order.status }}</span>
-            </td>
-            <td>
-              <div class="actions-wrapper">
-                <button 
-                  v-if="order.status === 'pending'"
-                  @click="updateStatus(order, 'confirmed')"
-                  class="btn-modern btn-modern-primary"
-                >
-                  Confirm
-                </button>
-
-                <button 
-                  v-if="order.status === 'confirmed'"
-                  @click="updateStatus(order, 'processing')"
-                  class="btn-modern btn-modern-purple"
-                >
-                  Process Order
-                </button>
-
-                <button 
-                  v-if="order.status === 'processing'"
-                  @click="updateStatus(order, 'dispatched')"
-                  class="btn-modern btn-modern-green"
-                >
-                  Dispatch Item
-                </button>
-                
-                <button 
-                  v-if="order.status === 'dispatched'"
-                  @click="updateStatus(order, 'delivered')"
-                  class="btn-modern btn-modern-secondary"
-                >
-                  Close Order
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-
-      <div v-if="filteredOrders.length === 0" class="empty-state">
-        <i class="fa-solid fa-inbox"></i>
-        <p>No orders found for the selected criteria.</p>
-      </div>
-
-      <AdminPagination 
-        v-if="orders.length > 0"
-        :current-page="currentPage" 
-        :last-page="lastPage" 
-        @page-change="loadOrders" 
-      />
-    </div>
-
-    <!-- Items Modal -->
-    <div :class="['modal-overlay', { open: isItemsModalOpen }]" @click.self="closeItemsModal">
-      <div class="om-modal">
-        <div class="om-left om-left-items">
-          <div class="om-icon-wrap"><i class="fa-solid fa-list-check"></i></div>
-          <h3 class="om-side-title">Order Items</h3>
-          <p class="om-side-desc">Review the items purchased in this order.</p>
-        </div>
-        <div class="om-right">
-          <div class="pm-header">
-            <div>
-              <p class="pm-header-label">Items Review</p>
-              <h4 class="pm-title">Order #{{ selectedOrderItemsOrder?.order_number }}</h4>
-            </div>
-            <button @click="closeItemsModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="om-body items-modal-body">
-            <table class="admin-table items-table">
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  <th>Size</th>
-                  <th>Qty</th>
-                  <th>Price</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, idx) in selectedOrderItems" :key="idx">
-                  <td><strong>{{ item.product_name }}</strong></td>
-                  <td>{{ item.size }}</td>
-                  <td>{{ item.quantity }}</td>
-                  <td>LKR {{ formatNumber(item.price) }}</td>
-                  <td><strong>LKR {{ formatNumber(item.price * item.quantity) }}</strong></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="pm-footer">
-            <button @click="closeItemsModal" class="btn-admin btn-admin-secondary">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bank Slip Modal -->
-    <div :class="['modal-overlay', { open: isSlipModalOpen }]" @click.self="closeSlipModal">
-      <div class="om-modal">
-        <div class="om-left om-left-bank">
-          <div class="om-icon-wrap"><i class="fa-solid fa-building-columns"></i></div>
-          <h3 class="om-side-title">Bank Receipt</h3>
-          <p class="om-side-desc">Verify the bank transfer receipt against the expected order amount.</p>
-          <div class="om-amount-chip">LKR {{ formatNumber(selectedOrder?.total || 0) }}</div>
-        </div>
-        <div class="om-right">
-          <div class="pm-header">
-            <div>
-              <p class="pm-header-label om-label-bank">Bank Transfer Review</p>
-              <h4 class="pm-title">Order #{{ selectedOrder?.order_number }}</h4>
-            </div>
-            <button @click="closeSlipModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="om-body">
-            <p class="om-meta">Customer: <strong>{{ selectedOrder?.customer_name }}</strong></p>
-            <div class="receipt-canvas">
-              <img v-if="selectedOrder?.bank_slip_path" :src="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/view-slip'" alt="Receipt" class="receipt-image" />
-              <div v-else class="receipt-empty"><i class="fa-solid fa-file-image"></i><span>No slip uploaded</span></div>
-            </div>
-            <p class="receipt-note">Verify the transfer reference and total amount of <strong>LKR {{ formatNumber(selectedOrder?.total || 0) }}</strong> matches bank statements before approving.</p>
-          </div>
-          <div class="pm-footer">
-            <a v-if="selectedOrder?.bank_slip_path" :href="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/download-slip'" download class="btn-admin btn-admin-secondary mr-auto">
-              <i class="fa-solid fa-download mr-1"></i> Download
-            </a>
-            <button @click="closeSlipModal" class="btn-admin btn-admin-secondary">Close</button>
-            <button v-if="selectedOrder?.status === 'pending'" @click="approveSlipFromModal" class="btn-admin pm-save-btn om-save-bank">Approve & Confirm</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Confirm Dialog -->
-    <div :class="['modal-overlay', { open: confirmDialog.isOpen }]" @click.self="closeConfirm">
-      <div class="om-confirm">
-        <div class="om-confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <h4 class="om-confirm-title">Confirm Action</h4>
-        <p class="om-confirm-msg">{{ confirmDialog.message }}</p>
-        <div class="om-confirm-actions">
-          <button @click="closeConfirm" class="btn-admin btn-admin-secondary">Cancel</button>
-          <button @click="executeConfirm" class="btn-admin pm-save-btn">Yes, Proceed</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Customer Details Modal -->
-    <div :class="['modal-overlay', { open: isCustomerModalOpen }]" @click.self="closeCustomerModal">
-      <div class="om-modal">
-        <div class="om-left om-left-customer">
-          <div class="om-icon-wrap"><i class="fa-solid fa-user"></i></div>
-          <h3 class="om-side-title">{{ selectedCustomer?.customer_name }}</h3>
-          <p class="om-side-desc">Order Reference <strong>#{{ selectedCustomer?.order_number }}</strong></p>
-          <div class="om-amount-chip">LKR {{ formatNumber(selectedCustomer?.total || 0) }}</div>
-        </div>
-        <div class="om-right">
-          <div class="pm-header">
-            <div>
-              <p class="pm-header-label om-label-customer">Customer Details</p>
-              <h4 class="pm-title">{{ selectedCustomer?.customer_name }}</h4>
-            </div>
-            <button @click="closeCustomerModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div class="om-body">
-            <div class="customer-detail-grid" v-if="selectedCustomer">
-              <div class="detail-item">
-                <span class="detail-label"><i class="fa-solid fa-phone"></i> Phone</span>
-                <span class="detail-value">{{ selectedCustomer.customer_phone }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label"><i class="fa-solid fa-envelope"></i> Email</span>
-                <span class="detail-value">{{ selectedCustomer.customer_email || 'Not Provided' }}</span>
-              </div>
-              <div class="detail-item full-width">
-                <span class="detail-label"><i class="fa-solid fa-location-dot"></i> Address</span>
-                <span class="detail-value">{{ selectedCustomer.customer_address }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label"><i class="fa-solid fa-city"></i> City</span>
-                <span class="detail-value">{{ selectedCustomer.customer_city }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="detail-label"><i class="fa-solid fa-hashtag"></i> Order Ref</span>
-                <span class="detail-value">#{{ selectedCustomer.order_number }}</span>
+        <!-- Orders Table -->
+        <UCard :ui="{ body: { padding: '' } }">
+          <template #header>
+            <div class="flex items-center justify-between">
+              <h3 class="font-semibold text-gray-900 dark:text-white">All Orders</h3>
+              <div class="flex items-center gap-3">
+                <select v-model="paymentFilter" class="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2">
+                  <option value="all">All Payment Methods</option>
+                  <option value="bank_deposit">Bank Deposit</option>
+                  <option value="cod">Cash on Delivery</option>
+                  <option value="payhere">PayHere Gateway</option>
+                </select>
+                <UButton icon="i-lucide-refresh-cw" color="gray" variant="ghost" @click="loadOrders">Refresh</UButton>
               </div>
             </div>
+          </template>
+          
+          <UTable :data="filteredOrders" :columns="[
+            { id: 'ref', header: 'Ref ID' },
+            { id: 'customer', header: 'Customer' },
+            { id: 'items', header: 'Items' },
+            { id: 'total', header: 'Total' },
+            { id: 'payment', header: 'Payment' },
+            { id: 'status', header: 'Status' },
+            { id: 'actions', header: 'Actions' }
+          ]">
+            <template #ref-cell="{ row }">
+              <div class="flex flex-col">
+                <span class="font-bold">#{{ row.original.order_number }}</span>
+                <span class="text-xs text-gray-500"><UIcon name="i-lucide-clock" class="inline w-3 h-3" /> {{ new Date(row.original.created_at).toLocaleString() }}</span>
+              </div>
+            </template>
+            
+            <template #customer-cell="{ row }">
+              <div class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 p-2 -m-2 rounded transition-colors" @click="openCustomerModal(row.original)">
+                <div class="flex items-center gap-2">
+                  <UAvatar :alt="row.original.customer_name" size="sm" />
+                  <div class="flex flex-col">
+                    <span class="font-semibold text-sm">{{ row.original.customer_name }}</span>
+                    <span class="text-xs text-gray-500"><UIcon name="i-lucide-phone" class="inline w-3 h-3" /> {{ row.original.customer_phone }}</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+            
+            <template #items-cell="{ row }">
+              <UButton size="xs" variant="outline" icon="i-lucide-list" @click="openItemsModal(row.original)">
+                View ({{ row.original.order_items?.length || 0 }})
+              </UButton>
+            </template>
+            
+            <template #total-cell="{ row }">
+              <span class="font-bold">LKR {{ formatNumber(row.original.total) }}</span>
+            </template>
+            
+            <template #payment-cell="{ row }">
+              <div class="flex flex-col items-start gap-1">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ formatPaymentMethod(row.original.payment_method) }}</span>
+                <UButton v-if="row.original.payment_method === 'bank_deposit' && row.original.bank_slip_path" size="xs" variant="soft" icon="i-lucide-image" @click="openSlipModal(row.original)">
+                  Review Slip
+                </UButton>
+              </div>
+            </template>
+            
+            <template #status-cell="{ row }">
+              <UBadge :color="row.original.status === 'delivered' ? 'emerald' : row.original.status === 'pending' ? 'amber' : row.original.status === 'processing' ? 'purple' : row.original.status === 'dispatched' ? 'primary' : 'gray'" variant="soft" class="capitalize">
+                {{ row.original.status }}
+              </UBadge>
+            </template>
+            
+            <template #actions-cell="{ row }">
+              <div class="flex gap-1 flex-wrap max-w-[120px]">
+                <UButton v-if="row.original.status === 'pending'" size="xs" color="primary" @click="updateStatus(row.original, 'confirmed')">Confirm</UButton>
+                <UButton v-if="row.original.status === 'confirmed'" size="xs" color="purple" @click="updateStatus(row.original, 'processing')">Process</UButton>
+                <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
+                <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
+              </div>
+            </template>
+            
+            <template #empty>
+              <div class="flex flex-col items-center justify-center py-12">
+                <UIcon name="i-lucide-inbox" class="w-12 h-12 text-gray-400 mb-4" />
+                <p class="text-gray-500">No orders found for the selected criteria.</p>
+              </div>
+            </template>
+          </UTable>
+          
+          <div class="p-4 border-t border-gray-200 dark:border-gray-800" v-if="orders.length > 0">
+            <AdminPagination :current-page="currentPage" :last-page="lastPage" @page-change="loadOrders" />
           </div>
-          <div class="pm-footer">
-            <button @click="closeCustomerModal" class="btn-admin btn-admin-secondary">Close</button>
-          </div>
-        </div>
+        </UCard>
+
+        <!-- Modals -->
+        <!-- Order Details Modal -->
+        <UModal v-model:open="isItemsModalOpen" :ui="{ width: 'sm:max-w-3xl' }">
+          <template #content>
+            <UCard>
+              <template #header>
+                <div class="flex justify-between items-center">
+                  <h3 class="font-bold">Order #{{ selectedOrderItemsOrder?.order_number }} - Items Review</h3>
+                  <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeItemsModal" />
+                </div>
+              </template>
+              <UTable :data="selectedOrderItems || []" :columns="[
+                { id: 'product_name', header: 'Product' },
+                { id: 'size', header: 'Size' },
+                { id: 'quantity', header: 'Qty' },
+                { id: 'price', header: 'Price' },
+                { id: 'total', header: 'Total' }
+              ]">
+                <template #price-cell="{ row }">
+                  LKR {{ formatNumber(row.original.price) }}
+                </template>
+                <template #total-cell="{ row }">
+                  <span class="font-bold">LKR {{ formatNumber(row.original.price * row.original.quantity) }}</span>
+                </template>
+                <template #product_name-cell="{ row }">
+                  {{ row.original.product_name }}
+                </template>
+                <template #size-cell="{ row }">
+                  {{ row.original.size }}
+                </template>
+                <template #quantity-cell="{ row }">
+                  {{ row.original.quantity }}
+                </template>
+              </UTable>
+              <template #footer>
+                <div class="flex justify-end">
+                  <UButton color="gray" @click="closeItemsModal">Close</UButton>
+                </div>
+              </template>
+            </UCard>
+          </template>
+        </UModal>
+
+        <UModal v-model:open="isSlipModalOpen">
+          <template #content>
+          <UCard>
+            <template #header>
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">Order #{{ selectedOrder?.order_number }} - Bank Receipt</h3>
+                <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeSlipModal" />
+              </div>
+            </template>
+            
+            <div class="space-y-4">
+              <p>Customer: <strong>{{ selectedOrder?.customer_name }}</strong></p>
+              <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-2 flex justify-center border border-gray-200 dark:border-gray-800 min-h-[200px]">
+                <img v-if="selectedOrder?.bank_slip_path" :src="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/view-slip'" alt="Receipt" class="max-w-full max-h-[400px] object-contain" />
+                <div v-else class="flex flex-col items-center justify-center text-gray-400">
+                  <UIcon name="i-lucide-image" class="w-12 h-12 mb-2" />
+                  <span>No slip uploaded</span>
+                </div>
+              </div>
+              <p class="text-sm text-center text-gray-500">Verify the transfer reference and total amount of <strong>LKR {{ formatNumber(selectedOrder?.total || 0) }}</strong> matches bank statements before approving.</p>
+            </div>
+            
+            <template #footer>
+              <div class="flex justify-between w-full">
+                <UButton v-if="selectedOrder?.bank_slip_path" :to="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/download-slip'" target="_blank" icon="i-lucide-download" color="gray" variant="solid">Download</UButton>
+                <div class="flex gap-2">
+                  <UButton color="gray" variant="ghost" @click="closeSlipModal">Close</UButton>
+                  <UButton v-if="selectedOrder?.status === 'pending'" color="primary" @click="approveSlipFromModal">Approve & Confirm</UButton>
+                </div>
+              </div>
+            </template>
+            </UCard>
+          </template>
+        </UModal>
+
+        <!-- Confirmation Modal -->
+        <UModal v-model:open="confirmDialog.isOpen" :ui="{ width: 'sm:max-w-sm' }">
+          <template #content>
+            <div class="flex flex-col items-center text-center p-4">
+              <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-4">
+                <UIcon name="i-lucide-alert-triangle" class="w-8 h-8" />
+              </div>
+              <h3 class="text-lg font-bold mb-2">Confirm Action</h3>
+              <p class="text-gray-500 mb-6">{{ confirmDialog.message }}</p>
+              <div class="flex gap-3 w-full justify-center">
+                <UButton color="gray" variant="solid" @click="closeConfirm">Cancel</UButton>
+                <UButton color="primary" @click="executeConfirm">Yes, Proceed</UButton>
+              </div>
+            </div>
+          </template>
+        </UModal>
+        
+        <UModal v-model:open="isCustomerModalOpen">
+          <template #content>
+          <UCard>
+            <template #header>
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">Customer Details - {{ selectedCustomer?.customer_name }}</h3>
+                <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeCustomerModal" />
+              </div>
+            </template>
+            <div class="space-y-4" v-if="selectedCustomer">
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-phone" class="w-5 h-5 text-gray-500" />
+                <div>
+                  <p class="text-xs text-gray-500">Phone</p>
+                  <p class="font-semibold">{{ selectedCustomer.customer_phone }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-mail" class="w-5 h-5 text-gray-500" />
+                <div>
+                  <p class="text-xs text-gray-500">Email</p>
+                  <p class="font-semibold">{{ selectedCustomer.customer_email || 'Not Provided' }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-map-pin" class="w-5 h-5 text-gray-500" />
+                <div>
+                  <p class="text-xs text-gray-500">Address</p>
+                  <p class="font-semibold">{{ selectedCustomer.customer_address }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-map" class="w-5 h-5 text-gray-500" />
+                <div>
+                  <p class="text-xs text-gray-500">City</p>
+                  <p class="font-semibold">{{ selectedCustomer.customer_city }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <UIcon name="i-lucide-hash" class="w-5 h-5 text-gray-500" />
+                <div>
+                  <p class="text-xs text-gray-500">Order Ref</p>
+                  <p class="font-semibold">#{{ selectedCustomer.order_number }}</p>
+                </div>
+              </div>
+            </div>
+            <template #footer>
+              <div class="flex justify-end">
+                <UButton color="gray" @click="closeCustomerModal">Close</UButton>
+              </div>
+            </template>
+          </UCard>
+          </template>
+        </UModal>
+
       </div>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup>

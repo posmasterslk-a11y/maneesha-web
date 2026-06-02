@@ -1,224 +1,218 @@
 <template>
-  <div class="admin-products">
-    <div class="header-row animate-fade-up">
-      <h3 class="luxury-title">Apparel Catalog</h3>
-      <button @click="openAddModal" class="btn-admin"><i class="fa-solid fa-plus mr-2"></i> Add New Product</button>
-    </div>
+  <UDashboardPanel id="products">
+    <template #header>
+      <UDashboardNavbar title="Products">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <!-- Loading -->
-    <div v-if="loading" class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i> Loading products...
-    </div>
-
-    <!-- Products Grid -->
-    <div v-else-if="products.length > 0" class="products-dashboard-grid animate-fade-up">
-      <div v-for="prod in products" :key="prod.id" class="product-crud-card glass-panel">
-        <!-- Product Image -->
-        <div class="card-preview">
-          <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="card-img" />
-          <div v-else class="card-placeholder">
-            <i class="fa-solid fa-shirt"></i>
-          </div>
-          <span class="featured-badge" v-if="prod.is_featured">⭐ Featured</span>
-          <span class="inactive-badge" v-if="!prod.is_active">Hidden</span>
+    <template #body>
+      <div class="flex flex-col gap-6">
+        <div class="flex justify-between items-center">
+          <h3 class="font-semibold text-gray-900 dark:text-white text-lg">Apparel Catalog</h3>
+          <UButton icon="i-lucide-plus" color="primary" @click="openAddModal">Add New Product</UButton>
         </div>
 
-        <div class="card-body">
-          <span class="category-tag">{{ prod.category_name }}</span>
-          <h4>{{ prod.name }}</h4>
-          <p class="desc">{{ prod.short_description }}</p>
 
-          <div class="price-stock-row">
-            <span class="price-badge">LKR {{ formatNumber(prod.base_price) }}</span>
-            <span class="stock-badge">Stock: {{ prod.stock }}</span>
-          </div>
-
-          <div class="sizing-variants-preview" v-if="prod.variants?.length">
-            <h5>Size Variants ({{ prod.variants.length }})</h5>
-            <div v-for="v in prod.variants" :key="v.id" class="variant-row">
-              <span><strong>{{ v.size }}</strong></span>
-              <span>LKR {{ formatNumber(v.price) }}</span>
-              <span>Qty: {{ v.stock }}</span>
-            </div>
-          </div>
-
-          <div class="card-actions">
-            <button @click="editProduct(prod)" class="btn-admin btn-admin-secondary"><i class="fa-regular fa-pen-to-square"></i> Edit</button>
-            <button @click="deleteProduct(prod.id)" class="btn-admin btn-admin-danger"><i class="fa-regular fa-trash-can"></i> Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-else class="empty-state glass-panel">
-      <i class="fa-solid fa-box-open"></i>
-      <p>No products yet. Add your first product!</p>
-    </div>
-
-    <AdminPagination 
-      v-if="products.length > 0"
-      :current-page="currentPage" 
-      :last-page="lastPage" 
-      @page-change="fetchProducts" 
-    />
-
-    <!-- Add/Edit Modal -->
-    <div :class="['modal-overlay', { open: isModalOpen }]" @click.self="closeModal">
-      <div class="pm-modal">
-
-        <!-- Left Panel: Image Upload -->
-        <div class="pm-left">
-          <div class="pm-image-area" @click="triggerFileInput">
-            <img v-if="imagePreview" :src="imagePreview" alt="Preview" class="pm-preview-img" />
-            <img v-else-if="formData.main_image" :src="formData.main_image" alt="Current" class="pm-preview-img" />
-            <div v-else class="pm-upload-prompt">
-              <div class="pm-upload-icon">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-              </div>
-              <p>Drop your image here</p>
-              <small>JPG, PNG, WEBP · Max 5MB</small>
-            </div>
-            <div class="pm-image-overlay">
-              <i class="fa-solid fa-camera"></i>
-              <span>Change Photo</span>
-            </div>
-          </div>
-          <input ref="fileInput" type="file" accept="image/*" @change="onImageChange" style="display:none" />
-
-          <!-- Toggle Switches -->
-          <div class="pm-toggles">
-            <label class="pm-toggle-item">
-              <div class="pm-toggle-label">
-                <i class="fa-solid fa-eye"></i>
-                <span>Active on Store</span>
-              </div>
-              <div class="pm-switch" :class="{ on: formData.is_active }" @click="formData.is_active = !formData.is_active">
-                <div class="pm-switch-thumb"></div>
-              </div>
-            </label>
-            <label class="pm-toggle-item">
-              <div class="pm-toggle-label">
-                <i class="fa-solid fa-star"></i>
-                <span>Featured</span>
-              </div>
-              <div class="pm-switch" :class="{ on: formData.is_featured }" @click="formData.is_featured = !formData.is_featured">
-                <div class="pm-switch-thumb"></div>
-              </div>
-            </label>
-            <label class="pm-toggle-item">
-              <div class="pm-toggle-label">
-                <i class="fa-solid fa-images"></i>
-                <span>Hero Slider</span>
-              </div>
-              <div class="pm-switch" :class="{ on: formData.in_hero_slider }" @click="formData.in_hero_slider = !formData.in_hero_slider">
-                <div class="pm-switch-thumb"></div>
-              </div>
-            </label>
-          </div>
+        <!-- Loading -->
+        <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+          <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-primary-500 mb-4" />
+          <p class="text-gray-500">Loading products...</p>
         </div>
 
-        <!-- Right Panel: Form -->
-        <div class="pm-right">
-          <div class="pm-header">
-            <div>
-              <p class="pm-header-label">{{ isEditing ? 'Editing Product' : 'New Product' }}</p>
-              <h4 class="pm-title">{{ isEditing ? formData.name || 'Edit Product' : 'Add New Product' }}</h4>
-            </div>
-            <button @click="closeModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-
-          <form @submit.prevent="saveProduct" enctype="multipart/form-data" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
-            <div class="pm-form-scroll">
-
-              <div class="pm-section-label">Basic Info</div>
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label">Product Name *</label>
-                  <input type="text" v-model="formData.name" class="form-input" required placeholder="e.g. Silk Georgette Saree" />
+        <!-- Products Grid -->
+        <div v-else-if="products.length > 0" class="flex flex-col gap-6">
+          <UPageGrid class="lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <UCard v-for="prod in products" :key="prod.id" class="flex flex-col h-full overflow-hidden" :ui="{ body: { padding: '' }, footer: { padding: 'p-4' } }">
+              <!-- Product Image -->
+              <div class="relative h-40 bg-gray-100 dark:bg-gray-800">
+                <img v-if="prod.main_image" :src="getImageUrl(prod.main_image)" :alt="prod.name" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
+                  <UIcon name="i-lucide-shirt" class="w-12 h-12" />
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Category *</label>
-                  <select v-model="formData.category_id" class="form-input" required>
-                    <option value="">— Select Category —</option>
-                    <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-                  </select>
+                <UBadge v-if="prod.is_featured" color="amber" class="absolute top-2 left-2" icon="i-lucide-star">Featured</UBadge>
+                <UBadge v-if="!prod.is_active" color="red" class="absolute top-2 right-2">Hidden</UBadge>
+              </div>
+
+              <div class="p-4 flex-1 flex flex-col">
+                <span class="text-xs font-bold text-primary uppercase tracking-wider mb-1">{{ prod.category_name }}</span>
+                <h4 class="font-bold text-lg mb-2">{{ prod.name }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-4">{{ prod.short_description }}</p>
+
+                <div class="flex gap-2 mb-4 flex-wrap">
+                  <UBadge color="gray" variant="soft" size="md">LKR {{ formatNumber(prod.base_price) }}</UBadge>
+                  <UBadge color="emerald" variant="soft" size="md">Stock: {{ prod.stock }}</UBadge>
+                </div>
+
+              </div>
+
+              <template #footer>
+                <div class="flex gap-2">
+                  <UButton class="flex-1 justify-center" color="gray" variant="solid" icon="i-lucide-edit" @click="editProduct(prod)">Edit</UButton>
+                  <UButton class="flex-1 justify-center" color="red" variant="soft" icon="i-lucide-trash" @click="deleteProduct(prod.id)">Delete</UButton>
+                </div>
+              </template>
+            </UCard>
+          </UPageGrid>
+          
+          <AdminPagination :current-page="currentPage" :last-page="lastPage" @page-change="fetchProducts" />
+        </div>
+
+        <div v-else class="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
+          <UIcon name="i-lucide-package-open" class="w-16 h-16 text-gray-300 mb-4" />
+          <p class="text-gray-500 font-medium">No products yet. Add your first product!</p>
+        </div>
+
+        <!-- Add/Edit Modal -->
+        <UModal v-model:open="isModalOpen" :ui="{ content: 'sm:max-w-5xl w-full' }">
+          <template #content>
+          <div class="flex flex-col md:flex-row h-full max-h-[85vh]">
+            <!-- Left Panel: Image Upload -->
+            <div class="w-full md:w-64 bg-gradient-to-br from-primary-500 to-purple-600 flex flex-col flex-shrink-0">
+              <div class="flex-1 relative min-h-[200px] cursor-pointer group" @click="triggerFileInput">
+                <img v-if="imagePreview" :src="imagePreview" alt="Preview" class="w-full h-full object-cover" />
+                <img v-else-if="formData.main_image" :src="getImageUrl(formData.main_image)" alt="Current" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full flex flex-col items-center justify-center text-white p-6 text-center">
+                  <div class="w-16 h-16 rounded-full border-2 border-dashed border-white/40 bg-white/10 flex items-center justify-center mb-2">
+                    <UIcon name="i-lucide-upload-cloud" class="w-8 h-8" />
+                  </div>
+                  <p class="font-semibold text-sm">Drop your image here</p>
+                  <span class="text-xs opacity-75 mt-1">JPG, PNG, WEBP · Max 5MB</span>
+                </div>
+                <div class="absolute inset-0 bg-black/40 flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity flex">
+                  <UIcon name="i-lucide-camera" class="w-8 h-8 mb-1" />
+                  <span class="text-sm font-semibold">Change Photo</span>
                 </div>
               </div>
+              <input ref="fileInput" type="file" accept="image/*" @change="onImageChange" class="hidden" />
 
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label">Base Price (LKR) *</label>
-                  <div class="input-prefix-wrap">
-                    <span class="input-prefix">Rs.</span>
-                    <input type="number" v-model.number="formData.base_price" class="form-input has-prefix" required min="0" step="0.01" />
+              <!-- Toggle Switches -->
+              <div class="p-4 bg-black/20 flex flex-col gap-4">
+                <div class="flex items-center justify-between text-white">
+                  <div class="flex items-center gap-2 text-sm font-medium">
+                    <UIcon name="i-lucide-eye" class="w-4 h-4 opacity-75" />
+                    <span>Active on Store</span>
+                  </div>
+                  <UToggle v-model="formData.is_active" color="emerald" />
+                </div>
+                <div class="flex items-center justify-between text-white">
+                  <div class="flex items-center gap-2 text-sm font-medium">
+                    <UIcon name="i-lucide-star" class="w-4 h-4 opacity-75" />
+                    <span>Featured</span>
+                  </div>
+                  <UToggle v-model="formData.is_featured" color="amber" />
+                </div>
+                <div class="flex items-center justify-between text-white">
+                  <div class="flex items-center gap-2 text-sm font-medium">
+                    <UIcon name="i-lucide-image" class="w-4 h-4 opacity-75" />
+                    <span>Hero Slider</span>
+                  </div>
+                  <UToggle v-model="formData.in_hero_slider" color="primary" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Form -->
+            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 h-[85vh]">
+              <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start">
+                <div>
+                  <p class="text-xs font-bold text-primary uppercase tracking-wider mb-1">{{ isEditing ? 'Editing Product' : 'New Product' }}</p>
+                  <h4 class="text-xl font-bold">{{ isEditing ? formData.name || 'Edit Product' : 'Add New Product' }}</h4>
+                </div>
+                <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeModal" />
+              </div>
+
+              <form @submit.prevent="saveProduct" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto flex-1 space-y-6">
+                  <div>
+                    <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Basic Info</h5>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                      <UFormField label="Product Name *" required>
+                        <UInput v-model="formData.name" placeholder="e.g. Silk Georgette Saree" required />
+                      </UFormField>
+                      <UFormField label="Category *" required>
+                        <select v-model="formData.category_id" class="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-md block w-full p-2 h-8" required>
+                          <option value="">— Select Category —</option>
+                          <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                        </select>
+                      </UFormField>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                      <UFormField label="Base Price (LKR) *" required>
+                        <UInput v-model.number="formData.base_price" type="number" min="0" step="0.01" required>
+                          <template #leading>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs">Rs.</span>
+                          </template>
+                        </UInput>
+                      </UFormField>
+                      <UFormField label="Total Stock *" required>
+                        <UInput v-model.number="formData.stock" type="number" min="0" required />
+                      </UFormField>
+                    </div>
+                    <UFormField label="Short Description" class="mb-4 w-full">
+                      <UInput v-model="formData.short_description" placeholder="One-line summary shown on cards" class="w-full" />
+                    </UFormField>
+                    <UFormField label="Full Description" class="mb-4 w-full">
+                      <UTextarea v-model="formData.description" :rows="3" placeholder="Detailed product description..." class="w-full" />
+                    </UFormField>
+                    <div class="grid grid-cols-2 gap-4">
+                      <UFormField label="Fabric">
+                        <UInput v-model="formData.fabric" placeholder="e.g. Silk, Cotton" />
+                      </UFormField>
+                      <UFormField label="Care Instructions">
+                        <UInput v-model="formData.care_instructions" placeholder="e.g. Dry clean only" />
+                      </UFormField>
+                    </div>
+                  </div>
+
+                  <!-- Size Variants -->
+                  <div>
+                    <div class="flex justify-between items-center mb-3">
+                      <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
+                        <UIcon name="i-lucide-ruler" class="w-4 h-4" /> Size Variants & Pricing
+                      </h5>
+                      <UButton size="xs" variant="soft" color="primary" @click="addVariant">+ Add Size</UButton>
+                    </div>
+                    <div class="space-y-2">
+                      <div v-for="(v, idx) in formData.variants" :key="idx" class="flex gap-2 items-start">
+                        <UFormField label="Size" class="flex-1">
+                          <UInput v-model="v.size" placeholder="e.g. M" required />
+                        </UFormField>
+                        <UFormField label="Price (LKR)" class="flex-1">
+                          <UInput v-model.number="v.price" type="number" min="0" required />
+                        </UFormField>
+                        <UFormField label="Stock" class="flex-1">
+                          <UInput v-model.number="v.stock" type="number" min="0" required />
+                        </UFormField>
+                        <div class="pt-6">
+                          <UButton color="red" variant="ghost" icon="i-lucide-x" @click="removeVariant(idx)" />
+                        </div>
+                      </div>
+                      <p v-if="!formData.variants.length" class="text-sm text-gray-500 italic mt-2">No size variants added. Add at least one size.</p>
+                    </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Total Stock *</label>
-                  <input type="number" v-model.number="formData.stock" class="form-input" required min="0" />
-                </div>
-              </div>
 
-              <div class="form-group">
-                <label class="form-label">Short Description</label>
-                <input type="text" v-model="formData.short_description" class="form-input" placeholder="One-line summary shown on cards" />
-              </div>
+                <div v-if="errorMsg" class="p-3 mx-6 mb-4 bg-red-100 text-red-700 rounded-md flex items-center gap-2 text-sm">
+                  <UIcon name="i-lucide-alert-triangle" class="w-5 h-5" /> {{ errorMsg }}
+                </div>
 
-              <div class="form-group">
-                <label class="form-label">Full Description</label>
-                <textarea v-model="formData.description" class="form-input" rows="2" placeholder="Detailed product description..."></textarea>
-              </div>
-
-              <div class="form-grid-2">
-                <div class="form-group">
-                  <label class="form-label">Fabric</label>
-                  <input type="text" v-model="formData.fabric" class="form-input" placeholder="e.g. Silk, Cotton" />
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex justify-end gap-3 bg-gray-50 dark:bg-gray-900">
+                  <UButton color="gray" variant="solid" @click="closeModal">Cancel</UButton>
+                  <UButton type="submit" color="primary" :loading="saving" :icon="saving ? '' : 'i-lucide-save'">
+                    {{ saving ? 'Saving...' : 'Save Product' }}
+                  </UButton>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Care Instructions</label>
-                  <input type="text" v-model="formData.care_instructions" class="form-input" placeholder="e.g. Dry clean only" />
-                </div>
-              </div>
-
-              <!-- Size Variants -->
-              <div class="pm-section-label mt-8">
-                <i class="fa-solid fa-ruler-combined mr-1"></i> Size Variants & Pricing
-                <button type="button" @click="addVariant" class="pm-add-size-btn">+ Add Size</button>
-              </div>
-              <div v-for="(v, idx) in formData.variants" :key="idx" class="vnt-row">
-                <div class="form-group mb-0">
-                  <label class="form-label mini">Size</label>
-                  <input type="text" v-model="v.size" class="form-input mini" placeholder="e.g. M" required />
-                </div>
-                <div class="form-group mb-0">
-                  <label class="form-label mini">Price (LKR)</label>
-                  <input type="number" v-model.number="v.price" class="form-input mini" required min="0" />
-                </div>
-                <div class="form-group mb-0">
-                  <label class="form-label mini">Stock</label>
-                  <input type="number" v-model.number="v.stock" class="form-input mini" required min="0" />
-                </div>
-                <button type="button" @click="removeVariant(idx)" class="remove-vnt-btn"><i class="fa-solid fa-times"></i></button>
-              </div>
-              <p v-if="!formData.variants.length" class="no-variants-hint">No size variants added. Add at least one size.</p>
-
+              </form>
             </div>
-
-            <div v-if="errorMsg" class="error-banner"><i class="fa-solid fa-triangle-exclamation"></i> {{ errorMsg }}</div>
-
-            <div class="pm-footer">
-              <button type="button" @click="closeModal" class="btn-admin btn-admin-secondary">Cancel</button>
-              <button type="submit" :disabled="saving" class="btn-admin pm-save-btn">
-                <span v-if="saving"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Saving...</span>
-                <span v-else><i class="fa-regular fa-floppy-disk mr-2"></i>Save Product</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
+          </div>
+          </template>
+        </UModal>
       </div>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup>
@@ -265,6 +259,12 @@ const authHeaders = () => ({
   'Authorization': `Bearer ${token()}`,
   'Accept': 'application/json',
 })
+
+const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `http://127.0.0.1:8000/storage/${path}`;
+}
 
 const fetchProducts = async (page = 1) => {
   loading.value = true

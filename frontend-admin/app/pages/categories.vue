@@ -1,147 +1,148 @@
 <template>
-  <div class="admin-categories">
-    <div class="header-row animate-fade-up">
-      <h3 class="luxury-title">Category Management</h3>
-      <button @click="openAddModal" class="btn-admin">
-        <i class="fa-solid fa-plus mr-2"></i> Add Category
-      </button>
-    </div>
+  <UDashboardPanel id="categories">
+    <template #header>
+      <UDashboardNavbar title="Categories">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
 
-    <!-- Loading -->
-    <div v-if="loading" class="loading-state">
-      <i class="fa-solid fa-spinner fa-spin"></i> Loading categories...
-    </div>
-
-    <!-- Categories Table -->
-    <div v-else class="table-wrapper glass-panel animate-fade-up">
-      <table class="admin-table" v-if="categories.length > 0">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Slug</th>
-            <th>Products</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="cat in categories" :key="cat.id">
-            <td class="id-col">{{ cat.id }}</td>
-            <td>
-              <strong>{{ cat.name }}</strong>
-              <p v-if="cat.description" class="desc-small">{{ cat.description }}</p>
-            </td>
-            <td><code class="slug-code">{{ cat.slug }}</code></td>
-            <td>
-              <span class="count-badge">{{ cat.products_count ?? 0 }} items</span>
-            </td>
-            <td>
-              <span :class="['status-pill', cat.is_active ? 'active' : 'inactive']">
-                {{ cat.is_active ? 'Active' : 'Hidden' }}
-              </span>
-            </td>
-            <td class="actions-col">
-              <button @click="editCategory(cat)" class="btn-admin btn-admin-secondary btn-sm">
-                <i class="fa-regular fa-pen-to-square"></i> Edit
-              </button>
-              <button @click="deleteCategory(cat.id)" class="btn-admin btn-admin-danger btn-sm">
-                <i class="fa-regular fa-trash-can"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div v-else class="empty-state">
-        <i class="fa-solid fa-tags"></i>
-        <p>No categories yet. Add your first category!</p>
-      </div>
-
-      <AdminPagination 
-        v-if="categories.length > 0"
-        :current-page="currentPage" 
-        :last-page="lastPage" 
-        @page-change="fetchCategories" 
-      />
-    </div>
-
-    <!-- Add/Edit Modal -->
-    <div :class="['modal-overlay', { open: isModalOpen }]" @click.self="closeModal">
-      <div class="cm-modal">
-
-        <!-- Left Panel -->
-        <div class="cm-left">
-          <div class="cm-icon-wrap">
-            <i class="fa-solid fa-tags"></i>
-          </div>
-          <h3 class="cm-side-title">{{ isEditing ? 'Edit Category' : 'New Category' }}</h3>
-          <p class="cm-side-desc">Categories help customers browse your collection easily. Give it a clear, descriptive name.</p>
-
-          <!-- Active Toggle -->
-          <div class="cm-toggle-item">
-            <div class="cm-toggle-label">
-              <i class="fa-solid fa-eye"></i>
-              <span>Active on Store</span>
-            </div>
-            <div class="pm-switch" :class="{ on: formData.is_active }" @click="formData.is_active = !formData.is_active">
-              <div class="pm-switch-thumb"></div>
-            </div>
-          </div>
+    <template #body>
+      <div class="flex flex-col gap-6">
+        <div class="flex justify-between items-center">
+          <h3 class="font-semibold text-gray-900 dark:text-white text-lg">Category Management</h3>
+          <UButton icon="i-lucide-plus" color="primary" @click="openAddModal">Add Category</UButton>
         </div>
 
-        <!-- Right Panel: Form -->
-        <div class="cm-right">
-          <div class="pm-header">
-            <div>
-              <p class="pm-header-label">{{ isEditing ? 'Editing Category' : 'New Category' }}</p>
-              <h4 class="pm-title">{{ isEditing ? formData.name || 'Edit Category' : 'Add New Category' }}</h4>
-            </div>
-            <button @click="closeModal" class="pm-close-btn"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-
-          <form @submit.prevent="saveCategory">
-            <div class="cm-form-body">
-
-              <div class="form-group">
-                <label class="form-label">Category Name *</label>
-                <input type="text" v-model="formData.name" class="form-input" required placeholder="e.g. Sarees, Frocks, Blouses" @input="autoSlug" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Slug (URL key)</label>
-                <input type="text" v-model="formData.slug" class="form-input slug-input" placeholder="auto-generated" />
-                <small class="hint">Used in URLs. Auto-filled from name.</small>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Description</label>
-                <textarea v-model="formData.description" class="form-input" rows="3" placeholder="Brief description shown on the storefront..."></textarea>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Sort Order</label>
-                <input type="number" v-model.number="formData.sort_order" class="form-input" min="0" placeholder="0" />
-                <small class="hint">Lower numbers appear first.</small>
-              </div>
-
-            </div>
-
-            <div v-if="errorMsg" class="error-banner"><i class="fa-solid fa-triangle-exclamation"></i> {{ errorMsg }}</div>
-
-            <div class="pm-footer">
-              <button type="button" @click="closeModal" class="btn-admin btn-admin-secondary">Cancel</button>
-              <button type="submit" :disabled="saving" class="btn-admin pm-save-btn">
-                <span v-if="saving"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Saving...</span>
-                <span v-else><i class="fa-regular fa-floppy-disk mr-2"></i>Save Category</span>
-              </button>
-            </div>
-          </form>
+        <!-- Loading -->
+        <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+          <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin text-primary-500 mb-4" />
+          <p class="text-gray-500">Loading categories...</p>
         </div>
 
+        <!-- Categories Table -->
+        <UCard v-else :ui="{ body: { padding: '' } }">
+          <UTable :data="categories" :columns="[
+            { id: 'id', header: '#' },
+            { id: 'name', header: 'Name' },
+            { id: 'slug', header: 'Slug' },
+            { id: 'products', header: 'Products' },
+            { id: 'status', header: 'Status' },
+            { id: 'actions', header: 'Actions' }
+          ]">
+            <template #id-cell="{ row }">
+              <span class="text-gray-500 text-xs">{{ row.original.id }}</span>
+            </template>
+            
+            <template #name-cell="{ row }">
+              <div class="flex flex-col">
+                <span class="font-bold">{{ row.original.name }}</span>
+                <span v-if="row.original.description" class="text-xs text-gray-500 truncate max-w-xs">{{ row.original.description }}</span>
+              </div>
+            </template>
+            
+            <template #slug-cell="{ row }">
+              <code class="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-1 rounded text-xs">{{ row.original.slug }}</code>
+            </template>
+            
+            <template #products-cell="{ row }">
+              <UBadge color="emerald" variant="soft" size="sm">{{ row.original.products_count ?? 0 }} items</UBadge>
+            </template>
+            
+            <template #status-cell="{ row }">
+              <UBadge :color="row.original.is_active ? 'emerald' : 'red'" variant="soft">
+                {{ row.original.is_active ? 'Active' : 'Hidden' }}
+              </UBadge>
+            </template>
+            
+            <template #actions-cell="{ row }">
+              <div class="flex gap-2">
+                <UButton size="xs" color="gray" variant="solid" icon="i-lucide-edit" @click="editCategory(row.original)">Edit</UButton>
+                <UButton size="xs" color="red" variant="soft" icon="i-lucide-trash" @click="deleteCategory(row.original.id)" />
+              </div>
+            </template>
+            
+            <template #empty>
+              <div class="flex flex-col items-center justify-center py-12">
+                <UIcon name="i-lucide-tags" class="w-12 h-12 text-gray-400 mb-4" />
+                <p class="text-gray-500">No categories yet. Add your first category!</p>
+              </div>
+            </template>
+          </UTable>
+          
+          <div class="p-4 border-t border-gray-200 dark:border-gray-800" v-if="categories.length > 0">
+            <AdminPagination :current-page="currentPage" :last-page="lastPage" @page-change="fetchCategories" />
+          </div>
+        </UCard>
+
+        <!-- Add/Edit Modal -->
+        <UModal v-model:open="isModalOpen" :ui="{ content: 'sm:max-w-2xl w-full' }">
+          <template #content>
+          <div class="flex flex-col md:flex-row h-full max-h-[85vh]">
+            <!-- Left Panel -->
+            <div class="w-full md:w-56 bg-gradient-to-br from-emerald-500 to-primary-500 flex flex-col items-center justify-center p-6 text-center text-white shrink-0">
+              <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4">
+                <UIcon name="i-lucide-tags" class="w-8 h-8" />
+              </div>
+              <h3 class="font-bold text-lg mb-2">{{ isEditing ? 'Edit Category' : 'New Category' }}</h3>
+              <p class="text-sm text-white/80 mb-6">Categories help customers browse your collection easily. Give it a clear, descriptive name.</p>
+              
+              <div class="w-full pt-4 border-t border-white/20 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm font-medium">
+                  <UIcon name="i-lucide-eye" class="w-4 h-4 opacity-80" />
+                  <span>Active</span>
+                </div>
+                <UToggle v-model="formData.is_active" color="emerald" />
+              </div>
+            </div>
+
+            <!-- Right Panel: Form -->
+            <div class="flex-1 flex flex-col bg-white dark:bg-gray-900 h-[85vh]">
+              <div class="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start">
+                <div>
+                  <p class="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">{{ isEditing ? 'Editing Category' : 'New Category' }}</p>
+                  <h4 class="text-xl font-bold">{{ isEditing ? formData.name || 'Edit Category' : 'Add New Category' }}</h4>
+                </div>
+                <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeModal" />
+              </div>
+
+              <form @submit.prevent="saveCategory" class="flex flex-col flex-1">
+                <div class="p-6 space-y-4 flex-1 overflow-y-auto">
+                  <UFormField label="Category Name *" required>
+                    <UInput v-model="formData.name" placeholder="e.g. Sarees, Frocks, Blouses" @input="autoSlug" required />
+                  </UFormField>
+                  <UFormField label="Slug (URL key)">
+                    <UInput v-model="formData.slug" placeholder="auto-generated" class="font-mono text-sm" />
+                    <template #help>Used in URLs. Auto-filled from name.</template>
+                  </UFormField>
+                  <UFormField label="Description">
+                    <UTextarea v-model="formData.description" :rows="3" placeholder="Brief description shown on the storefront..." />
+                  </UFormField>
+                  <UFormField label="Sort Order">
+                    <UInput v-model.number="formData.sort_order" type="number" min="0" placeholder="0" />
+                    <template #help>Lower numbers appear first.</template>
+                  </UFormField>
+                </div>
+
+                <div v-if="errorMsg" class="p-3 mx-6 mb-4 bg-red-100 text-red-700 rounded-md flex items-center gap-2 text-sm">
+                  <UIcon name="i-lucide-alert-triangle" class="w-5 h-5" /> {{ errorMsg }}
+                </div>
+
+                <div class="p-4 border-t border-gray-200 dark:border-gray-800 flex justify-end gap-3 bg-gray-50 dark:bg-gray-900">
+                  <UButton color="gray" variant="solid" @click="closeModal">Cancel</UButton>
+                  <UButton type="submit" color="primary" :loading="saving" :icon="saving ? '' : 'i-lucide-save'">
+                    {{ saving ? 'Saving...' : 'Save Category' }}
+                  </UButton>
+                </div>
+              </form>
+            </div>
+          </div>
+          </template>
+        </UModal>
       </div>
-    </div>
-  </div>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup>

@@ -2,7 +2,7 @@
   <div class="checkout-page container">
     <div class="checkout-header">
       <h1 class="luxury-title">Secure <span class="gold-gradient-text">Checkout</span></h1>
-      <p>Fill out your delivery credentials and select a payment gateway to secure your tailoring order.</p>
+      <p>Fill out your delivery credentials and select a payment gateway to secure your order.</p>
     </div>
 
     <div v-if="cart.length > 0" class="checkout-layout">
@@ -166,7 +166,7 @@
     <div v-else class="empty-checkout glass-panel">
       <i class="fa-solid fa-bag-shopping"></i>
       <h3>Checkout is locked.</h3>
-      <p>Please add custom clothing to your shopping cart before attempting checkout.</p>
+      <p>Please add clothing to your shopping cart before attempting checkout.</p>
       <NuxtLink to="/shop" class="btn-premium btn-gold mt-4">Go to Collection</NuxtLink>
     </div>
 

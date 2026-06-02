@@ -1,8 +1,8 @@
 <template>
   <div class="cart-page container">
     <div class="cart-header">
-      <h1 class="luxury-title">Your Tailor <span class="gold-gradient-text">Cart</span></h1>
-      <p>Verify your tailored selections below before proceeding to secure payment and dispatch.</p>
+      <h1 class="luxury-title">Your Shopping <span class="gold-gradient-text">Cart</span></h1>
+      <p>Verify your selected items below before proceeding to secure payment and dispatch.</p>
     </div>
 
     <div v-if="cart.length > 0" class="cart-layout">
@@ -81,8 +81,8 @@
     <!-- Empty Cart -->
     <div v-else class="empty-cart glass-panel">
       <i class="fa-solid fa-cart-flat-bed-suitcases"></i>
-      <h3>Your tailor cart is empty.</h3>
-      <p>Browse our beautiful clothing store and customize custom sizes to add items!</p>
+      <h3>Your cart is empty.</h3>
+      <p>Browse our beautiful clothing store and select your favorite sizes to add items!</p>
       <NuxtLink to="/shop" class="btn-premium btn-gold mt-4">Go to Collection</NuxtLink>
     </div>
   </div>

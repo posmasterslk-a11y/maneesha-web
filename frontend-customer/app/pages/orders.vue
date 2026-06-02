@@ -2,13 +2,13 @@
   <div class="orders-page container">
     <div class="orders-header">
       <h1 class="luxury-title">Track Your <span class="gold-gradient-text">Orders</span></h1>
-      <p>Monitor your hand-made stitches from the workshop to your doorstep.</p>
+      <p>Monitor your orders from the warehouse to your doorstep.</p>
       
       <div class="track-input-group mt-4 animate-fade-up">
         <input 
           type="text" 
-          v-model="customerPhone" 
-          placeholder="Enter your Phone Number to track" 
+          v-model="trackingId" 
+          placeholder="Enter your Order ID to track (e.g., MF-2026...)" 
           class="track-input"
           @keyup.enter="loadOrders"
         />
@@ -58,8 +58,8 @@
             </div>
             
             <div :class="['node', { active: isNodeActive(order.status, 'stitching') }]">
-              <div class="node-bullet"><i class="fa-solid fa-scissors" v-if="order.status === 'stitching'"></i><i class="fa-solid fa-check" v-else></i></div>
-              <span class="node-label">Sewing</span>
+              <div class="node-bullet"><i class="fa-solid fa-box" v-if="order.status === 'stitching'"></i><i class="fa-solid fa-check" v-else></i></div>
+              <span class="node-label">Processing</span>
             </div>
             
             <div :class="['node', { active: isNodeActive(order.status, 'dispatched') }]">
@@ -71,11 +71,11 @@
 
         <!-- Tailored items brief list -->
         <div class="order-items-brief">
-          <h5>Bespoke Stitching Details:</h5>
+          <h5>Order Items:</h5>
           <div class="brief-items-grid">
             <div v-for="(item, idx) in order.items" :key="idx" class="brief-item-row">
               <div class="item-title">
-                <i class="fa-solid fa-scissors text-gold"></i>
+                <i class="fa-solid fa-shirt text-gold"></i>
                 <div>
                   <strong>{{ item.name }}</strong>
                   <span class="tailor-size">{{ item.size }}</span>
@@ -91,9 +91,9 @@
     <!-- Empty State -->
     <div v-else class="empty-orders glass-panel">
       <i class="fa-solid fa-boxes-packing"></i>
-      <h3>No custom orders found.</h3>
-      <p>You have not placed any custom tailoring orders yet under this device.</p>
-      <NuxtLink to="/shop" class="btn-premium btn-gold mt-4">Browse Tailoring Shop</NuxtLink>
+      <h3>No orders found.</h3>
+      <p>You have not placed any orders yet under this device.</p>
+      <NuxtLink to="/shop" class="btn-premium btn-gold mt-4">Browse Collection</NuxtLink>
     </div>
   </div>
 </template>
@@ -102,15 +102,15 @@
 import { ref, onMounted } from 'vue'
 
 const ordersList = ref([])
-const customerPhone = ref('')
+const trackingId = ref('')
 const isLoading = ref(false)
 
 const loadOrders = async () => {
-  if (!customerPhone.value) return;
+  if (!trackingId.value) return;
   
   isLoading.value = true;
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/track-orders?phone=${encodeURIComponent(customerPhone.value)}`);
+    const res = await fetch(`http://127.0.0.1:8000/api/track-orders?order_id=${encodeURIComponent(trackingId.value)}`);
     if (res.ok) {
       const data = await res.json();
       
@@ -162,9 +162,9 @@ const formatNumber = (num) => {
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    const savedPhone = localStorage.getItem('maneesha-customer-phone');
-    if (savedPhone) {
-      customerPhone.value = savedPhone;
+    const savedOrder = localStorage.getItem('maneesha-customer-order-id');
+    if (savedOrder) {
+      trackingId.value = savedOrder;
       loadOrders();
     }
   }

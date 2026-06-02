@@ -14,9 +14,9 @@
           <i v-else class="fa-solid fa-shirt"></i>
         </div>
         <div class="preview-highlights">
-          <div class="hl-item"><i class="fa-solid fa-scissors"></i> Hand Cut</div>
-          <div class="hl-item"><i class="fa-solid fa-sheet-plastic"></i> Premium Linens</div>
-          <div class="hl-item"><i class="fa-solid fa-award"></i> Quality Stitched</div>
+          <div class="hl-item"><i class="fa-solid fa-gem"></i> Premium Quality</div>
+          <div class="hl-item"><i class="fa-solid fa-sheet-plastic"></i> Best Fabrics</div>
+          <div class="hl-item"><i class="fa-solid fa-award"></i> Guaranteed</div>
         </div>
       </div>
 
@@ -67,7 +67,7 @@
         <!-- Stock indicators -->
         <div class="stock-info">
           <i class="fa-solid fa-circle-check text-success"></i>
-          <span>Ready to sew. Orders dispatched within 3-4 working days.</span>
+          <span>In stock. Orders dispatched within 3-4 working days.</span>
         </div>
       </div>
     </div>

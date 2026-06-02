@@ -3,13 +3,13 @@
     <!-- Hero Banner Section -->
     <section class="hero-section glass-panel">
       <div class="hero-content container">
-        <span class="hero-subtitle animate-slide-left">Bespost tailor-made clothing</span>
+        <span class="hero-subtitle animate-slide-left">Premium ready-to-wear clothing</span>
         <h1 class="luxury-title animate-fade-up">
           Elegant Stitches <br />
           Crafted For <span class="gold-gradient-text">Your Shape</span>
         </h1>
         <p class="hero-desc animate-fade-up">
-          At Maneesha Fashion, we hand-craft every cloth piece to order. Choose from our standard premium sizes or provide custom tailored specs for a custom fit.
+          At Maneesha Fashion, we offer a carefully curated collection of premium clothing. Choose from our standard premium sizes for a perfect fit.
         </p>
         <div class="hero-ctas animate-fade-up">
           <NuxtLink to="/shop" class="btn-premium btn-gold">Explore Collection</NuxtLink>
@@ -73,7 +73,7 @@
       <div class="section-header-row">
         <div>
           <h2 class="luxury-title">Featured <span class="gold-gradient-text">Creations</span></h2>
-          <p>Hand-selected popular styles ready to customize and buy.</p>
+          <p>Hand-selected popular styles ready to buy.</p>
         </div>
         <NuxtLink to="/shop" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></NuxtLink>
       </div>
@@ -88,7 +88,7 @@
               <i class="fa-solid fa-shirt"></i>
             </div>
             <div class="hover-overlay">
-              <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">Customize &amp; Buy</NuxtLink>
+              <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">View Details &amp; Buy</NuxtLink>
             </div>
           </div>
 
@@ -116,15 +116,15 @@
       <div class="container story-grid">
         <div class="story-text">
           <span class="gold-gradient-text text-uppercase font-bold">The Craftsmanship</span>
-          <h2 class="luxury-title">Why Tailor-Made Beats Ready-Made</h2>
-          <p>Ready-made sizes assume everyone is identical. At Maneesha Fashion, we respect your individuality. When you purchase, select your exact size or choose 'Custom Stitch' to supply your exact measurements. Our senior tailors cut, stitch, and press your apparel separately for unmatched luxury comfort.</p>
+          <h2 class="luxury-title">Why Choose Our Premium Collection</h2>
+          <p>We believe fashion is about individuality. At Maneesha Fashion, we respect your style. When you purchase, select your exact size from our premium standard measurements. Our carefully crafted apparel is inspected and prepared for unmatched luxury comfort.</p>
           
           <div class="highlights-row">
             <div class="hl-item">
               <i class="fa-solid fa-ruler-combined"></i>
               <div>
                 <h5>Perfect Fit</h5>
-                <p>Sizes change, tailored beauty remains.</p>
+                <p>Fashion changes, true style remains.</p>
               </div>
             </div>
             <div class="hl-item">

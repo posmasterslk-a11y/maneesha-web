@@ -66,8 +66,8 @@
           </nav>
           
           <div class="drawer-footer">
-            <p>Sinhalese craft, modern tailoring.</p>
-            <span>Made with custom tailoring sizes.</span>
+            <p>Sri Lankan style, modern fashion.</p>
+            <span>Made with premium quality fabrics.</span>
           </div>
         </div>
       </aside>
@@ -106,7 +106,7 @@
       <div class="container footer-grid">
         <div>
           <h3 class="luxury-title">Maneesha <span class="gold-gradient-text">Fashion</span></h3>
-          <p>Hand-crafted elegance tailored for your unique style. Standard & Custom sizes with Sri Lanka's finest stitches.</p>
+          <p>Hand-selected elegance for your unique style. Standard premium sizes with Sri Lanka's finest quality.</p>
         </div>
         <div>
           <h4>Explore</h4>
@@ -153,6 +153,11 @@ const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value
   if (typeof window !== 'undefined') {
     localStorage.setItem('maneesha-theme', isDarkMode.value ? 'dark' : 'light')
+    if (isDarkMode.value) {
+      document.body.classList.add('dark-mode')
+    } else {
+      document.body.classList.remove('dark-mode')
+    }
   }
 }
 
@@ -207,6 +212,9 @@ onMounted(() => {
   if (typeof window !== 'undefined') {
     const theme = localStorage.getItem('maneesha-theme')
     isDarkMode.value = theme === 'dark'
+    if (isDarkMode.value) {
+      document.body.classList.add('dark-mode')
+    }
   }
 })
 </script>

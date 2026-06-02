@@ -263,14 +263,14 @@ class OrderController extends Controller
      */
     public function trackOrders(Request $request)
     {
-        $phone = $request->query('phone');
+        $orderId = $request->query('order_id');
         
-        if (!$phone) {
-            return response()->json(['error' => 'Phone number is required to track orders'], 400);
+        if (!$orderId) {
+            return response()->json(['error' => 'Order ID is required to track orders'], 400);
         }
 
         $orders = Order::with('orderItems')
-            ->where('customer_phone', $phone)
+            ->where('order_number', $orderId)
             ->orderBy('created_at', 'desc')
             ->get();
 
