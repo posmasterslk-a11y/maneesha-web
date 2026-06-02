@@ -146,6 +146,45 @@
         </div>
       </div>
     </section>
+    <!-- Popular / Most Viewed Products Section -->
+    <section class="popular-products container mb-20" v-if="popularProducts.length > 0">
+      <div class="section-header">
+        <h2 class="luxury-title">Most <span class="gold-gradient-text">Viewed</span></h2>
+        <p>Our customers' favorite picks.</p>
+      </div>
+
+      <div class="products-grid">
+        <div v-for="prod in popularProducts" :key="prod.id" class="product-card glass-panel">
+          <div class="product-img-wrapper">
+            <div class="product-tag" v-if="prod.views > 0"><i class="fa-solid fa-fire text-orange-500 mr-1"></i> {{ prod.views }} Views</div>
+            <!-- Real image or fallback gradient -->
+            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" />
+            <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">
+              <i class="fa-solid fa-shirt"></i>
+            </div>
+            <div class="hover-overlay">
+              <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">View Details &amp; Buy</NuxtLink>
+            </div>
+          </div>
+
+          <div class="product-details">
+            <span class="product-cat">{{ prod.category_name }}</span>
+            <h3 class="luxury-title">{{ prod.name }}</h3>
+            <p class="product-desc">{{ prod.short_description }}</p>
+            
+            <div class="price-row">
+              <div class="price-info">
+                <span class="price-label">Starts from</span>
+                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+              </div>
+              <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
+                <i class="fa-solid fa-circle-chevron-right"></i>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -158,6 +197,7 @@ const router = useRouter()
 
 const categories     = ref([])
 const products       = ref([])
+const popularProducts = ref([])
 const heroSlides     = ref([])
 const currentSlide   = ref(0)
 let slideInterval    = null
@@ -224,9 +264,20 @@ const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+const fetchPopularProducts = async () => {
+  try {
+    const r = await fetch(`${API}/products/popular`)
+    if (r.ok) {
+      const res = await r.json()
+      popularProducts.value = res.data || res
+    }
+  } catch (e) { console.error('Failed to load popular products', e) }
+}
+
 onMounted(() => {
   fetchCategories()
   fetchFeaturedProducts()
+  fetchPopularProducts()
   fetchHeroSlides()
 })
 
@@ -522,6 +573,10 @@ body.dark-mode .category-card span {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 30px;
+  margin-bottom: 80px;
+}
+
+.mb-20 {
   margin-bottom: 80px;
 }
 

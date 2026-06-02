@@ -45,7 +45,23 @@ class ProductController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
+        $product->increment('views');
+
         return response()->json($this->formatProduct($product));
+    }
+
+    /** GET /api/products/popular — get top viewed products */
+    public function popular()
+    {
+        $products = Product::with(['category', 'variants' => fn($q) => $q->where('is_active', true)])
+            ->where('is_active', true)
+            ->orderBy('views', 'desc')
+            ->take(4)
+            ->get();
+            
+        $products->transform(fn($p) => $this->formatProduct($p));
+
+        return response()->json($products);
     }
 
     /** GET /api/admin/products — full list for admin */
