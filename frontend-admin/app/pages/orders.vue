@@ -44,22 +44,21 @@
           </UPageCard>
         </UPageGrid>
 
+        <div class="flex justify-between items-center">
+          <h3 class="font-semibold text-gray-900 dark:text-white text-lg">Order Management</h3>
+          <div class="flex items-center gap-3">
+            <USelect v-model="paymentFilter" :options="[
+              { label: 'All Payment Methods', value: 'all' },
+              { label: 'Bank Deposit', value: 'bank_deposit' },
+              { label: 'Cash on Delivery', value: 'cod' },
+              { label: 'PayHere Gateway', value: 'payhere' }
+            ]" class="w-48" />
+            <UButton icon="i-lucide-refresh-cw" color="primary" variant="soft" @click="loadOrders">Refresh</UButton>
+          </div>
+        </div>
+
         <!-- Orders Table -->
         <UCard :ui="{ body: { padding: '' } }">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <h3 class="font-semibold text-gray-900 dark:text-white">All Orders</h3>
-              <div class="flex items-center gap-3">
-                <select v-model="paymentFilter" class="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2">
-                  <option value="all">All Payment Methods</option>
-                  <option value="bank_deposit">Bank Deposit</option>
-                  <option value="cod">Cash on Delivery</option>
-                  <option value="payhere">PayHere Gateway</option>
-                </select>
-                <UButton icon="i-lucide-refresh-cw" color="gray" variant="ghost" @click="loadOrders">Refresh</UButton>
-              </div>
-            </div>
-          </template>
           
           <UTable :data="filteredOrders" :columns="[
             { id: 'ref', header: 'Ref ID' },
@@ -141,12 +140,18 @@
         <UModal v-model:open="isItemsModalOpen" :ui="{ width: 'sm:max-w-3xl' }">
           <template #content>
             <UCard>
-              <template #header>
-                <div class="flex justify-between items-center">
-                  <h3 class="font-bold">Order #{{ selectedOrderItemsOrder?.order_number }} - Items Review</h3>
+                <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400">
+                      <UIcon name="i-lucide-shopping-bag" class="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Order Items Review</p>
+                      <h3 class="font-bold text-lg leading-none">Order #{{ selectedOrderItemsOrder?.order_number }}</h3>
+                    </div>
+                  </div>
                   <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeItemsModal" />
                 </div>
-              </template>
               <UTable :data="selectedOrderItems || []" :columns="[
                 { id: 'product_name', header: 'Product' },
                 { id: 'size', header: 'Size' },
@@ -184,7 +189,15 @@
           <UCard>
             <template #header>
               <div class="flex justify-between items-center">
-                <h3 class="font-bold">Order #{{ selectedOrder?.order_number }} - Bank Receipt</h3>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                    <UIcon name="i-lucide-receipt" class="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Bank Receipt</p>
+                    <h3 class="font-bold text-lg leading-none">Order #{{ selectedOrder?.order_number }}</h3>
+                  </div>
+                </div>
                 <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeSlipModal" />
               </div>
             </template>
@@ -236,7 +249,15 @@
           <UCard>
             <template #header>
               <div class="flex justify-between items-center">
-                <h3 class="font-bold">Customer Details - {{ selectedCustomer?.customer_name }}</h3>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                    <UIcon name="i-lucide-user" class="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Customer Details</p>
+                    <h3 class="font-bold text-lg leading-none">{{ selectedCustomer?.customer_name }}</h3>
+                  </div>
+                </div>
                 <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeCustomerModal" />
               </div>
             </template>

@@ -130,7 +130,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 Maneesha Fashion. All Rights Reserved. Designed for visual excellence.</p>
+        <p>&copy; 2026 Maneesha Fashion. All Rights Reserved. Designed for visual excellence. | Web By Codehub Software</p>
       </div>
     </footer>
   </div>
