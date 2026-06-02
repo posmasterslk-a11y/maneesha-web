@@ -122,31 +122,53 @@ const handleLogin = async () => {
   margin-top: 8px;
 }
 
+.form-group {
+  margin-bottom: 20px;
+}
+
 .form-label {
   color: #94a3b8;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
 }
 
 .form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid rgba(255,255,255,0.1);
   background: rgba(15, 23, 42, 0.6);
-  border-color: rgba(255,255,255,0.1);
   color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .form-input:focus {
+  outline: none;
   border-color: var(--admin-gold);
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
 .btn-admin {
-  background: var(--admin-gold);
+  background: var(--admin-gold, #d4af37);
   color: #000;
   font-weight: 700;
   width: 100%;
   padding: 14px;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-admin:hover {
   background: #b8901c;
+  transform: translateY(-2px);
 }
 
 .btn-block {
