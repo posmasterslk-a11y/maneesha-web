@@ -3,8 +3,8 @@
     <!-- Desktop Premium Header -->
     <header class="desktop-header glass-panel">
       <div class="header-container">
-        <NuxtLink to="/" class="logo luxury-title">
-          Maneesha <span class="gold-gradient-text">Fashion</span>
+        <NuxtLink to="/" class="logo-link">
+          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo" />
         </NuxtLink>
         
         <nav class="nav-links">
@@ -32,8 +32,8 @@
         <i class="fa-solid fa-bars-staggered"></i>
       </button>
       
-      <NuxtLink to="/" class="logo luxury-title">
-        Maneesha <span class="gold-gradient-text">Fashion</span>
+      <NuxtLink to="/" class="logo-link">
+        <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-mobile" />
       </NuxtLink>
       
       <button @click="toggleTheme" class="icon-btn" aria-label="Toggle theme">
@@ -45,7 +45,7 @@
     <div :class="['app-drawer-overlay', { 'drawer-open': isDrawerOpen }]" @click.self="toggleDrawer">
       <aside class="app-drawer glass-panel">
         <div class="drawer-header">
-          <span class="luxury-title logo">Maneesha <span class="gold-gradient-text">Fashion</span></span>
+          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-drawer" />
           <button @click="toggleDrawer" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         
@@ -105,7 +105,7 @@
     <footer class="app-footer">
       <div class="container footer-grid">
         <div>
-          <h3 class="luxury-title">Maneesha <span class="gold-gradient-text">Fashion</span></h3>
+          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="footer-logo" />
           <p>Hand-selected elegance for your unique style. Standard premium sizes with Sri Lanka's finest quality.</p>
         </div>
         <div>
@@ -251,6 +251,31 @@ body.dark-mode .desktop-header {
   width: 100%;
   justify-content: space-between;
   align-items: center;
+}
+
+.header-logo {
+  height: 45px;
+  width: auto;
+  display: block;
+}
+
+.header-logo-mobile {
+  height: 35px;
+  width: auto;
+  display: block;
+}
+
+.header-logo-drawer {
+  height: 40px;
+  width: auto;
+  display: block;
+}
+
+.footer-logo {
+  height: 80px;
+  width: auto;
+  margin-bottom: 20px;
+  display: block;
 }
 
 .logo {
