@@ -161,7 +161,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const API   = 'http://localhost:8000/api'
+const config = useRuntimeConfig()
+const API = config.public.apiBase
 const token = () => localStorage.getItem('maneesha-admin-token') || ''
 const authHeaders = () => ({ 'Authorization': `Bearer ${token()}`, 'Accept': 'application/json', 'Content-Type': 'application/json' })
 

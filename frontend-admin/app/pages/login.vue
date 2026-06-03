@@ -51,7 +51,8 @@ const handleLogin = async () => {
   errorMsg.value  = ''
 
   try {
-    const res = await fetch('http://localhost:8000/api/admin/login', {
+    const config = useRuntimeConfig()
+    const res = await fetch(`${config.public.apiBase}/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),

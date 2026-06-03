@@ -395,7 +395,8 @@
 <script setup>
 import { ref, onMounted, inject } from 'vue'
 
-const API = 'http://localhost:8000/api'
+const config = useRuntimeConfig()
+const API = config.public.apiBase
 const token = () => localStorage.getItem('maneesha-admin-token') || ''
 const adminName = inject('adminName', ref('Admin'))
 

@@ -316,7 +316,8 @@
 import { ref, onMounted, computed } from 'vue'
 import AdminPagination from '@/components/AdminPagination.vue'
 
-const API = 'http://localhost:8000/api'
+const config = useRuntimeConfig()
+const API = config.public.apiBase
 const orders = ref([])
 const stats = ref({})
 const currentPage = ref(1)
