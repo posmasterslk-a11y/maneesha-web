@@ -17,32 +17,16 @@
         </div>
       </div>
       
-      <!-- Luxury visual highlights / Dynamic Slider -->
+      <!-- Designer Focus Visual -->
       <div class="hero-visual">
         <div class="ambient-glow"></div>
-        <div v-if="heroSlides.length > 0" class="hero-slider">
-          <transition-group name="fade" tag="div" class="slide-wrapper">
-            <div 
-              v-for="(slide, index) in heroSlides" 
-              :key="slide.id"
-              v-show="currentSlide === index"
-              class="slide-content-wrapper"
-            >
-              <img 
-                :src="slide.main_image" 
-                :alt="slide.name" 
-                class="slider-image"
-              />
-              <div class="slider-overlay">
-                <h3 class="slider-product-name">{{ slide.name }}</h3>
-                <NuxtLink :to="`/shop?category=${slide.category_slug}`" class="btn-premium btn-gold btn-sm mt-2">Shop Now</NuxtLink>
-              </div>
-            </div>
-          </transition-group>
-        </div>
-        <div v-else class="visual-badge">
-          <i class="fa-solid fa-scissors"></i>
-          <span>100% Bespoke</span>
+        <div class="designer-hero-images">
+          <div class="img-wrapper img-1 animate-slide-left">
+            <img src="/images/designer-1.jpeg" alt="Maneesha Fashion Designer" />
+          </div>
+          <div class="img-wrapper img-2 animate-fade-up" style="animation-delay: 0.3s;">
+            <img src="/images/designer-2.jpeg" alt="Maneesha Fashion Studio" />
+          </div>
         </div>
       </div>
     </section>
@@ -156,38 +140,14 @@
       </div>
     </section>
 
-    <!-- Meet the Designer Section -->
-    <section class="meet-designer-section container mb-20 glass-panel">
-      <div class="designer-grid">
-        <div class="designer-text">
-          <span class="gold-gradient-text text-uppercase font-bold">Behind The Brand</span>
-          <h2 class="luxury-title mt-2">Meet the <span class="gold-gradient-text">Designer</span></h2>
-          <p class="mt-4">
-            Every stitch, every cut, and every detail is guided by a passion for perfection. 
-            At Maneesha Fashion, we believe in bringing your dream outfits to life with a personal touch.
-          </p>
-          <div class="mt-6 flex gap-4">
-            <div class="stat-badge">
-              <i class="fa-solid fa-heart"></i>
-              <span>Crafted with Love</span>
-            </div>
-            <div class="stat-badge">
-              <i class="fa-solid fa-gem"></i>
-              <span>Premium Quality</span>
-            </div>
-          </div>
-        </div>
-        <div class="designer-images">
-          <div class="img-wrapper img-1">
-            <!-- Put the first photo as designer-1.jpeg -->
-            <img src="/images/designer-1.jpeg" alt="Maneesha Fashion Designer" />
-          </div>
-          <div class="img-wrapper img-2">
-            <!-- Put the second photo as designer-2.jpeg -->
-            <img src="/images/designer-2.jpeg" alt="Maneesha Fashion Studio" />
-          </div>
-        </div>
-      </div>
+    <!-- Meet the Designer Section (Simplified text) -->
+    <section class="meet-designer-section container mb-20 glass-panel" style="text-align: center; max-width: 800px; margin: 0 auto 80px auto; padding: 40px;">
+        <span class="gold-gradient-text text-uppercase font-bold">Behind The Brand</span>
+        <h2 class="luxury-title mt-2">Crafted with <span class="gold-gradient-text">Passion</span></h2>
+        <p class="mt-4" style="color: var(--text-dark-secondary);">
+          Every stitch, every cut, and every detail is guided by a passion for perfection. 
+          At Maneesha Fashion, we believe in bringing your dream outfits to life with a personal touch.
+        </p>
     </section>
 
     <!-- Popular / Most Viewed Products Section -->
@@ -429,6 +389,53 @@ body.dark-mode .secondary-btn:hover {
   font-family: var(--font-serif);
   font-size: 1.1rem;
   letter-spacing: 0.5px;
+}
+
+/* Designer Hero Image Styles */
+.designer-hero-images {
+  position: relative;
+  width: 100%;
+  height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+.designer-hero-images .img-wrapper {
+  position: absolute;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+  border: 2px solid rgba(212,175,55,0.3);
+  transition: transform 0.4s ease;
+}
+
+.designer-hero-images .img-wrapper:hover {
+  transform: scale(1.05);
+  z-index: 10;
+}
+
+.designer-hero-images .img-1 {
+  width: 65%;
+  height: 85%;
+  left: 5%;
+  top: 5%;
+  z-index: 2;
+}
+
+.designer-hero-images .img-2 {
+  width: 55%;
+  height: 75%;
+  right: 5%;
+  bottom: -5%;
+  z-index: 3;
+}
+
+.designer-hero-images img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* Slider Styles */
