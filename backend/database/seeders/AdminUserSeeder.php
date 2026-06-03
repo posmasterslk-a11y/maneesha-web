@@ -21,9 +21,31 @@ class AdminUserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        $this->command->info('✅ Admin user created:');
-        $this->command->info('   Email   : admin@maneeshafashion.lk');
-        $this->command->info('   Password: Admin@1234');
+        // Create customer users
+        DB::table('users')->insertOrIgnore([
+            [
+                'name'       => 'Test Customer',
+                'email'      => 'customer@maneeshafashion.lk',
+                'phone'      => '0711111111',
+                'password'   => Hash::make('Customer@1234'),
+                'role'       => 'customer',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name'       => 'John Doe',
+                'email'      => 'john@example.com',
+                'phone'      => '0722222222',
+                'password'   => Hash::make('Password@1234'),
+                'role'       => 'customer',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
+
+        $this->command->info('✅ Users created:');
+        $this->command->info('   Admin Email   : admin@maneeshafashion.lk | Password: Admin@1234');
+        $this->command->info('   Customer Email: customer@maneeshafashion.lk | Password: Customer@1234');
         $this->command->warn('   ⚠️  Please change the password after first login!');
     }
 }
