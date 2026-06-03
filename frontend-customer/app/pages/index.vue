@@ -350,10 +350,10 @@ body.dark-mode .secondary-btn:hover {
   position: relative;
   height: 100%;
   width: 100%;
-  background: linear-gradient(135deg, #131518 0%, #08090a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: transparent;
 }
 
 .ambient-glow {
