@@ -119,8 +119,12 @@ class OrderController extends Controller
     /**
      * List orders for admin dashboard
      */
-    public function listOrders()
+    public function listOrders(Request $request)
     {
+        if ($request->user() && $request->user()->role === 'inventory') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $orders = Order::with('orderItems')->orderBy('created_at', 'desc')->paginate(10);
         return response()->json($orders);
     }

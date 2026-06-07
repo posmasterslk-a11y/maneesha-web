@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayHereController;
 use App\Http\Controllers\HeroSlideController;
+use App\Http\Controllers\UserController;
 
 // ── Public: Auth ───────────────────────────────────────────────────────────
 Route::post('/admin/login',  [AuthController::class, 'adminLogin']);
@@ -30,6 +31,12 @@ Route::post('/payhere/hash',       [PayHereController::class, 'generateHash']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/logout', [AuthController::class, 'adminLogout']);
 
+    // User Management (RBAC)
+    Route::get('/admin/users',               [UserController::class, 'index']);
+    Route::post('/admin/users',              [UserController::class, 'store']);
+    Route::put('/admin/users/{id}',          [UserController::class, 'update']);
+    Route::delete('/admin/users/{id}',       [UserController::class, 'destroy']);
+
     // Categories CRUD
     Route::get('/admin/categories',          [CategoryController::class, 'adminIndex']);
     Route::post('/admin/categories',         [CategoryController::class, 'store']);
@@ -37,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/admin/categories/{id}',  [CategoryController::class, 'destroy']);
 
     // Products CRUD
+    Route::get('/admin/dashboard/products-stats', [ProductController::class, 'dashboardStats']);
     Route::get('/admin/products',            [ProductController::class, 'adminIndex']);
     Route::post('/admin/products',           [ProductController::class, 'store']);
     Route::post('/admin/products/{id}',      [ProductController::class, 'update']); // POST for FormData (file upload)

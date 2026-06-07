@@ -33,8 +33,50 @@
           </div>
         </div>
 
-        <!-- KPI Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Inventory Stats -->
+        <div v-if="adminRole === 'admin' || adminRole === 'inventory'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div class="modern-card group">
+            <div class="card-glow bg-blue-500/20"></div>
+            <div class="relative z-10 flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total Products</p>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ productStats.totalProducts }}</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <UIcon name="i-lucide-shirt" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+          </div>
+
+          <div class="modern-card group border-l-4 border-l-emerald-500">
+            <div class="card-glow bg-emerald-500/20"></div>
+            <div class="relative z-10 flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Active Products</p>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ productStats.activeProducts }}</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900 dark:to-emerald-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <UIcon name="i-lucide-check-circle" class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </div>
+          </div>
+
+          <div class="modern-card group border-l-4 border-l-red-500">
+            <div class="card-glow bg-red-500/20"></div>
+            <div class="relative z-10 flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Low Stock Alerts</p>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ productStats.lowStockProducts }}</h3>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <UIcon name="i-lucide-alert-triangle" class="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales KPI Cards -->
+        <div v-if="adminRole === 'admin' || adminRole === 'sales'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Total Revenue -->
           <div class="modern-card group">
             <div class="card-glow bg-primary-500/20"></div>
@@ -115,7 +157,7 @@
         </div>
 
         <!-- Payment Breakdown (Now matches top cards) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div v-if="adminRole === 'admin' || adminRole === 'sales'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Bank Deposit -->
           <div class="modern-card group">
             <div class="card-glow bg-blue-500/20"></div>
@@ -190,7 +232,7 @@
         </div>
 
         <!-- Single Column Layout: Main content -->
-        <div class="flex flex-col gap-6">
+        <div v-if="adminRole === 'admin' || adminRole === 'sales'" class="flex flex-col gap-6">
           
           <!-- Recent Orders -->
           <div class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border border-gray-200/50 dark:border-gray-800/50 rounded-2xl overflow-hidden shadow-sm">
@@ -399,6 +441,7 @@ const config = useRuntimeConfig()
 const API = config.public.apiBase
 const token = () => localStorage.getItem('maneesha-admin-token') || ''
 const adminName = inject('adminName', ref('Admin'))
+const adminRole = inject('adminRole', ref('admin'))
 
 const stats = ref({
   totalRevenue: 0,
@@ -412,6 +455,13 @@ const stats = ref({
   recentOrders: [],
   districtStats: []
 })
+
+const productStats = ref({
+  totalProducts: 0,
+  activeProducts: 0,
+  lowStockProducts: 0
+})
+
 const isSlipModalOpen = ref(false)
 const selectedOrder = ref(null)
 const isRefreshing = ref(false)
@@ -426,8 +476,15 @@ const authHeaders = () => ({ 'Authorization': `Bearer ${token()}`, 'Accept': 'ap
 const loadDashboardStats = async () => {
   isRefreshing.value = true
   try {
-    const res = await fetch(`${API}/admin/dashboard/stats`, { headers: authHeaders() })
-    if (res.ok) stats.value = await res.json()
+    if (adminRole.value === 'admin' || adminRole.value === 'sales') {
+      const res = await fetch(`${API}/admin/dashboard/stats`, { headers: authHeaders() })
+      if (res.ok) stats.value = await res.json()
+    }
+    
+    if (adminRole.value === 'admin' || adminRole.value === 'inventory') {
+      const res = await fetch(`${API}/admin/dashboard/products-stats`, { headers: authHeaders() })
+      if (res.ok) productStats.value = await res.json()
+    }
   } catch (err) { console.error('Failed to load dashboard stats', err) }
   finally {
     setTimeout(() => { isRefreshing.value = false }, 500)

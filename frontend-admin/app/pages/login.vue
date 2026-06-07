@@ -64,6 +64,7 @@ const handleLogin = async () => {
       localStorage.setItem('maneesha-admin-auth', 'true')
       localStorage.setItem('maneesha-admin-token', data.token)
       localStorage.setItem('maneesha-admin-name', data.user?.name || 'Admin')
+      localStorage.setItem('maneesha-admin-role', data.user?.role || 'admin')
       router.push('/')
     } else {
       errorMsg.value = data.message || 'Invalid email or password.'

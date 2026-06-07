@@ -6,40 +6,68 @@ const toast = useToast()
 
 const open = ref(false)
 
-const links = [[{
-  label: 'Dashboard',
-  icon: 'i-lucide-layout-dashboard',
-  to: '/',
-  onSelect: () => { open.value = false }
-}, {
-  label: 'Products',
-  icon: 'i-lucide-shirt',
-  to: '/products',
-  onSelect: () => { open.value = false }
-}, {
-  label: 'Categories',
-  icon: 'i-lucide-tags',
-  to: '/categories',
-  onSelect: () => { open.value = false }
-}, {
-  label: 'Orders',
-  icon: 'i-lucide-shopping-cart',
-  to: '/orders',
-  onSelect: () => { open.value = false }
-}], [{
-  label: 'Sign Out',
-  icon: 'i-lucide-log-out',
-  onSelect: () => { 
-    localStorage.removeItem('maneesha-admin-auth');
-    localStorage.removeItem('maneesha-admin-token');
-    window.location.href = '/login'; 
+const adminRole = inject('adminRole', ref('admin'))
+
+const links = computed(() => {
+  const topLinks = [
+    {
+      label: 'Dashboard',
+      icon: 'i-lucide-layout-dashboard',
+      to: '/',
+      onSelect: () => { open.value = false }
+    }
+  ]
+
+  if (adminRole.value === 'admin' || adminRole.value === 'inventory') {
+    topLinks.push({
+      label: 'Products',
+      icon: 'i-lucide-shirt',
+      to: '/products',
+      onSelect: () => { open.value = false }
+    }, {
+      label: 'Categories',
+      icon: 'i-lucide-tags',
+      to: '/categories',
+      onSelect: () => { open.value = false }
+    })
   }
-}]] satisfies NavigationMenuItem[][]
+
+  if (adminRole.value === 'admin' || adminRole.value === 'sales') {
+    topLinks.push({
+      label: 'Orders',
+      icon: 'i-lucide-shopping-cart',
+      to: '/orders',
+      onSelect: () => { open.value = false }
+    })
+  }
+
+  if (adminRole.value === 'admin') {
+    topLinks.push({
+      label: 'Users',
+      icon: 'i-lucide-users',
+      to: '/users',
+      onSelect: () => { open.value = false }
+    })
+  }
+
+  const bottomLinks = [{
+    label: 'Sign Out',
+    icon: 'i-lucide-log-out',
+    onSelect: () => { 
+      localStorage.removeItem('maneesha-admin-auth');
+      localStorage.removeItem('maneesha-admin-token');
+      localStorage.removeItem('maneesha-admin-role');
+      window.location.href = '/login'; 
+    }
+  }]
+
+  return [topLinks, bottomLinks] as NavigationMenuItem[][]
+})
 
 const groups = computed(() => [{
   id: 'links',
   label: 'Go to',
-  items: links.flat()
+  items: links.value.flat()
 }])
 
 onMounted(async () => {

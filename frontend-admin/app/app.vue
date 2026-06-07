@@ -33,13 +33,16 @@ const route  = useRoute()
 
 const isAuthenticated = ref(false)
 const adminName = ref('Admin')
+const adminRole = ref('admin')
 
 provide('isAuthenticated', isAuthenticated)
 provide('adminName', adminName)
+provide('adminRole', adminRole)
 
 const handleAuth = () => {
   isAuthenticated.value = true
   adminName.value = localStorage.getItem('maneesha-admin-name') || 'Admin'
+  adminRole.value = localStorage.getItem('maneesha-admin-role') || 'admin'
 }
 
 provide('isAuthenticated', isAuthenticated)
@@ -52,9 +55,11 @@ onMounted(() => {
     if (auth === 'true' && token) {
       isAuthenticated.value = true
       adminName.value = localStorage.getItem('maneesha-admin-name') || 'Admin'
+      adminRole.value = localStorage.getItem('maneesha-admin-role') || 'admin'
     } else {
       localStorage.removeItem('maneesha-admin-auth')
       localStorage.removeItem('maneesha-admin-token')
+      localStorage.removeItem('maneesha-admin-role')
       isAuthenticated.value = false
       router.push('/login')
     }

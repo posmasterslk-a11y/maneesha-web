@@ -64,6 +64,22 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    /** GET /api/admin/dashboard/products-stats — get stats for inventory dashboard */
+    public function dashboardStats()
+    {
+        $totalProducts = Product::count();
+        $activeProducts = Product::where('is_active', true)->count();
+        $lowStockProducts = Product::whereHas('variants', function($q) {
+            $q->where('stock', '<', 5);
+        })->orWhere('stock', '<', 5)->count();
+
+        return response()->json([
+            'totalProducts' => $totalProducts,
+            'activeProducts' => $activeProducts,
+            'lowStockProducts' => $lowStockProducts
+        ]);
+    }
+
     /** GET /api/admin/products — full list for admin */
     public function adminIndex()
     {

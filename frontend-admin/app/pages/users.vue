@@ -1,0 +1,220 @@
+<template>
+  <UDashboardPage>
+    <UDashboardPanel grow>
+      <UDashboardNavbar title="User Management" badge="Admins/Staff">
+        <template #right>
+          <UButton label="New User" trailing-icon="i-lucide-plus" @click="openCreateModal" />
+        </template>
+      </UDashboardNavbar>
+
+      <div class="p-4">
+        <UTable :rows="users" :columns="columns" :loading="pending">
+          <template #role-data="{ row }">
+            <UBadge :color="getRoleColor(row.role)" variant="subtle">{{ getRoleName(row.role) }}</UBadge>
+          </template>
+          
+          <template #actions-data="{ row }">
+            <UDropdown :items="getItems(row)">
+              <UButton color="neutral" variant="ghost" icon="i-lucide-more-horizontal" />
+            </UDropdown>
+          </template>
+        </UTable>
+      </div>
+    </UDashboardPanel>
+
+    <!-- User Modal -->
+    <UModal v-model="isModalOpen">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold">{{ isEditing ? 'Edit User' : 'Create User' }}</h3>
+        </template>
+
+        <form @submit.prevent="saveUser" class="space-y-4">
+          <UFormGroup label="Name">
+            <UInput v-model="form.name" required />
+          </UFormGroup>
+          <UFormGroup label="Email">
+            <UInput v-model="form.email" type="email" required />
+          </UFormGroup>
+          <UFormGroup label="Role">
+            <USelect v-model="form.role" :options="roleOptions" required />
+          </UFormGroup>
+          <UFormGroup :label="isEditing ? 'Password (leave blank to keep current)' : 'Password'">
+            <UInput v-model="form.password" type="password" :required="!isEditing" />
+          </UFormGroup>
+          
+          <div class="flex justify-end gap-2 mt-4">
+            <UButton label="Cancel" color="neutral" variant="ghost" @click="isModalOpen = false" />
+            <UButton type="submit" label="Save" color="primary" :loading="saving" />
+          </div>
+        </form>
+      </UCard>
+    </UModal>
+  </UDashboardPage>
+</template>
+
+<script setup>
+import { ref, onMounted, inject } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const adminRole = inject('adminRole')
+const toast = useToast()
+const config = useRuntimeConfig()
+const API = config.public.apiBase
+
+const users = ref([])
+const pending = ref(true)
+const isModalOpen = ref(false)
+const isEditing = ref(false)
+const saving = ref(false)
+
+const form = ref({
+  id: null,
+  name: '',
+  email: '',
+  role: 'inventory',
+  password: ''
+})
+
+const columns = [
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'role', label: 'Role' },
+  { key: 'created_at', label: 'Created At' },
+  { key: 'actions' }
+]
+
+const roleOptions = [
+  { label: 'Super Admin', value: 'admin' },
+  { label: 'Stock Manager', value: 'inventory' },
+  { label: 'Order Manager', value: 'sales' }
+]
+
+const getRoleName = (role) => {
+  const r = roleOptions.find(opt => opt.value === role)
+  return r ? r.label : role
+}
+
+const getRoleColor = (role) => {
+  if (role === 'admin') return 'red'
+  if (role === 'inventory') return 'green'
+  if (role === 'sales') return 'blue'
+  return 'neutral'
+}
+
+const getItems = (row) => [
+  [{
+    label: 'Edit',
+    icon: 'i-lucide-pencil',
+    click: () => openEditModal(row)
+  }],
+  [{
+    label: 'Delete',
+    icon: 'i-lucide-trash-2',
+    color: 'error',
+    click: () => deleteUser(row.id)
+  }]
+]
+
+const fetchUsers = async () => {
+  pending.value = true
+  const token = localStorage.getItem('maneesha-admin-token')
+  try {
+    const res = await fetch(`${API}/admin/users`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (res.ok) {
+      users.value = await res.json()
+    } else {
+      toast.add({ title: 'Error fetching users', color: 'error' })
+    }
+  } catch (e) {
+    console.error(e)
+  }
+  pending.value = false
+}
+
+const openCreateModal = () => {
+  isEditing.value = false
+  form.value = { id: null, name: '', email: '', role: 'inventory', password: '' }
+  isModalOpen.value = true
+}
+
+const openEditModal = (user) => {
+  isEditing.value = true
+  form.value = { id: user.id, name: user.name, email: user.email, role: user.role, password: '' }
+  isModalOpen.value = true
+}
+
+const saveUser = async () => {
+  saving.value = true
+  const token = localStorage.getItem('maneesha-admin-token')
+  
+  const payload = {
+    name: form.value.name,
+    email: form.value.email,
+    role: form.value.role
+  }
+  if (form.value.password) {
+    payload.password = form.value.password
+  }
+
+  const url = isEditing.value ? `${API}/admin/users/${form.value.id}` : `${API}/admin/users`
+  const method = isEditing.value ? 'PUT' : 'POST'
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    
+    if (res.ok) {
+      toast.add({ title: `User ${isEditing.value ? 'updated' : 'created'} successfully`, color: 'success' })
+      isModalOpen.value = false
+      fetchUsers()
+    } else {
+      const err = await res.json()
+      toast.add({ title: err.message || 'Error saving user', color: 'error' })
+    }
+  } catch (e) {
+    toast.add({ title: 'Network error', color: 'error' })
+  }
+  saving.value = false
+}
+
+const deleteUser = async (id) => {
+  if (!confirm('Are you sure you want to delete this user?')) return
+  
+  const token = localStorage.getItem('maneesha-admin-token')
+  try {
+    const res = await fetch(`${API}/admin/users/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    
+    if (res.ok) {
+      toast.add({ title: 'User deleted successfully', color: 'success' })
+      fetchUsers()
+    } else {
+      const err = await res.json()
+      toast.add({ title: err.message || 'Error deleting user', color: 'error' })
+    }
+  } catch (e) {
+    toast.add({ title: 'Network error', color: 'error' })
+  }
+}
+
+onMounted(() => {
+  if (adminRole.value !== 'admin') {
+    toast.add({ title: 'Unauthorized access', color: 'error' })
+    router.push('/')
+    return
+  }
+  fetchUsers()
+})
+</script>
