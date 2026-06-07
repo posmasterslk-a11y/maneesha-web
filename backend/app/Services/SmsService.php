@@ -2,78 +2,83 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
+use App\Models\SmsLog;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class SmsService
 {
-    protected string $apiUrl;
-    protected string $apiToken;
-    protected string $senderId;
-
-    public function __construct()
+    /**
+     * Check if SMS is enabled globally
+     */
+    public function isEnabled(): bool
     {
-        // Default credentials as supplied by user, with fallback config support
-        $this->apiUrl = env('SMS_API_URL', 'https://dashboard.smsapi.lk/api/v3/sendsms');
-        $this->apiToken = env('SMS_API_TOKEN', '172|jbMj5WdmlWftzoxtTr64n9pevmBlPosoIYARLlU5');
-        $this->senderId = env('SMS_SENDER_ID', 'POS Masters');
+        $setting = Setting::where('key', 'sms_enabled')->first();
+        return $setting ? $setting->value === '1' : false;
     }
 
     /**
-     * Dispatch tailored SMS to Sri Lankan mobile number
-     *
-     * @param string $recipient Mobile number e.g. 0771234567 or 94771234567
-     * @param string $message Alphanumeric SMS body content
-     * @return bool
+     * Send an SMS via smsapi.lk API v3
      */
-    public function sendSms(string $recipient, string $message): bool
+    public function sendSms(string $phone, string $message, string $type = 'transactional'): bool
     {
-        // Sanitize and format recipient number to standard international structure (947XXXXXXXX)
-        $formattedRecipient = $this->formatNumber($recipient);
+        if (!$this->isEnabled()) {
+            Log::info("SMS sending disabled. Did not send SMS to: {$phone}");
+            return false;
+        }
+
+        $token = env('SMS_API_TOKEN');
+        $senderId = env('SMS_SENDER_ID', 'POS Masters');
+        
+        if (!$token) {
+            Log::error('SMS API Token is missing in environment variables.');
+            return false;
+        }
+
+        // Format phone number to start with 94 if needed
+        $formattedPhone = $phone;
+        if (str_starts_with($formattedPhone, '0')) {
+            $formattedPhone = '94' . substr($formattedPhone, 1);
+        }
 
         try {
-            Log::info("Initiating SMS dispatch to {$formattedRecipient} via smsapi.lk...");
+            // According to standard smsapi.lk v3 usage
+            $response = Http::withToken($token)
+                ->post('https://dashboard.smsapi.lk/api/v3/sms/send', [
+                    'recipient' => $formattedPhone,
+                    'sender_id' => $senderId,
+                    'message' => $message,
+                ]);
 
-            $response = Http::withHeaders([
-                'Authorization' => "Bearer {$this->apiToken}",
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-            ])->post($this->apiUrl, [
-                'recipient' => $formattedRecipient,
-                'sender_id' => $this->senderId,
+            $status = $response->successful() ? 'sent' : 'failed';
+
+            SmsLog::create([
+                'phone' => $formattedPhone,
                 'message' => $message,
+                'type' => $type,
+                'status' => $status,
+                'cost' => 1.30,
             ]);
 
-            if ($response->successful()) {
-                Log::info("SMS successfully delivered to {$formattedRecipient} via smsapi.lk. Response: " . $response->body());
-                return true;
+            if (!$response->successful()) {
+                Log::error("SMS API Error: " . $response->body());
+                return false;
             }
 
-            Log::error("SMS dispatch failed for {$formattedRecipient}. Status Code: " . $response->status() . " | Error: " . $response->body());
-            return false;
-
+            return true;
         } catch (\Exception $e) {
-            Log::error("Critical Exception during SMS dispatch to {$formattedRecipient}: " . $e->getMessage());
+            Log::error("SMS Exception: " . $e->getMessage());
+            
+            SmsLog::create([
+                'phone' => $formattedPhone,
+                'message' => $message,
+                'type' => $type,
+                'status' => 'failed',
+                'cost' => 1.30,
+            ]);
+            
             return false;
         }
-    }
-
-    /**
-     * Helper to format numbers matching Sri Lankan provider norms (947XXXXXXXX)
-     */
-    protected function formatNumber(string $phone): string
-    {
-        $cleaned = preg_replace('/[^0-9]/', '', $phone);
-        
-        // Convert starting "0" or prefix strings
-        if (str_starts_with($cleaned, '0')) {
-            $cleaned = '94' . substr($cleaned, 1);
-        }
-        
-        if (!str_starts_with($cleaned, '94')) {
-            $cleaned = '94' . $cleaned;
-        }
-
-        return $cleaned;
     }
 }

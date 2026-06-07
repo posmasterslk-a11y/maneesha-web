@@ -58,6 +58,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin Hero Slides
     Route::get('/hero-slides',         [HeroSlideController::class, 'adminIndex']);
+
+    // SMS & Settings
+    Route::get('/admin/sms/settings',        [\App\Http\Controllers\SmsController::class, 'getSettings']);
+    Route::post('/admin/sms/settings',       [\App\Http\Controllers\SmsController::class, 'updateSettings']);
+    Route::get('/admin/sms/logs',            [\App\Http\Controllers\SmsController::class, 'getLogs']);
+    Route::get('/admin/sms/billing',         [\App\Http\Controllers\SmsController::class, 'getBillingSummary']);
+    Route::post('/admin/sms/promotional',    [\App\Http\Controllers\SmsController::class, 'sendPromotional']);
     Route::post('/hero-slides',        [HeroSlideController::class, 'store']);
     Route::put('/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
     Route::delete('/hero-slides/{id}', [HeroSlideController::class, 'destroy']);

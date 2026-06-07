@@ -47,6 +47,11 @@ const links = computed(() => {
       icon: 'i-lucide-users',
       to: '/users',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'SMS Center',
+      icon: 'i-lucide-message-square',
+      to: '/sms',
+      onSelect: () => { open.value = false }
     })
   }
 
