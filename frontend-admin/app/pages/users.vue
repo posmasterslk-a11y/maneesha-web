@@ -43,7 +43,7 @@
 
             <div class="flex flex-col gap-1.5">
               <label class="text-sm font-bold text-gray-700 dark:text-gray-200">Account Role</label>
-              <USelect v-model="form.role" :options="roleOptions" required icon="i-lucide-shield" size="md" />
+              <USelect v-model="form.role" :options="roleOptions" option-attribute="label" value-attribute="value" required icon="i-lucide-shield" size="md" />
             </div>
 
             <div class="flex flex-col gap-1.5">
