@@ -119,8 +119,6 @@
           <h4>Support & Delivery</h4>
           <ul>
             <li>PayHere Secure Gateway</li>
-            <li>Cash on Delivery (COD)</li>
-            <li>Direct Bank Deposit</li>
           </ul>
         </div>
         <div>
