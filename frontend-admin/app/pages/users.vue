@@ -8,13 +8,13 @@
       </UDashboardNavbar>
 
       <div class="p-4">
-        <UTable :rows="users" :columns="columns" :loading="pending">
-          <template #role-data="{ row }">
-            <UBadge :color="getRoleColor(row.role)" variant="subtle">{{ getRoleName(row.role) }}</UBadge>
+        <UTable :data="users" :columns="columns" :loading="pending">
+          <template #role-cell="{ row }">
+            <UBadge :color="getRoleColor(row.original.role)" variant="subtle">{{ getRoleName(row.original.role) }}</UBadge>
           </template>
           
-          <template #actions-data="{ row }">
-            <UDropdown :items="getItems(row)">
+          <template #actions-cell="{ row }">
+            <UDropdown :items="getItems(row.original)">
               <UButton color="neutral" variant="ghost" icon="i-lucide-more-horizontal" />
             </UDropdown>
           </template>
@@ -78,11 +78,11 @@ const form = ref({
 })
 
 const columns = [
-  { key: 'name', label: 'Name' },
-  { key: 'email', label: 'Email' },
-  { key: 'role', label: 'Role' },
-  { key: 'created_at', label: 'Created At' },
-  { key: 'actions' }
+  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'role', header: 'Role' },
+  { accessorKey: 'created_at', header: 'Created At' },
+  { id: 'actions' }
 ]
 
 const roleOptions = [
