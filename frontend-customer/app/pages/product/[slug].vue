@@ -160,7 +160,7 @@ const quantity = ref(1)
 const activePrice = computed(() => {
   if (!product.value) return 0
   const variant = product.value.variants?.find(v => v.size === selectedSize.value)
-  return variant ? variant.price : product.value.base_price
+  return variant && Number(variant.price) > 0 ? Number(variant.price) : Number(product.value.base_price)
 })
 
 const activeStock = computed(() => {
