@@ -94,10 +94,20 @@ class OrderController extends Controller
 
         Log::info("Order successfully registered: #{$orderNumber}");
 
-        if ($status === 'confirmed') {
-            $ownerPhone = env('OWNER_PHONE_NUMBER', '0771234567');
-            $message = "Maneesha Fashion: New order confirmed! Order {$orderNumber} - Total: LKR " . number_format($request->total_amount, 2) . " by {$request->customer_name}.";
-            $this->sms->sendSms($ownerPhone, $message);
+        if ($status === 'confirmed' || $status === 'pending') {
+            $smsData = [
+                'name' => $order->customer_name,
+                'order_id' => $order->order_number,
+                'total' => number_format($order->total, 2)
+            ];
+            
+            // Send SMS to customer (Fallback if template is empty)
+            if (!$this->sms->sendOrderPlacedCustomer($order->customer_phone, $smsData)) {
+                $this->sms->sendSms($order->customer_phone, "Dear {$order->customer_name}, your order {$order->order_number} has been received. Total: LKR {$smsData['total']}");
+            }
+
+            // Send SMS to admins
+            $this->sms->sendOrderPlacedAdmin($smsData);
         }
 
         // Send email to customer
@@ -200,16 +210,26 @@ class OrderController extends Controller
 
         // Send SMS to customer on status update
         try {
-            $statusMessages = [
-                'confirmed' => "Your Maneesha Fashion order #{$order->order_number} has been confirmed.",
-                'processing' => "Your Maneesha Fashion order #{$order->order_number} is now being processed.",
-                'dispatched' => "Great news! Your Maneesha Fashion order #{$order->order_number} has been dispatched.",
-                'delivered' => "Your Maneesha Fashion order #{$order->order_number} has been delivered. Thank you!",
-                'cancelled' => "Your Maneesha Fashion order #{$order->order_number} has been cancelled."
+            $smsData = [
+                'name' => $order->customer_name,
+                'order_id' => $order->order_number,
+                'status' => strtoupper($request->status)
             ];
 
-            if (isset($statusMessages[$request->status])) {
-                $this->sms->sendSms($order->customer_phone, $statusMessages[$request->status]);
+            // Attempt to send template SMS
+            if (!$this->sms->sendOrderStatusCustomer($order->customer_phone, $smsData)) {
+                // Fallback
+                $statusMessages = [
+                    'confirmed' => "Your Maneesha Fashion order #{$order->order_number} has been confirmed.",
+                    'processing' => "Your Maneesha Fashion order #{$order->order_number} is now being processed.",
+                    'dispatched' => "Great news! Your Maneesha Fashion order #{$order->order_number} has been dispatched.",
+                    'delivered' => "Your Maneesha Fashion order #{$order->order_number} has been delivered. Thank you!",
+                    'cancelled' => "Your Maneesha Fashion order #{$order->order_number} has been cancelled."
+                ];
+    
+                if (isset($statusMessages[$request->status])) {
+                    $this->sms->sendSms($order->customer_phone, $statusMessages[$request->status]);
+                }
             }
         } catch (\Exception $e) {
             Log::warning("Failed to send status update SMS: " . $e->getMessage());

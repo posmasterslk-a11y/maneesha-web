@@ -19,21 +19,54 @@ class SmsController extends Controller
 
     public function getSettings()
     {
-        $setting = Setting::firstOrCreate(
-            ['key' => 'sms_enabled'],
-            ['value' => '0']
-        );
-        return response()->json(['sms_enabled' => $setting->value === '1']);
+        $keys = [
+            'sms_enabled' => '0',
+            'sms_template_order_customer' => 'Hi {name}, your order #{order_id} has been placed successfully.',
+            'sms_template_order_status' => 'Hi {name}, your order #{order_id} is now {status}.',
+            'sms_template_order_admin' => 'New Order #{order_id} placed by {name} for LKR {total}.',
+            'sms_admin_numbers' => ''
+        ];
+
+        $settings = [];
+        foreach ($keys as $key => $default) {
+            $setting = Setting::firstOrCreate(['key' => $key], ['value' => $default]);
+            $settings[$key] = $setting->value;
+        }
+
+        return response()->json([
+            'sms_enabled' => $settings['sms_enabled'] === '1',
+            'sms_template_order_customer' => $settings['sms_template_order_customer'],
+            'sms_template_order_status' => $settings['sms_template_order_status'],
+            'sms_template_order_admin' => $settings['sms_template_order_admin'],
+            'sms_admin_numbers' => $settings['sms_admin_numbers'],
+        ]);
     }
 
     public function updateSettings(Request $request)
     {
-        $request->validate(['sms_enabled' => 'required|boolean']);
+        $request->validate([
+            'sms_enabled' => 'nullable|boolean',
+            'sms_template_order_customer' => 'nullable|string',
+            'sms_template_order_status' => 'nullable|string',
+            'sms_template_order_admin' => 'nullable|string',
+            'sms_admin_numbers' => 'nullable|string',
+        ]);
         
-        Setting::updateOrCreate(
-            ['key' => 'sms_enabled'],
-            ['value' => $request->sms_enabled ? '1' : '0']
-        );
+        if ($request->has('sms_enabled')) {
+            Setting::updateOrCreate(['key' => 'sms_enabled'], ['value' => $request->sms_enabled ? '1' : '0']);
+        }
+        if ($request->has('sms_template_order_customer')) {
+            Setting::updateOrCreate(['key' => 'sms_template_order_customer'], ['value' => $request->sms_template_order_customer ?? '']);
+        }
+        if ($request->has('sms_template_order_status')) {
+            Setting::updateOrCreate(['key' => 'sms_template_order_status'], ['value' => $request->sms_template_order_status ?? '']);
+        }
+        if ($request->has('sms_template_order_admin')) {
+            Setting::updateOrCreate(['key' => 'sms_template_order_admin'], ['value' => $request->sms_template_order_admin ?? '']);
+        }
+        if ($request->has('sms_admin_numbers')) {
+            Setting::updateOrCreate(['key' => 'sms_admin_numbers'], ['value' => $request->sms_admin_numbers ?? '']);
+        }
 
         return response()->json(['message' => 'Settings updated successfully']);
     }

@@ -149,7 +149,7 @@
             <span class="text-success font-bold">FREE</span>
           </div>
           <hr class="divider" />
-          <div class="row grand-row">
+          <div class="row grand-row total-highlight-box">
             <span>Total Payable</span>
             <span class="gold-gradient-text">LKR {{ formatNumber(subtotal) }}</span>
           </div>
@@ -673,6 +673,7 @@ body.dark-mode .divider {
 .totals-block .row {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 12px;
   font-size: 0.95rem;
 }
 

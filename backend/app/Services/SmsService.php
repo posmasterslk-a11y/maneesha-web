@@ -81,4 +81,70 @@ class SmsService
             return false;
         }
     }
+
+    /**
+     * Parse template by replacing placeholders with data
+     */
+    public function parseTemplate(string $templateKey, array $data): ?string
+    {
+        $setting = Setting::where('key', $templateKey)->first();
+        if (!$setting || empty($setting->value)) {
+            return null;
+        }
+
+        $message = $setting->value;
+        foreach ($data as $key => $value) {
+            $message = str_replace('{' . $key . '}', $value, $message);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Send order placed SMS to customer
+     */
+    public function sendOrderPlacedCustomer(string $phone, array $data): bool
+    {
+        $message = $this->parseTemplate('sms_template_order_customer', $data);
+        if ($message) {
+            return $this->sendSms($phone, $message, 'transactional');
+        }
+        return false;
+    }
+
+    /**
+     * Send order status update SMS to customer
+     */
+    public function sendOrderStatusCustomer(string $phone, array $data): bool
+    {
+        $message = $this->parseTemplate('sms_template_order_status', $data);
+        if ($message) {
+            return $this->sendSms($phone, $message, 'transactional');
+        }
+        return false;
+    }
+
+    /**
+     * Send order placed SMS to admins
+     */
+    public function sendOrderPlacedAdmin(array $data): void
+    {
+        $adminNumbersSetting = Setting::where('key', 'sms_admin_numbers')->first();
+        if (!$adminNumbersSetting || empty($adminNumbersSetting->value)) {
+            return;
+        }
+
+        $message = $this->parseTemplate('sms_template_order_admin', $data);
+        if (!$message) {
+            return;
+        }
+
+        $numbers = explode(',', $adminNumbersSetting->value);
+        foreach ($numbers as $number) {
+            $number = trim($number);
+            if (!empty($number)) {
+                $this->sendSms($number, $message, 'admin_notification');
+            }
+        }
+    }
 }
