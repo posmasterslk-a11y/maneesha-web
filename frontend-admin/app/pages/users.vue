@@ -23,32 +23,34 @@
     </UDashboardPanel>
 
     <!-- User Modal -->
-    <UModal v-model="isModalOpen">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">{{ isEditing ? 'Edit User' : 'Create User' }}</h3>
-        </template>
+    <UModal v-model:open="isModalOpen">
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold">{{ isEditing ? 'Edit User' : 'Create User' }}</h3>
+          </template>
 
-        <form @submit.prevent="saveUser" class="space-y-4">
-          <UFormGroup label="Name">
-            <UInput v-model="form.name" required />
-          </UFormGroup>
-          <UFormGroup label="Email">
-            <UInput v-model="form.email" type="email" required />
-          </UFormGroup>
-          <UFormGroup label="Role">
-            <USelect v-model="form.role" :options="roleOptions" required />
-          </UFormGroup>
-          <UFormGroup :label="isEditing ? 'Password (leave blank to keep current)' : 'Password'">
-            <UInput v-model="form.password" type="password" :required="!isEditing" />
-          </UFormGroup>
-          
-          <div class="flex justify-end gap-2 mt-4">
-            <UButton label="Cancel" color="neutral" variant="ghost" @click="isModalOpen = false" />
-            <UButton type="submit" label="Save" color="primary" :loading="saving" />
-          </div>
-        </form>
-      </UCard>
+          <form @submit.prevent="saveUser" class="space-y-4">
+            <UFormGroup label="Name">
+              <UInput v-model="form.name" required />
+            </UFormGroup>
+            <UFormGroup label="Email">
+              <UInput v-model="form.email" type="email" required />
+            </UFormGroup>
+            <UFormGroup label="Role">
+              <USelect v-model="form.role" :options="roleOptions" required />
+            </UFormGroup>
+            <UFormGroup :label="isEditing ? 'Password (leave blank to keep current)' : 'Password'">
+              <UInput v-model="form.password" type="password" :required="!isEditing" />
+            </UFormGroup>
+            
+            <div class="flex justify-end gap-2 mt-4">
+              <UButton label="Cancel" color="neutral" variant="ghost" @click="isModalOpen = false" />
+              <UButton type="submit" label="Save" color="primary" :loading="saving" />
+            </div>
+          </form>
+        </UCard>
+      </template>
     </UModal>
   </UDashboardPage>
 </template>
