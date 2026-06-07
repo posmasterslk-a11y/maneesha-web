@@ -32,7 +32,7 @@
     </section>
 
     <!-- Featured Products Section -->
-    <section class="featured-products container">
+    <section class="featured-products container" v-if="products && products.length > 0">
       <div class="section-header-row">
         <div>
           <h2 class="luxury-title">Featured <span class="gold-gradient-text">Creations</span></h2>
