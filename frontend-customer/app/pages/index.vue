@@ -31,27 +31,6 @@
       </div>
     </section>
 
-    <!-- Categories Showcase -->
-    <section class="categories-section container">
-      <div class="section-header">
-        <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
-        <p>Curated designs ready to be stitched by hand.</p>
-      </div>
-
-      <div class="categories-grid">
-        <div v-for="cat in categories" :key="cat.id" class="category-card glass-panel" @click="navigateToCategory(cat.slug)">
-          <div class="category-overlay"></div>
-          <div class="category-icon">
-            <i :class="cat.icon"></i>
-          </div>
-          <div class="category-info">
-            <h3 class="luxury-title">{{ cat.name }}</h3>
-            <span>{{ cat.products_count ?? cat.itemCount ?? 0 }} Designs</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Featured Products Section -->
     <section class="featured-products container">
       <div class="section-header-row">
@@ -90,6 +69,27 @@
                 <i class="fa-solid fa-circle-chevron-right"></i>
               </NuxtLink>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Showcase -->
+    <section class="categories-section container">
+      <div class="section-header">
+        <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
+        <p>Curated designs ready to be stitched by hand.</p>
+      </div>
+
+      <div class="categories-grid">
+        <div v-for="cat in categories" :key="cat.id" class="category-card glass-panel" @click="navigateToCategory(cat.slug)">
+          <div class="category-overlay"></div>
+          <div class="category-icon">
+            <i :class="cat.icon"></i>
+          </div>
+          <div class="category-info">
+            <h3 class="luxury-title">{{ cat.name }}</h3>
+            <span>{{ cat.products_count ?? cat.itemCount ?? 0 }} Designs</span>
           </div>
         </div>
       </div>
