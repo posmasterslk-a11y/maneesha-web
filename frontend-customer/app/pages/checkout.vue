@@ -20,7 +20,7 @@
             
             <div class="form-group">
               <label class="form-label">Phone Number</label>
-              <input type="tel" v-model="orderData.phone" class="form-input" required placeholder="e.g. 0771234567" />
+              <input type="tel" v-model="orderData.phone" class="form-input" required placeholder="e.g. 0771234567" pattern="[0-9]{10}" minlength="10" maxlength="10" title="Please enter exactly 10 digits" />
             </div>
             
             <div class="form-group">
