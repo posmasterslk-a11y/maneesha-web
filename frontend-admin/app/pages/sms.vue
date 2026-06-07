@@ -16,8 +16,8 @@
     <UDashboardPanelContent>
       <UTabs :items="tabs" class="w-full">
         <!-- Dashboard & Billing Tab -->
-        <template #item="{ item }">
-          <div v-if="item.key === 'billing'" class="p-6 space-y-6">
+        <template #billing="{ item }">
+          <div class="p-6 space-y-6">
             <h2 class="text-xl font-bold">Billing & Usage ({{ billingData.month }})</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,9 +52,11 @@
               </template>
             </UAlert>
           </div>
+        </template>
 
-          <!-- Promotional SMS Tab -->
-          <div v-else-if="item.key === 'promo'" class="p-6 max-w-3xl">
+        <!-- Promotional SMS Tab -->
+        <template #promo="{ item }">
+          <div class="p-6 max-w-3xl">
             <h2 class="text-xl font-bold mb-4">Send Promotional Campaign</h2>
             <p class="text-gray-500 mb-6 text-sm">This will send an SMS to all unique customer phone numbers found in your orders database.</p>
             
@@ -72,9 +74,11 @@
               <p v-if="!settings.sms_enabled" class="text-red-500 text-sm mt-2">SMS Gateway is currently disabled. Turn it on from the top right to send messages.</p>
             </UForm>
           </div>
+        </template>
 
-          <!-- Logs Tab -->
-          <div v-else-if="item.key === 'logs'" class="p-4">
+        <!-- Logs Tab -->
+        <template #logs="{ item }">
+          <div class="p-4">
             <div class="flex justify-between items-center mb-4">
               <h2 class="text-xl font-bold">SMS Delivery Logs</h2>
               <UButton icon="i-lucide-refresh-cw" color="gray" variant="ghost" @click="fetchLogs" :loading="loadingLogs" />
@@ -99,9 +103,11 @@
               </template>
             </UTable>
           </div>
+        </template>
 
-          <!-- Templates & Settings Tab -->
-          <div v-else-if="item.key === 'templates'" class="p-6 max-w-4xl space-y-8">
+        <!-- Templates & Settings Tab -->
+        <template #templates="{ item }">
+          <div class="p-6 max-w-4xl space-y-8">
             <div>
               <h2 class="text-xl font-bold mb-2">SMS Templates & Settings</h2>
               <p class="text-gray-500 text-sm">Configure automated messages sent to customers and admins. Use {name}, {order_id}, {total}, and {status} as placeholders.</p>
@@ -180,10 +186,10 @@ const sendingPromo = ref(false)
 const promoForm = ref({ message: '' })
 
 const tabs = [
-  { label: 'Billing Dashboard', icon: 'i-lucide-pie-chart', key: 'billing' },
-  { label: 'Promotional SMS', icon: 'i-lucide-megaphone', key: 'promo' },
-  { label: 'Message Logs', icon: 'i-lucide-list', key: 'logs' },
-  { label: 'Templates & Settings', icon: 'i-lucide-settings', key: 'templates' }
+  { label: 'Billing Dashboard', icon: 'i-lucide-pie-chart', slot: 'billing' },
+  { label: 'Promotional SMS', icon: 'i-lucide-megaphone', slot: 'promo' },
+  { label: 'Message Logs', icon: 'i-lucide-list', slot: 'logs' },
+  { label: 'Templates & Settings', icon: 'i-lucide-settings', slot: 'templates' }
 ]
 
 const columns = [
