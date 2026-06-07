@@ -41,9 +41,15 @@
               <UInput v-model="form.email" type="email" required placeholder="john@example.com" icon="i-lucide-mail" size="md" />
             </div>
 
-            <div class="flex flex-col gap-1.5">
+            <div class="flex flex-col gap-1.5 relative">
               <label class="text-sm font-bold text-gray-700 dark:text-gray-200">Account Role</label>
-              <USelect v-model="form.role" :options="roleOptions" option-attribute="label" value-attribute="value" required icon="i-lucide-shield" size="md" />
+              <div class="relative flex items-center">
+                <UIcon name="i-lucide-shield" class="absolute left-3 w-5 h-5 text-gray-400 pointer-events-none" />
+                <select v-model="form.role" required class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm rounded-md focus:ring-primary-500 focus:border-primary-500 block appearance-none outline-none transition-colors">
+                  <option v-for="role in roleOptions" :key="role.value" :value="role.value">{{ role.label }}</option>
+                </select>
+                <UIcon name="i-lucide-chevron-down" class="absolute right-3 w-4 h-4 text-gray-500 pointer-events-none" />
+              </div>
             </div>
 
             <div class="flex flex-col gap-1.5">
