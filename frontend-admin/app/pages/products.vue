@@ -167,6 +167,30 @@
                     </div>
                   </div>
 
+                  <!-- Gallery Images -->
+                  <div>
+                    <h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1">
+                      <UIcon name="i-lucide-images" class="w-4 h-4" /> Gallery Images (Max 4)
+                    </h5>
+                    <div class="grid grid-cols-4 gap-4 mb-4">
+                      <!-- Existing/Preview Images -->
+                      <div v-for="(img, idx) in galleryPreviews" :key="idx" class="relative aspect-square bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden group border border-gray-200 dark:border-gray-700">
+                        <img :src="img.url" class="w-full h-full object-cover" />
+                        <button type="button" @click.stop="removeGalleryImage(idx)" class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <UIcon name="i-lucide-x" class="w-4 h-4" />
+                        </button>
+                        <span v-if="img.isNew" class="absolute bottom-0 left-0 right-0 bg-blue-500/80 text-white text-[10px] text-center py-0.5">NEW</span>
+                      </div>
+                      
+                      <!-- Upload Button -->
+                      <div v-if="galleryPreviews.length < 4" class="relative aspect-square bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-md flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" @click="triggerGalleryInput">
+                        <UIcon name="i-lucide-plus" class="w-6 h-6 text-gray-400 mb-1" />
+                        <span class="text-xs text-gray-500">Add Photo</span>
+                        <input ref="galleryInput" type="file" accept="image/*" multiple @change="onGalleryChange" class="hidden" />
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- Size Variants -->
                   <div>
                     <div class="flex justify-between items-center mb-3">
@@ -238,6 +262,11 @@ const fileInput    = ref(null)
 const imageFile    = ref(null)
 const imagePreview = ref('')
 
+const galleryInput    = ref(null)
+const galleryFiles    = ref([]) // Array of new File objects
+const galleryPreviews = ref([]) // Array of objects: { url, isNew, path? }
+const retainedGallery = ref([]) // Array of paths from existing images
+
 const defaultVariants = () => [
   { size: 'XS',     price: 0, stock: 5  },
   { size: 'S',      price: 0, stock: 10 },
@@ -300,12 +329,52 @@ const onImageChange = (e) => {
   imagePreview.value = URL.createObjectURL(file)
 }
 
+const triggerGalleryInput = () => galleryInput.value?.click()
+
+const onGalleryChange = (e) => {
+  const files = Array.from(e.target.files)
+  if (!files.length) return
+  
+  let added = 0;
+  for (const file of files) {
+    if (galleryPreviews.value.length >= 4) break;
+    if (file.size > 5 * 1024 * 1024) {
+      errorMsg.value = 'One or more images are too large. Max 5MB per image.'
+      continue;
+    }
+    galleryFiles.value.push(file)
+    galleryPreviews.value.push({
+      url: URL.createObjectURL(file),
+      isNew: true,
+      fileIndex: galleryFiles.value.length - 1
+    })
+    added++;
+  }
+  
+  if (added > 0) e.target.value = ''; // Reset input
+}
+
+const removeGalleryImage = (idx) => {
+  const item = galleryPreviews.value[idx];
+  if (item.isNew) {
+    // Remove from galleryFiles
+    galleryFiles.value[item.fileIndex] = null; // Mark as null, we'll filter out later
+  } else {
+    // Remove from retainedGallery
+    retainedGallery.value = retainedGallery.value.filter(path => path !== item.path);
+  }
+  galleryPreviews.value.splice(idx, 1);
+}
+
 // ── Modal ──────────────────────────────────────────────────────────────────
 const openAddModal = () => {
   isEditing.value = false
   editingId.value = null
   imageFile.value = null
   imagePreview.value = ''
+  galleryFiles.value = []
+  galleryPreviews.value = []
+  retainedGallery.value = []
   formData.value = {
     name: '', category_id: '', base_price: 2000, stock: 0,
     short_description: '', description: '', fabric: '',
@@ -321,6 +390,18 @@ const editProduct = (prod) => {
   editingId.value = prod.id
   imageFile.value = null
   imagePreview.value = ''
+  
+  galleryFiles.value = []
+  galleryPreviews.value = []
+  retainedGallery.value = []
+  
+  if (prod.gallery_images && Array.isArray(prod.gallery_images)) {
+    prod.gallery_images.forEach(img => {
+      retainedGallery.value.push(img.path);
+      galleryPreviews.value.push({ url: img.url, isNew: false, path: img.path });
+    });
+  }
+
   formData.value = {
     name:              prod.name,
     category_id:       prod.category_id,
@@ -346,6 +427,9 @@ const closeModal = () => {
   isModalOpen.value = false
   imagePreview.value = ''
   imageFile.value = null
+  galleryFiles.value = []
+  galleryPreviews.value = []
+  retainedGallery.value = []
 }
 
 // ── Variants ───────────────────────────────────────────────────────────────
@@ -372,8 +456,14 @@ const saveProduct = async () => {
     fd.append('is_featured',       formData.value.is_featured ? '1' : '0')
     fd.append('in_hero_slider',    formData.value.in_hero_slider ? '1' : '0')
     fd.append('variants',          JSON.stringify(formData.value.variants))
+    fd.append('retained_gallery_images', JSON.stringify(retainedGallery.value))
 
     if (imageFile.value) fd.append('main_image', imageFile.value)
+    
+    // Append valid gallery files
+    galleryFiles.value.forEach(file => {
+      if (file) fd.append('gallery_images[]', file)
+    })
 
     const url = isEditing.value
       ? `${API}/admin/products/${editingId.value}`

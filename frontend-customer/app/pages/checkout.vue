@@ -64,16 +64,6 @@
               </div>
             </label>
 
-            <label :class="['pay-method-card', { active: orderData.paymentMethod === 'cod' }]">
-              <input type="radio" v-model="orderData.paymentMethod" value="cod" class="hidden-radio" />
-              <div class="pay-card-content">
-                <i class="fa-solid fa-hand-holding-dollar pay-icon"></i>
-                <div>
-                  <h5>Cash on Delivery (COD)</h5>
-                  <p>Pay when our courier delivers the package</p>
-                </div>
-              </div>
-            </label>
 
             <label :class="['pay-method-card', { active: orderData.paymentMethod === 'bank_deposit' }]">
               <input type="radio" v-model="orderData.paymentMethod" value="bank_deposit" class="hidden-radio" />

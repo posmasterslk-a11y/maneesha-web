@@ -4,7 +4,7 @@
     <header class="desktop-header glass-panel">
       <div class="header-container">
         <NuxtLink to="/" class="logo-link">
-          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo" />
+          <img src="/images/maneesha_logo.PNG" alt="Maneesha Fashion Logo" class="header-logo" />
         </NuxtLink>
         
         <nav class="nav-links">
@@ -33,7 +33,7 @@
       </button>
       
       <NuxtLink to="/" class="logo-link">
-        <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-mobile" />
+        <img src="/images/maneesha_logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-mobile" />
       </NuxtLink>
       
       <button @click="toggleTheme" class="icon-btn" aria-label="Toggle theme">
@@ -45,7 +45,7 @@
     <div :class="['app-drawer-overlay', { 'drawer-open': isDrawerOpen }]" @click.self="toggleDrawer">
       <aside class="app-drawer glass-panel">
         <div class="drawer-header">
-          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-drawer" />
+          <img src="/images/maneesha_logo.PNG" alt="Maneesha Fashion Logo" class="header-logo-drawer" />
           <button @click="toggleDrawer" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         
@@ -105,7 +105,7 @@
     <footer class="app-footer">
       <div class="container footer-grid">
         <div>
-          <img src="/images/logo.PNG" alt="Maneesha Fashion Logo" class="footer-logo" />
+          <img src="/images/maneesha_logo.PNG" alt="Maneesha Fashion Logo" class="footer-logo" />
           <p>Hand-selected elegance for your unique style. Standard premium sizes with Sri Lanka's finest quality.</p>
         </div>
         <div>

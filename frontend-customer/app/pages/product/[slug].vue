@@ -10,9 +10,22 @@
       <!-- Left Visual Preview -->
       <div class="product-gallery glass-panel">
         <div class="main-preview" :style="{ background: product.colorTheme }">
-          <img v-if="product.main_image" :src="product.main_image" :alt="product.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md);" />
+          <img v-if="currentImage" :src="currentImage" :alt="product.name" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-md);" />
           <i v-else class="fa-solid fa-shirt"></i>
         </div>
+        
+        <!-- Thumbnails -->
+        <div v-if="allImages.length > 1" class="gallery-thumbnails">
+          <div 
+            v-for="(img, idx) in allImages" 
+            :key="idx" 
+            :class="['thumbnail', { active: currentImage === img }]"
+            @click="setCurrentImage(img)"
+          >
+            <img :src="img" :alt="product.name + ' ' + idx" />
+          </div>
+        </div>
+
         <div class="preview-highlights">
           <div class="hl-item"><i class="fa-solid fa-gem"></i> Premium Quality</div>
           <div class="hl-item"><i class="fa-solid fa-sheet-plastic"></i> Best Fabrics</div>
@@ -52,12 +65,16 @@
 
 
         <!-- Quantity & Buy Now -->
-        <div class="action-section">
+        <div class="action-section" v-if="activeStock > 0">
           <div class="qty-counter">
             <button @click="changeQty(-1)" class="qty-btn" aria-label="Decrease quantity"><i class="fa-solid fa-minus"></i></button>
             <span class="qty-num">{{ quantity }}</span>
             <button @click="changeQty(1)" class="qty-btn" aria-label="Increase quantity"><i class="fa-solid fa-plus"></i></button>
           </div>
+
+          <button @click="handleAddToCart" class="btn-premium flex-1" style="background: transparent; border: 2px solid var(--primary-gold); color: inherit;">
+            <i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart
+          </button>
 
           <button @click="handleBuyNow" class="btn-premium btn-gold flex-1">
             <i class="fa-solid fa-bolt mr-2"></i> Buy Now
@@ -65,9 +82,29 @@
         </div>
 
         <!-- Stock indicators -->
-        <div class="stock-info">
+        <div v-if="activeStock > 0" class="stock-info">
           <i class="fa-solid fa-circle-check text-success"></i>
-          <span>In stock. Orders dispatched within 3-4 working days.</span>
+          <span>{{ activeStock }} In stock. Orders dispatched within 3-4 working days.</span>
+        </div>
+        <div v-else class="stock-info" style="color: var(--accent-error);">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span style="font-weight: 700;">Out of Stock!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Notification Dialog -->
+    <div :class="['modal-overlay', { open: notifyDialog.isOpen }]" @click.self="closeNotify">
+      <div class="notify-modal">
+        <div class="modal-body text-center py-4">
+          <i v-if="notifyDialog.type === 'success'" class="fa-solid fa-circle-check text-success mb-3" style="font-size: 3rem;"></i>
+          <i v-else class="fa-solid fa-circle-xmark text-danger mb-3" style="font-size: 3rem;"></i>
+          
+          <h4 class="luxury-title mb-2">{{ notifyDialog.title }}</h4>
+          <p class="mb-4">{{ notifyDialog.message }}</p>
+          <div class="flex justify-center">
+            <button @click="closeNotify" class="btn-premium btn-gold">Okay</button>
+          </div>
         </div>
       </div>
     </div>
@@ -126,13 +163,47 @@ const activePrice = computed(() => {
   return variant ? variant.price : product.value.base_price
 })
 
+const activeStock = computed(() => {
+  if (!product.value) return 0
+  const variant = product.value.variants?.find(v => v.size === selectedSize.value)
+  return variant ? variant.stock : product.value.stock
+})
+
 const selectSize = (variant) => {
   selectedSize.value = variant.size
+  const newStock = variant.stock !== undefined ? variant.stock : product.value.stock
+  if (quantity.value > newStock) {
+    quantity.value = newStock > 0 ? newStock : 1
+  }
 }
 
 const changeQty = (val) => {
   const next = quantity.value + val
-  if (next >= 1 && next <= 10) quantity.value = next
+  if (next >= 1 && next <= activeStock.value) quantity.value = next
+}
+
+const notifyDialog = ref({
+  isOpen: false,
+  type: 'success', 
+  title: '',
+  message: '',
+  onClose: null
+})
+
+const openNotify = (type, title, message, onClose = null) => {
+  notifyDialog.value = { isOpen: true, type, title, message, onClose }
+}
+
+const closeNotify = () => {
+  if (notifyDialog.value.onClose) {
+    notifyDialog.value.onClose()
+  }
+  notifyDialog.value.isOpen = false
+}
+
+const handleAddToCart = () => {
+  addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, null)
+  openNotify('success', 'Added to Cart', `${product.value.name} has been added to your cart successfully.`)
 }
 
 const handleBuyNow = () => {
@@ -142,6 +213,24 @@ const handleBuyNow = () => {
 
 const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+// Gallery logic
+const currentImage = ref(product.value?.main_image || '')
+const allImages = computed(() => {
+  if (!product.value) return []
+  const imgs = []
+  if (product.value.main_image) imgs.push(product.value.main_image)
+  if (product.value.gallery_images && Array.isArray(product.value.gallery_images)) {
+    product.value.gallery_images.forEach(img => {
+      imgs.push(img.url)
+    })
+  }
+  return imgs
+})
+
+const setCurrentImage = (imgUrl) => {
+  currentImage.value = imgUrl
 }
 </script>
 
@@ -179,6 +268,41 @@ body.dark-mode .breadcrumb {
   font-size: 8rem;
   color: rgba(255, 255, 255, 0.45);
   box-shadow: inset 0 0 50px rgba(0,0,0,0.1);
+}
+
+.gallery-thumbnails {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  overflow-x: auto;
+  padding-bottom: 5px;
+}
+
+.gallery-thumbnails .thumbnail {
+  width: 70px;
+  height: 90px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.7;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.gallery-thumbnails .thumbnail:hover {
+  opacity: 1;
+}
+
+.gallery-thumbnails .thumbnail.active {
+  opacity: 1;
+  border-color: var(--primary-gold);
+}
+
+.gallery-thumbnails .thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .preview-highlights {
@@ -461,4 +585,49 @@ body.dark-mode .stock-info {
     gap: 12px;
   }
 }
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+.notify-modal {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  width: 90%;
+  max-width: 450px;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+body.dark-mode .notify-modal {
+  background: var(--bg-dark-card);
+  border-color: var(--border-dark);
+}
+.modal-overlay.open .notify-modal {
+  transform: translateY(0);
+}
+.text-success { color: #10b981; }
+.text-danger { color: #ef4444; }
+.py-4 { padding-top: 30px; padding-bottom: 30px; }
+.mb-2 { margin-bottom: 10px; }
+.mb-3 { margin-bottom: 15px; }
+.mb-4 { margin-bottom: 25px; }
+.flex { display: flex; }
+.justify-center { justify-content: center; }
 </style>

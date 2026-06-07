@@ -93,11 +93,19 @@ class ProductController extends Controller
         $data['is_featured']    = $request->input('is_featured', '0') === '1';
         $data['in_hero_slider'] = $request->input('in_hero_slider', '0') === '1';
 
-        // Handle image upload
         if ($request->hasFile('main_image')) {
             $path = $request->file('main_image')->store('images/products', 'public');
             $data['main_image'] = 'storage/' . $path;
         }
+
+        $galleryPaths = [];
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $path = $file->store('images/products', 'public');
+                $galleryPaths[] = 'storage/' . $path;
+            }
+        }
+        $data['gallery_images'] = $galleryPaths;
 
         $slug = \Str::slug($data['name']);
         $data['slug'] = Product::where('slug', $slug)->exists()
@@ -148,6 +156,19 @@ class ProductController extends Controller
             $data['main_image'] = 'storage/' . $path;
         }
 
+        // Handle gallery images
+        $existingGallery = $product->gallery_images ?? [];
+        $retainedGallery = json_decode($request->input('retained_gallery_images', '[]'), true) ?? [];
+        $finalGallery = array_values(array_intersect($existingGallery, $retainedGallery));
+
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $path = $file->store('images/products', 'public');
+                $finalGallery[] = 'storage/' . $path;
+            }
+        }
+        $data['gallery_images'] = $finalGallery;
+
         $product->update($data);
 
         // Sync variants (JSON string from FormData)
@@ -183,6 +204,16 @@ class ProductController extends Controller
             ? url($product->main_image)
             : null;
 
+        $galleryUrls = [];
+        if (is_array($product->gallery_images)) {
+            foreach ($product->gallery_images as $path) {
+                $galleryUrls[] = [
+                    'path' => $path,
+                    'url' => url($path)
+                ];
+            }
+        }
+
         return [
             'id'                => $product->id,
             'name'              => $product->name,
@@ -195,6 +226,7 @@ class ProductController extends Controller
             'base_price'        => (float) $product->base_price,
             'stock'             => $product->stock,
             'main_image'        => $imageUrl,
+            'gallery_images'    => $galleryUrls,
             'fabric'            => $product->fabric,
             'care_instructions' => $product->care_instructions,
             'is_active'         => (bool) $product->is_active,

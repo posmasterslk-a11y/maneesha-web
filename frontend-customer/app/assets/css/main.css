@@ -7,13 +7,13 @@
 
 :root {
   /* Color Palette (Luxury Premium Fashion) */
-  --primary-gold: #d4af37;
-  --primary-gold-dark: #b8901c;
-  --primary-gold-light: #e8d082;
+  --primary-gold: #ff69b4; /* Hot Pink */
+  --primary-gold-dark: #e60073;
+  --primary-gold-light: #ffb3d9;
   
-  --bg-dark: #0b0c0e;
-  --bg-dark-surface: #131518;
-  --bg-dark-border: #212529;
+  --bg-dark: #000000;
+  --bg-dark-surface: #111111;
+  --bg-dark-border: #222222;
   
   --bg-light: #faf9f6;
   --bg-light-surface: #ffffff;
