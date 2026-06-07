@@ -14,7 +14,7 @@
     </UDashboardNavbar>
 
     <UDashboardPanelContent>
-      <UTabs :items="tabs" class="w-full">
+      <UTabs :items="tabs" class="w-full" :unmount="false">
         <!-- Dashboard & Billing Tab -->
         <template #billing="{ item }">
           <div class="p-6 space-y-6">
