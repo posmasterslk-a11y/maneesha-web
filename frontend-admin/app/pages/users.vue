@@ -30,23 +30,30 @@
             <h3 class="text-lg font-semibold">{{ isEditing ? 'Edit User' : 'Create User' }}</h3>
           </template>
 
-          <form @submit.prevent="saveUser" class="space-y-4">
-            <UFormGroup label="Name">
-              <UInput v-model="form.name" required />
-            </UFormGroup>
-            <UFormGroup label="Email">
-              <UInput v-model="form.email" type="email" required />
-            </UFormGroup>
-            <UFormGroup label="Role">
-              <USelect v-model="form.role" :options="roleOptions" required />
-            </UFormGroup>
-            <UFormGroup :label="isEditing ? 'Password (leave blank to keep current)' : 'Password'">
-              <UInput v-model="form.password" type="password" :required="!isEditing" />
-            </UFormGroup>
+          <form @submit.prevent="saveUser" class="flex flex-col gap-5 p-2">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-gray-700 dark:text-gray-200">Full Name</label>
+              <UInput v-model="form.name" required placeholder="John Doe" icon="i-lucide-user" size="md" />
+            </div>
             
-            <div class="flex justify-end gap-2 mt-4">
-              <UButton label="Cancel" color="neutral" variant="ghost" @click="isModalOpen = false" />
-              <UButton type="submit" label="Save" color="primary" :loading="saving" />
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-gray-700 dark:text-gray-200">Email Address</label>
+              <UInput v-model="form.email" type="email" required placeholder="john@example.com" icon="i-lucide-mail" size="md" />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-gray-700 dark:text-gray-200">Account Role</label>
+              <USelect v-model="form.role" :options="roleOptions" required icon="i-lucide-shield" size="md" />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-bold text-gray-700 dark:text-gray-200">{{ isEditing ? 'Password (leave blank to keep current)' : 'Password' }}</label>
+              <UInput v-model="form.password" type="password" :required="!isEditing" placeholder="••••••••" icon="i-lucide-lock" size="md" />
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <UButton label="Cancel" color="gray" variant="soft" @click="isModalOpen = false" class="px-6 font-bold" />
+              <UButton type="submit" :label="isEditing ? 'Save Changes' : 'Create User'" color="primary" :loading="saving" class="px-6 font-bold shadow-md" />
             </div>
           </form>
         </UCard>
