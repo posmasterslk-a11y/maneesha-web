@@ -122,13 +122,18 @@
         <h3 class="luxury-title summary-title">Cart Verification</h3>
         
         <div class="summary-items">
-          <div v-for="(item, idx) in cart" :key="idx" class="summary-item-row">
-            <div>
+          <div v-for="(item, idx) in cart" :key="idx" class="summary-item-row" style="display: flex; justify-content: space-between; align-items: center; padding-right: 5px;">
+            <div style="flex: 1;">
               <strong class="item-name">{{ item.name }}</strong>
               <span class="item-size">{{ item.size }}</span>
               <span class="item-qty">Qty: {{ item.quantity }}</span>
             </div>
-            <strong class="item-total">LKR {{ formatNumber(item.price * item.quantity) }}</strong>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <strong class="item-total">LKR {{ formatNumber(item.price * item.quantity) }}</strong>
+              <button type="button" @click="removeItem(idx)" title="Remove Item" style="background: none; border: none; cursor: pointer; padding: 4px; color: #ef4444; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#fee2e2'" onmouseout="this.style.backgroundColor='transparent'">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -235,6 +240,12 @@ const totalQty = computed(() => {
 const subtotal = computed(() => {
   return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
 })
+
+const removeItem = (index) => {
+  const newCart = [...cart.value]
+  newCart.splice(index, 1)
+  updateCart(newCart)
+}
 
 const handleSlipUpload = (event) => {
   const file = event.target.files[0]
