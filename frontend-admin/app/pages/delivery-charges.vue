@@ -1,6 +1,6 @@
 <template>
-  <UDashboardPage>
-    <UDashboardPanel grow id="delivery-charges">
+  <UDashboardPanel id="delivery-charges">
+    <template #header>
       <UDashboardNavbar title="Delivery Charges">
         <template #leading>
           <UDashboardSidebarCollapse />
@@ -11,9 +11,11 @@
           </UButton>
         </template>
       </UDashboardNavbar>
+    </template>
 
-      <div class="p-4 flex-1 overflow-y-auto">
-        <div class="mb-6">
+    <template #body>
+      <div class="flex flex-col gap-6">
+        <div>
           <p class="text-gray-500 dark:text-gray-400">Manage delivery fees for all 25 districts in Sri Lanka.</p>
         </div>
 
@@ -40,8 +42,8 @@
           </div>
         </UCard>
       </div>
-    </UDashboardPanel>
-  </UDashboardPage>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup>
