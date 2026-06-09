@@ -118,7 +118,7 @@
         <div>
           <h4>Support & Delivery</h4>
           <ul>
-            <li>PayHere Secure Gateway</li>
+            <li>Secure Bank Deposit Integration</li>
           </ul>
         </div>
         <div>
@@ -133,7 +133,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 Maneesha Fashion. All Rights Reserved. Designed for visual excellence. | Web By Codehub Software</p>
+        <p>&copy; 2026 Maneesha Fashion. All Rights Reserved. Designed for visual excellence. | Web By <a href="https://www.facebook.com/profile.php?id=61590317867191" target="_blank" style="color: var(--primary-gold); font-weight: bold; text-decoration: none; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">W E B R I X</a></p>
       </div>
     </footer>
   </div>

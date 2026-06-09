@@ -53,6 +53,7 @@
           <h3 class="luxury-title section-title"><i class="fa-solid fa-credit-card"></i> 2. Payment Channel</h3>
           
           <div class="payment-methods-grid">
+            <!-- PayHere is temporarily disabled until approved
             <label :class="['pay-method-card', { active: orderData.paymentMethod === 'payhere' }]">
               <input type="radio" v-model="orderData.paymentMethod" value="payhere" class="hidden-radio" />
               <div class="pay-card-content">
@@ -63,6 +64,7 @@
                 </div>
               </div>
             </label>
+            -->
 
 
             <label :class="['pay-method-card', { active: orderData.paymentMethod === 'bank_deposit' }]">
@@ -146,12 +148,14 @@
           </div>
           <div class="row">
             <span>Delivery Fee</span>
-            <span class="text-success font-bold">FREE</span>
+            <span :class="{'text-success font-bold': deliveryFee === 0}">
+              {{ deliveryFee === 0 ? 'FREE' : 'LKR ' + formatNumber(deliveryFee) }}
+            </span>
           </div>
           <hr class="divider" />
           <div class="row grand-row total-highlight-box">
             <span>Total Payable</span>
-            <span class="gold-gradient-text">LKR {{ formatNumber(subtotal) }}</span>
+            <span class="gold-gradient-text">LKR {{ formatNumber(grandTotal) }}</span>
           </div>
         </div>
       </div>
@@ -184,7 +188,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -230,7 +234,7 @@ const orderData = ref({
   address: '',
   district: '',
   postal: '',
-  paymentMethod: 'payhere'
+  paymentMethod: 'bank_deposit'
 })
 
 const totalQty = computed(() => {
@@ -239,6 +243,24 @@ const totalQty = computed(() => {
 
 const subtotal = computed(() => {
   return cart.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+})
+
+const deliveryCharges = ref({})
+
+const deliveryFee = computed(() => {
+  if (!orderData.value.district) return 0
+  return deliveryCharges.value[orderData.value.district] ?? 300
+})
+
+const grandTotal = computed(() => subtotal.value + deliveryFee.value)
+
+onMounted(async () => {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/api/settings/delivery-charges')
+    deliveryCharges.value = await res.json()
+  } catch (err) {
+    console.error('Failed to load delivery charges', err)
+  }
 })
 
 const removeItem = (index) => {
@@ -268,7 +290,7 @@ const placeOrder = async () => {
 
   if (orderData.value.paymentMethod === 'payhere') {
     try {
-      const formattedAmount = Number(subtotal.value).toFixed(2);
+      const formattedAmount = Number(grandTotal.value).toFixed(2);
       const response = await fetch('http://127.0.0.1:8000/api/payhere/hash', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -344,7 +366,7 @@ const completeOrderLocally = async (orderId) => {
         district: orderData.value.district,
         postal_code: orderData.value.postal,
         payment_method: orderData.value.paymentMethod,
-        total_amount: subtotal.value,
+        total_amount: grandTotal.value,
         bank_slip: slipPreviewUrl.value || null,
         items: cart.value.map(item => ({
           id: item.id,

@@ -52,6 +52,11 @@ const links = computed(() => {
       icon: 'i-lucide-message-square',
       to: '/sms',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'Delivery Charges',
+      icon: 'i-lucide-truck',
+      to: '/delivery-charges',
+      onSelect: () => { open.value = false }
     })
   }
 

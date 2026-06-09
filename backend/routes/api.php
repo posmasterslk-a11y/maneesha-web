@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PayHereController;
 use App\Http\Controllers\HeroSlideController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SettingController;
 
 // ── Public: Auth ───────────────────────────────────────────────────────────
 Route::post('/admin/login',  [AuthController::class, 'adminLogin']);
@@ -18,6 +19,9 @@ Route::get('/products',            [ProductController::class, 'index']);
 Route::get('/products/popular',    [ProductController::class, 'popular']);
 Route::get('/products/{slug}',     [ProductController::class, 'show']);
 Route::get('/hero-slides',         [HeroSlideController::class, 'index']);
+
+// ── Public: Settings ──────────────────────────────────────────────────────
+Route::get('/settings/delivery-charges', [SettingController::class, 'getDeliveryCharges']);
 
 // ── Public: Checkout & PayHere IPN ────────────────────────────────────────
 Route::post('/checkout/order',     [OrderController::class, 'placeOrder']);
@@ -62,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // SMS & Settings
     Route::get('/admin/sms/settings',        [\App\Http\Controllers\SmsController::class, 'getSettings']);
     Route::post('/admin/sms/settings',       [\App\Http\Controllers\SmsController::class, 'updateSettings']);
+    Route::post('/admin/settings/delivery-charges', [SettingController::class, 'saveDeliveryCharges']);
     Route::get('/admin/sms/logs',            [\App\Http\Controllers\SmsController::class, 'getLogs']);
     Route::get('/admin/sms/billing',         [\App\Http\Controllers\SmsController::class, 'getBillingSummary']);
     Route::post('/admin/sms/promotional',    [\App\Http\Controllers\SmsController::class, 'sendPromotional']);

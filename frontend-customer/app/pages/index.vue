@@ -112,10 +112,10 @@
               </div>
             </div>
             <div class="hl-item">
-              <i class="fa-solid fa-wallet"></i>
+              <i class="fa-solid fa-building-columns"></i>
               <div>
-                <h5>PayHere Integration</h5>
-                <p>Secure online gateways or simple cash on delivery.</p>
+                <h5>Secure Bank Deposit</h5>
+                <p>Direct bank transfers for your convenience.</p>
               </div>
             </div>
           </div>

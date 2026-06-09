@@ -61,35 +61,70 @@ class OrderController extends Controller
             $status = 'confirmed';
         }
 
-        // Save Order
-        $order = Order::create([
-            'order_number' => $orderNumber,
-            'customer_name' => $request->customer_name,
-            'customer_phone' => $request->phone,
-            'customer_email' => $request->email,
-            'customer_address' => $request->address,
-            'customer_city' => $request->district,
-            'customer_postal_code' => $request->postal_code,
-            'subtotal' => $request->total_amount, // Simplified, you could compute from items
-            'total' => $request->total_amount,
-            'payment_method' => $request->payment_method,
-            'payment_status' => $paymentStatus,
-            'status' => $status,
-            'bank_slip_path' => $slipPath,
-        ]);
+        try {
+            $order = \Illuminate\Support\Facades\DB::transaction(function () use ($request, $orderNumber, $status, $paymentStatus, $slipPath) {
+                // Lock rows for stock verification
+                foreach ($request->items as $item) {
+                    $productId = $item['id'] ?? null;
+                    $quantity = $item['quantity'] ?? 1;
+                    if ($productId) {
+                        $product = \App\Models\Product::where('id', $productId)->lockForUpdate()->first();
+                        if ($product && $product->stock < $quantity) {
+                            throw new \Exception("Out of stock: Only {$product->stock} remaining for {$product->name}.");
+                        }
+                    }
+                }
 
-        // Save Order Items
-        foreach ($request->items as $item) {
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['id'] ?? null,
-                'product_name' => $item['name'],
-                'size' => $item['size'] ?? 'Standard',
-                'unit_price' => $item['price'],
-                'quantity' => $item['quantity'],
-                'subtotal' => $item['price'] * $item['quantity'],
-                'product_image' => $item['image'] ?? null,
-            ]);
+                // Save Order
+                $order = Order::create([
+                    'order_number' => $orderNumber,
+                    'customer_name' => $request->customer_name,
+                    'customer_phone' => $request->phone,
+                    'customer_email' => $request->email,
+                    'customer_address' => $request->address,
+                    'customer_city' => $request->district,
+                    'customer_postal_code' => $request->postal_code,
+                    'subtotal' => $request->total_amount, // Simplified
+                    'total' => $request->total_amount,
+                    'payment_method' => $request->payment_method,
+                    'payment_status' => $paymentStatus,
+                    'status' => $status,
+                    'bank_slip_path' => $slipPath,
+                ]);
+
+                // Save Order Items & Deduct Stock
+                foreach ($request->items as $item) {
+                    $productId = $item['id'] ?? null;
+                    $quantity = $item['quantity'] ?? 1;
+
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $productId,
+                        'product_name' => $item['name'],
+                        'size' => $item['size'] ?? 'Standard',
+                        'unit_price' => $item['price'],
+                        'quantity' => $quantity,
+                        'subtotal' => $item['price'] * $quantity,
+                        'product_image' => $item['image'] ?? null,
+                    ]);
+
+                    // Auto-deduct stock
+                    if ($productId) {
+                        $product = \App\Models\Product::find($productId);
+                        if ($product) {
+                            $product->stock = max(0, $product->stock - $quantity);
+                            $product->save();
+                        }
+                    }
+                }
+
+                return $order;
+            });
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
         }
 
         Log::info("Order successfully registered: #{$orderNumber}");
