@@ -15,7 +15,7 @@
             <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
             <div>
               <h3>Phone</h3>
-              <p>+94 77 123 4567</p>
+              <p>076 153 7772</p>
             </div>
           </div>
           
@@ -31,7 +31,7 @@
             <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
             <div>
               <h3>Headquarters</h3>
-              <p>123 Fashion Avenue,<br>Colombo 07, Sri Lanka</p>
+              <p>No 78/1 Senanayake Rd,<br>North Seeduwa, Seeduwa</p>
             </div>
           </div>
           

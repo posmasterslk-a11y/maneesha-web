@@ -128,8 +128,9 @@
         </div>
         <div>
           <h4>Contact & Location</h4>
-          <p><i class="fa-solid fa-phone"></i> +94 77 123 4567</p>
+          <p><i class="fa-solid fa-phone"></i> 076 153 7772</p>
           <p><i class="fa-solid fa-envelope"></i> info@maneeshafashion.lk</p>
+          <p style="margin-top: 5px;"><i class="fa-solid fa-location-dot"></i> No 78/1 Senanayake Rd, North Seeduwa, Seeduwa</p>
           <div class="social-links mt-4" style="margin-top: 15px;">
             <a href="https://www.facebook.com/manishafashion/" target="_blank" aria-label="Facebook" style="display: inline-block; padding: 5px; color: var(--primary-gold); transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
               <i class="fa-brands fa-facebook" style="font-size: 1.8rem;"></i>
