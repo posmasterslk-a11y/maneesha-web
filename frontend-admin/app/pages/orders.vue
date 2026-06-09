@@ -362,6 +362,33 @@ const openConfirm = (message, onConfirm) => {
   confirmDialog.value = { isOpen: true, message, onConfirm }
 }
 
+const viewSlip = async (id) => {
+  try {
+    const r = await fetch(`${API}/admin/orders/${id}/view-slip`, { headers: authHeaders() });
+    if (!r.ok) throw new Error('Failed to view slip');
+    const blob = await r.blob();
+    window.open(URL.createObjectURL(blob), '_blank');
+  } catch (e) {
+    alert('Failed to view slip');
+  }
+}
+
+const downloadSlip = async (id) => {
+  try {
+    const r = await fetch(`${API}/admin/orders/${id}/download-slip`, { headers: authHeaders() });
+    if (!r.ok) throw new Error('Failed to download slip');
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `slip-${id}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert('Failed to download slip');
+  }
+}
+
 const closeConfirm = () => {
   confirmDialog.value.isOpen = false
 }

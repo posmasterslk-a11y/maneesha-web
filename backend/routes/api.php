@@ -26,8 +26,6 @@ Route::get('/settings/delivery-charges', [SettingController::class, 'getDelivery
 // ── Public: Checkout & PayHere IPN ────────────────────────────────────────
 Route::post('/checkout/order',     [OrderController::class, 'placeOrder']);
 Route::get('/track-orders',        [OrderController::class, 'trackOrders']);
-Route::get('/orders/{id}/view-slip',    [OrderController::class, 'viewSlip']);
-Route::get('/orders/{id}/download-slip',[OrderController::class, 'downloadSlip']);
 Route::post('/payhere/ipn',        [PayHereController::class, 'handleIpn']);
 Route::post('/payhere/hash',       [PayHereController::class, 'generateHash']);
 
@@ -59,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/orders/stats',        [OrderController::class, 'orderStats']);
     Route::put('/admin/orders/{id}/status',  [OrderController::class, 'updateOrderStatus']);
     Route::get('/admin/dashboard/stats',     [OrderController::class, 'dashboardStats']);
+    Route::get('/admin/orders/{id}/view-slip',    [OrderController::class, 'viewSlip']);
+    Route::get('/admin/orders/{id}/download-slip',[OrderController::class, 'downloadSlip']);
 
     // Admin Hero Slides
     Route::get('/hero-slides',         [HeroSlideController::class, 'adminIndex']);
