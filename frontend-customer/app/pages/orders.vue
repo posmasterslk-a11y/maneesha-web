@@ -110,7 +110,7 @@ const loadOrders = async () => {
   
   isLoading.value = true;
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/track-orders?order_id=${encodeURIComponent(trackingId.value)}`);
+    const res = await fetch(`https://api-maneesha.posmasters.lk/api/track-orders?order_id=${encodeURIComponent(trackingId.value)}`);
     if (res.ok) {
       const data = await res.json();
       

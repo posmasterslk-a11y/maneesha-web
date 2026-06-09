@@ -256,7 +256,7 @@ const grandTotal = computed(() => subtotal.value + deliveryFee.value)
 
 onMounted(async () => {
   try {
-    const res = await fetch('http://127.0.0.1:8000/api/settings/delivery-charges')
+    const res = await fetch('https://api-maneesha.posmasters.lk/api/settings/delivery-charges')
     deliveryCharges.value = await res.json()
   } catch (err) {
     console.error('Failed to load delivery charges', err)
@@ -291,7 +291,7 @@ const placeOrder = async () => {
   if (orderData.value.paymentMethod === 'payhere') {
     try {
       const formattedAmount = Number(grandTotal.value).toFixed(2);
-      const response = await fetch('http://127.0.0.1:8000/api/payhere/hash', {
+      const response = await fetch('https://api-maneesha.posmasters.lk/api/payhere/hash', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -317,7 +317,7 @@ const placeOrder = async () => {
         "merchant_id": data.merchant_id, 
         "return_url": window.location.origin + "/orders",
         "cancel_url": window.location.origin + "/checkout",
-        "notify_url": "http://127.0.0.1:8000/api/payhere/ipn",
+        "notify_url": "https://api-maneesha.posmasters.lk/api/payhere/ipn",
         "order_id": orderIdStr,
         "items": "Maneesha Fashion Clothing",
         "amount": formattedAmount,
@@ -378,7 +378,7 @@ const completeOrderLocally = async (orderId) => {
         }))
       };
 
-      const response = await fetch('http://127.0.0.1:8000/api/checkout/order', {
+      const response = await fetch('https://api-maneesha.posmasters.lk/api/checkout/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

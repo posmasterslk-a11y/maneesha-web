@@ -393,7 +393,7 @@
                 </div>
                 
                 <div class="bg-gray-100/50 dark:bg-gray-800/50 rounded-xl p-2 flex justify-center border border-gray-200/50 dark:border-gray-700/50 min-h-[200px] relative group">
-                  <img v-if="selectedOrder?.bank_slip_path" :src="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/view-slip'" alt="Receipt" class="max-w-full max-h-[300px] object-contain rounded-lg shadow-sm" />
+                  <img v-if="selectedOrder?.bank_slip_path" :src="'https://api-maneesha.posmasters.lk/api/orders/' + selectedOrder.id + '/view-slip'" alt="Receipt" class="max-w-full max-h-[300px] object-contain rounded-lg shadow-sm" />
                   <div v-else class="flex flex-col items-center justify-center text-gray-400">
                     <UIcon name="i-lucide-image-off" class="w-10 h-10 mb-2 opacity-50" />
                     <span class="font-semibold text-xs">No slip uploaded</span>
@@ -402,7 +402,7 @@
               </div>
               
               <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-between bg-gray-50/50 dark:bg-gray-800/50">
-                <UButton v-if="selectedOrder?.bank_slip_path" :to="'http://127.0.0.1:8000/api/orders/' + selectedOrder.id + '/download-slip'" target="_blank" icon="i-lucide-download" color="gray" variant="solid" class="rounded-lg font-bold text-[10px]" size="sm">Download</UButton>
+                <UButton v-if="selectedOrder?.bank_slip_path" :to="'https://api-maneesha.posmasters.lk/api/orders/' + selectedOrder.id + '/download-slip'" target="_blank" icon="i-lucide-download" color="gray" variant="solid" class="rounded-lg font-bold text-[10px]" size="sm">Download</UButton>
                 <div v-else></div>
                 <div class="flex gap-2">
                   <UButton color="gray" variant="ghost" @click="closeSlipModal" class="rounded-lg font-bold text-[10px]" size="sm">Close</UButton>
@@ -494,7 +494,7 @@ const loadDashboardStats = async () => {
 const updateStatus = (order, newStatus) => {
   openConfirm(`Change order #${order.order_number} to '${newStatus}'?`, async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/admin/orders/${order.id}/status`, {
+      const res = await fetch(`https://api-maneesha.posmasters.lk/api/admin/orders/${order.id}/status`, {
         method: 'PUT',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
