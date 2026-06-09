@@ -113,12 +113,17 @@
           <ul>
             <li><NuxtLink to="/shop">All Clothing</NuxtLink></li>
             <li><NuxtLink to="/orders">Order Tracking</NuxtLink></li>
+            <li><NuxtLink to="/about">About Us</NuxtLink></li>
+            <li><NuxtLink to="/contact">Contact Us</NuxtLink></li>
           </ul>
         </div>
         <div>
           <h4>Support & Delivery</h4>
           <ul>
             <li>Secure Bank Deposit Integration</li>
+            <li><NuxtLink to="/privacy">Privacy Policy</NuxtLink></li>
+            <li><NuxtLink to="/terms">Terms & Conditions</NuxtLink></li>
+            <li><NuxtLink to="/returns">Return Policy</NuxtLink></li>
           </ul>
         </div>
         <div>
