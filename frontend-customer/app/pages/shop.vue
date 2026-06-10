@@ -38,7 +38,7 @@
       <div v-for="prod in products" :key="prod.id" class="product-card glass-panel">
         <div class="product-img-wrapper">
           <div class="product-tag" v-if="prod.is_featured">Featured</div>
-          <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" loading="lazy" />
+          <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="product-real-img" />
           <div v-else class="product-visual-placeholder">
             <i class="fa-solid fa-shirt"></i>
           </div>

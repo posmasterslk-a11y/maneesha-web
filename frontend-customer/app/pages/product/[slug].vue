@@ -145,7 +145,7 @@ if (product.value) {
       { name: 'description', content: product.value.short_description || product.value.description },
       { property: 'og:title', content: `${product.value.name} - Maneesha Fashion` },
       { property: 'og:description', content: product.value.short_description || product.value.description },
-      { property: 'og:image', content: product.value.main_image }
+      { property: 'og:image', content: product.value.main_image ? product.value.main_image.replace('http://', 'https://') : '' }
     ]
   })
 }
@@ -216,14 +216,14 @@ const formatNumber = (num) => {
 }
 
 // Gallery logic
-const currentImage = ref(product.value?.main_image || '')
+const currentImage = ref(product.value?.main_image ? product.value.main_image.replace('http://', 'https://') : '')
 const allImages = computed(() => {
   if (!product.value) return []
   const imgs = []
-  if (product.value.main_image) imgs.push(product.value.main_image)
+  if (product.value.main_image) imgs.push(product.value.main_image.replace('http://', 'https://'))
   if (product.value.gallery_images && Array.isArray(product.value.gallery_images)) {
     product.value.gallery_images.forEach(img => {
-      imgs.push(img.url)
+      imgs.push(img.url.replace('http://', 'https://'))
     })
   }
   return imgs
