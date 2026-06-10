@@ -237,6 +237,7 @@ const setCurrentImage = (imgUrl) => {
 <style scoped>
 .breadcrumb {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
@@ -577,12 +578,20 @@ body.dark-mode .stock-info {
 
 @media (max-width: 768px) {
   .product-config {
-    padding: 24px;
+    padding: 24px 15px;
+  }
+  
+  .product-gallery {
+    padding: 24px 15px;
   }
   
   .form-inputs-row {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  
+  .action-section {
+    flex-direction: column;
   }
 }
 
