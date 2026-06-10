@@ -46,7 +46,7 @@
           <div class="product-img-wrapper">
             <div class="product-tag" v-if="prod.is_featured">Featured</div>
             <!-- Real image or fallback gradient -->
-            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" />
+            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" loading="lazy" />
             <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">
               <i class="fa-solid fa-shirt"></i>
             </div>
@@ -162,7 +162,7 @@
           <div class="product-img-wrapper">
             <div class="product-tag" v-if="prod.views > 0"><i class="fa-solid fa-fire text-orange-500 mr-1"></i> {{ prod.views }} Views</div>
             <!-- Real image or fallback gradient -->
-            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" />
+            <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" loading="lazy" />
             <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">
               <i class="fa-solid fa-shirt"></i>
             </div>
@@ -750,6 +750,17 @@ body.dark-mode .story-text p {
   
   .hero-content {
     padding: 40px 20px;
+  }
+  
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+  }
+  
+  .hero-ctas .btn-premium {
+    width: 100%;
+    text-align: center;
   }
   
   .stitching-story {

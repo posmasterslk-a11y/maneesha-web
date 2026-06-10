@@ -455,6 +455,17 @@ body.dark-mode .empty-orders p {
 }
 
 @media (max-width: 768px) {
+  .track-input-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .track-input {
+    width: 100%;
+  }
+  .track-input-group .btn-premium {
+    width: 100%;
+  }
+
   .order-card {
     padding: 24px 15px;
   }

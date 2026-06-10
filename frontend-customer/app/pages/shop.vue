@@ -38,7 +38,7 @@
       <div v-for="prod in products" :key="prod.id" class="product-card glass-panel">
         <div class="product-img-wrapper">
           <div class="product-tag" v-if="prod.is_featured">Featured</div>
-          <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" />
+          <img v-if="prod.main_image" :src="prod.main_image" :alt="prod.name" class="product-real-img" loading="lazy" />
           <div v-else class="product-visual-placeholder">
             <i class="fa-solid fa-shirt"></i>
           </div>
@@ -341,5 +341,19 @@ body.dark-mode .empty-catalog p {
   display: flex;
   justify-content: center;
   margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  .search-box {
+    max-width: 100%;
+  }
+  .category-filters {
+    justify-content: center;
+  }
 }
 </style>
