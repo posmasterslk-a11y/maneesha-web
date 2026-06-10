@@ -70,7 +70,8 @@ const handleLogin = async () => {
       errorMsg.value = data.message || 'Invalid email or password.'
     }
   } catch (e) {
-    errorMsg.value = 'Cannot connect to server. Make sure backend is running on port 8000.'
+    console.error(e)
+    errorMsg.value = 'Error: ' + e.message + ' (Check console for details)'
   }
 
   isLoading.value = false
