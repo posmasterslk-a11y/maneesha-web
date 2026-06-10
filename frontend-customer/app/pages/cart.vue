@@ -422,15 +422,40 @@ body.dark-mode .empty-cart p {
     padding: 20px 15px;
   }
   
-  .cart-item-row {
-    grid-template-columns: 1fr;
-    text-align: center;
-    justify-items: center;
-    gap: 12px;
+  .cart-summary {
+    padding: 24px 15px;
   }
   
+  .cart-item-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 15px;
+    position: relative;
+  }
+
+  .item-visual-preview {
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+  }
+  
+  .remove-btn {
+    position: absolute;
+    top: 15px;
+    right: 0;
+  }
+  
+  .item-qty-actions {
+    width: 100%;
+  }
+
   .item-total-price {
-    text-align: center;
+    width: 100%;
+    text-align: left;
+    font-size: 1.2rem;
+    color: var(--primary-gold);
   }
 }
 </style>
