@@ -81,19 +81,22 @@
 
           <!-- Bank details panel + Slip Upload Input (Visible only if 'bank_deposit' is chosen) -->
           <div v-if="orderData.paymentMethod === 'bank_deposit'" class="bank-details-panel animate-fade-up">
-            <h5>Maneesha Fashion Bank Credentials</h5>
-            <div class="bank-account-list">
-              <div class="bank-row">
-                <strong>Bank:</strong> Commercial Bank PLC
-              </div>
-              <div class="bank-row">
-                <strong>Account Name:</strong> Maneesha Fashion Store
-              </div>
-              <div class="bank-row">
-                <strong>Account Number:</strong> 100023456789
-              </div>
-              <div class="bank-row">
-                <strong>Branch:</strong> Nugegoda Branch
+            <h5 style="text-align: center; margin-bottom: 20px; font-size: 1.2rem;">Bank Accounts</h5>
+            <div class="bank-account-list" style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+              <div v-if="bankAccounts.length === 0" class="w-full text-center py-4">Loading bank accounts...</div>
+              <div class="bank-card" v-for="bank in bankAccounts" :key="bank.id" style="flex: 1; min-width: 200px; padding: 15px; border: 1px solid var(--primary-gold-light); border-radius: 8px; background: rgba(212,175,55,0.02);">
+                <div class="bank-row" style="margin-bottom: 10px;">
+                  <strong style="font-size: 1.1em; color: var(--primary-gold);">{{ bank.bank_name }}</strong>
+                </div>
+                <div class="bank-row">
+                  <strong>Account Number:</strong> {{ bank.account_number }}
+                </div>
+                <div class="bank-row">
+                  <strong>Account Name:</strong> {{ bank.account_name }}
+                </div>
+                <div class="bank-row">
+                  <strong>Branch:</strong> {{ bank.branch }}
+                </div>
               </div>
             </div>
 
@@ -246,6 +249,7 @@ const subtotal = computed(() => {
 })
 
 const deliveryCharges = ref({})
+const bankAccounts = ref([])
 
 const deliveryFee = computed(() => {
   if (!orderData.value.district) return 0
@@ -260,6 +264,13 @@ onMounted(async () => {
     deliveryCharges.value = await res.json()
   } catch (err) {
     console.error('Failed to load delivery charges', err)
+  }
+
+  try {
+    const resBanks = await fetch('https://api-maneesha.posmasters.lk/api/bank-accounts')
+    bankAccounts.value = await resBanks.json()
+  } catch (err) {
+    console.error('Failed to load bank accounts', err)
   }
 })
 

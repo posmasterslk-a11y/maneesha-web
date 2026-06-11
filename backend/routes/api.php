@@ -9,7 +9,7 @@ use App\Http\Controllers\PayHereController;
 use App\Http\Controllers\HeroSlideController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
-
+use App\Http\Controllers\BankAccountController;
 // ── Public: Auth ───────────────────────────────────────────────────────────
 Route::post('/admin/login',  [AuthController::class, 'adminLogin']);
 
@@ -22,6 +22,7 @@ Route::get('/hero-slides',         [HeroSlideController::class, 'index']);
 
 // ── Public: Settings ──────────────────────────────────────────────────────
 Route::get('/settings/delivery-charges', [SettingController::class, 'getDeliveryCharges']);
+Route::get('/bank-accounts',       [BankAccountController::class, 'index']);
 
 // ── Public: Checkout & PayHere IPN ────────────────────────────────────────
 Route::post('/checkout/order',     [OrderController::class, 'placeOrder']);
@@ -73,4 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/hero-slides',        [HeroSlideController::class, 'store']);
     Route::put('/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
     Route::delete('/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
+
+    // Bank Accounts
+    Route::get('/admin/bank-accounts',       [BankAccountController::class, 'adminIndex']);
+    Route::post('/admin/bank-accounts',      [BankAccountController::class, 'store']);
+    Route::put('/admin/bank-accounts/{id}',  [BankAccountController::class, 'update']);
+    Route::delete('/admin/bank-accounts/{id}',[BankAccountController::class, 'destroy']);
+    Route::put('/admin/bank-accounts/{id}/toggle',[BankAccountController::class, 'toggleActive']);
 });

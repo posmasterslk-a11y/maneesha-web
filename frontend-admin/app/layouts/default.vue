@@ -57,6 +57,11 @@ const links = computed(() => {
       icon: 'i-lucide-truck',
       to: '/delivery-charges',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'Bank Accounts',
+      icon: 'i-lucide-building-2',
+      to: '/bank-accounts',
+      onSelect: () => { open.value = false }
     })
   }
 
