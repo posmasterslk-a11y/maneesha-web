@@ -208,12 +208,16 @@
                           <UInput v-model.number="v.price" type="number" min="0" required />
                         </UFormField>
                         <UFormField label="Stock" class="flex-1">
-                          <UInput v-model.number="v.stock" type="number" min="0" required />
+                          <UInput v-model.number="v.stock" type="number" min="0" :max="formData.stock" required />
                         </UFormField>
                         <div class="pt-6">
                           <UButton color="red" variant="ghost" icon="i-lucide-x" @click="removeVariant(idx)" />
                         </div>
                       </div>
+                      <p v-if="formData.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) > formData.stock" class="text-sm text-red-500 font-semibold mt-2 bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                        <UIcon name="i-lucide-alert-triangle" class="w-4 h-4 inline-block align-text-bottom mr-1" />
+                        Warning: Total sizes stock ({{ formData.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0) }}) exceeds the Total Product Stock ({{ formData.stock }}). Please adjust.
+                      </p>
                       <p v-if="!formData.variants.length" class="text-sm text-gray-500 italic mt-2">No size variants added. Add at least one size.</p>
                     </div>
                   </div>
@@ -240,7 +244,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 
 const config = useRuntimeConfig()
 const API = config.public.apiBase
@@ -268,13 +272,13 @@ const galleryPreviews = ref([]) // Array of objects: { url, isNew, path? }
 const retainedGallery = ref([]) // Array of paths from existing images
 
 const defaultVariants = () => [
-  { size: 'XS',     price: 0, stock: 5  },
-  { size: 'S',      price: 0, stock: 10 },
-  { size: 'M',      price: 0, stock: 10 },
-  { size: 'L',      price: 0, stock: 8  },
-  { size: 'XL',     price: 0, stock: 5  },
-  { size: 'XXL',    price: 0, stock: 3  },
-  { size: 'Custom', price: 0, stock: 99 },
+  { size: 'XS',     price: 0, stock: 0 },
+  { size: 'S',      price: 0, stock: 0 },
+  { size: 'M',      price: 0, stock: 0 },
+  { size: 'L',      price: 0, stock: 0 },
+  { size: 'XL',     price: 0, stock: 0 },
+  { size: 'XXL',    price: 0, stock: 0 },
+  { size: 'Custom', price: 0, stock: 0 },
 ]
 
 const formData = ref({
@@ -283,6 +287,12 @@ const formData = ref({
   care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
   main_image: '', variants: defaultVariants()
 })
+
+watch(formData, (newVal) => {
+  if (!isEditing.value) {
+    localStorage.setItem('maneesha-product-draft', JSON.stringify(newVal))
+  }
+}, { deep: true })
 
 // ── API Helpers ────────────────────────────────────────────────────────────
 const authHeaders = () => ({
@@ -375,11 +385,25 @@ const openAddModal = () => {
   galleryFiles.value = []
   galleryPreviews.value = []
   retainedGallery.value = []
-  formData.value = {
-    name: '', category_id: '', base_price: 2000, stock: 0,
-    short_description: '', description: '', fabric: '',
-    care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
-    main_image: '', variants: defaultVariants()
+  const draft = localStorage.getItem('maneesha-product-draft')
+  if (draft) {
+    try {
+      formData.value = JSON.parse(draft)
+    } catch(e) {
+      formData.value = {
+        name: '', category_id: '', base_price: 2000, stock: 0,
+        short_description: '', description: '', fabric: '',
+        care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
+        main_image: '', variants: defaultVariants()
+      }
+    }
+  } else {
+    formData.value = {
+      name: '', category_id: '', base_price: 2000, stock: 0,
+      short_description: '', description: '', fabric: '',
+      care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
+      main_image: '', variants: defaultVariants()
+    }
   }
   errorMsg.value = ''
   isModalOpen.value = true
@@ -433,13 +457,20 @@ const closeModal = () => {
 }
 
 // ── Variants ───────────────────────────────────────────────────────────────
-const addVariant    = () => formData.value.variants.push({ size: '', price: formData.value.base_price, stock: 5 })
+const addVariant    = () => formData.value.variants.push({ size: '', price: formData.value.base_price, stock: 0 })
 const removeVariant = (idx) => formData.value.variants.splice(idx, 1)
 
 // ── Save ───────────────────────────────────────────────────────────────────
 const saveProduct = async () => {
   saving.value   = true
   errorMsg.value = ''
+
+  const totalVariantStock = formData.value.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)
+  if (totalVariantStock > formData.value.stock) {
+    errorMsg.value = `Total size variants stock (${totalVariantStock}) cannot exceed the Total Stock (${formData.value.stock}).`
+    saving.value = false
+    return
+  }
 
   try {
     // Build FormData for multipart (required for image upload)
@@ -484,6 +515,9 @@ const saveProduct = async () => {
     }
 
     await fetchProducts(currentPage.value)
+    if (!isEditing.value) {
+      localStorage.removeItem('maneesha-product-draft')
+    }
     closeModal()
   } catch (e) {
     errorMsg.value = 'Failed to save product.'

@@ -11,7 +11,12 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $query = Category::where('is_active', true)
-            ->withCount('products')
+            ->whereHas('products', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->withCount(['products' => function ($q) {
+                $q->where('is_active', true);
+            }])
             ->orderBy('sort_order');
 
         if ($request->query('featured')) {
@@ -38,12 +43,15 @@ class CategoryController extends Controller
     /** POST /api/admin/categories */
     public function store(Request $request)
     {
+        \Log::info('Store category', ['hasFile' => $request->hasFile('size_chart_image'), 'all' => $request->all()]);
+        
         $data = $request->validate([
             'name'        => 'required|string|max:100',
             'description' => 'nullable|string',
             'is_active'   => 'boolean',
             'is_featured' => 'boolean',
             'sort_order'  => 'integer',
+            'size_chart_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $data['slug'] = \Str::slug($data['name']) . '-' . uniqid();
@@ -54,6 +62,10 @@ class CategoryController extends Controller
             $data['slug'] = $cleanSlug;
         }
 
+        if ($request->hasFile('size_chart_image')) {
+            $data['size_chart_image'] = $request->file('size_chart_image')->store('size_charts', 'public');
+        }
+
         $category = Category::create($data);
 
         return response()->json($category, 201);
@@ -62,6 +74,7 @@ class CategoryController extends Controller
     /** PUT /api/admin/categories/{id} */
     public function update(Request $request, $id)
     {
+        \Log::info('Update category payload', $request->all());
         $category = Category::findOrFail($id);
 
         $data = $request->validate([
@@ -70,6 +83,7 @@ class CategoryController extends Controller
             'is_active'   => 'boolean',
             'is_featured' => 'boolean',
             'sort_order'  => 'integer',
+            'size_chart_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         if (isset($data['name'])) {
@@ -77,6 +91,13 @@ class CategoryController extends Controller
             if (! Category::where('slug', $newSlug)->where('id', '!=', $id)->exists()) {
                 $data['slug'] = $newSlug;
             }
+        }
+
+        if ($request->hasFile('size_chart_image')) {
+            if ($category->size_chart_image) {
+                \Storage::disk('public')->delete($category->size_chart_image);
+            }
+            $data['size_chart_image'] = $request->file('size_chart_image')->store('size_charts', 'public');
         }
 
         $category->update($data);
@@ -88,6 +109,11 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
+        
+        if ($category->size_chart_image) {
+            \Storage::disk('public')->delete($category->size_chart_image);
+        }
+        
         $category->delete();
 
         return response()->json(['message' => 'Category deleted.']);

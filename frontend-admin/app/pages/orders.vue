@@ -156,14 +156,14 @@
                 { id: 'product_name', header: 'Product' },
                 { id: 'size', header: 'Size' },
                 { id: 'quantity', header: 'Qty' },
-                { id: 'price', header: 'Price' },
+                { id: 'unit_price', header: 'Price' },
                 { id: 'total', header: 'Total' }
               ]">
-                <template #price-cell="{ row }">
-                  LKR {{ formatNumber(row.original.price) }}
+                <template #unit_price-cell="{ row }">
+                  LKR {{ formatNumber(row.original.unit_price) }}
                 </template>
                 <template #total-cell="{ row }">
-                  <span class="font-bold">LKR {{ formatNumber(row.original.price * row.original.quantity) }}</span>
+                  <span class="font-bold">LKR {{ formatNumber(row.original.subtotal || (row.original.unit_price * row.original.quantity)) }}</span>
                 </template>
                 <template #product_name-cell="{ row }">
                   {{ row.original.product_name }}

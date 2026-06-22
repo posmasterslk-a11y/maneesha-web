@@ -18,6 +18,15 @@ Route::get('/categories',          [CategoryController::class, 'index']);
 Route::get('/products',            [ProductController::class, 'index']);
 Route::get('/products/popular',    [ProductController::class, 'popular']);
 Route::get('/products/{slug}',     [ProductController::class, 'show']);
+
+Route::get('/run-migrations', function () {
+    try {
+        \Artisan::call('migrate', ['--force' => true]);
+        return response()->json(['status' => 'success', 'message' => 'Migrations ran successfully!', 'output' => \Artisan::output()]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+});
 Route::get('/hero-slides',         [HeroSlideController::class, 'index']);
 
 // ── Public: Settings ──────────────────────────────────────────────────────
@@ -45,6 +54,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/categories',         [CategoryController::class, 'store']);
     Route::put('/admin/categories/{id}',     [CategoryController::class, 'update']);
     Route::delete('/admin/categories/{id}',  [CategoryController::class, 'destroy']);
+
+    // Size Charts CRUD
+    Route::get('/admin/size-charts',         [\App\Http\Controllers\SizeChartController::class, 'index']);
+    Route::post('/admin/size-charts',        [\App\Http\Controllers\SizeChartController::class, 'store']);
+    Route::put('/admin/size-charts/{id}',    [\App\Http\Controllers\SizeChartController::class, 'update']);
+    Route::delete('/admin/size-charts/{id}', [\App\Http\Controllers\SizeChartController::class, 'destroy']);
 
     // Products CRUD
     Route::get('/admin/dashboard/products-stats', [ProductController::class, 'dashboardStats']);

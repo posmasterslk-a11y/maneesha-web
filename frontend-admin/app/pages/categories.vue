@@ -136,6 +136,13 @@
                     <UInput v-model.number="formData.sort_order" type="number" min="0" placeholder="0" />
                     <template #help>Lower numbers appear first.</template>
                   </UFormField>
+                  <UFormField label="Size Chart Image (Optional)">
+                    <input type="file" @change="handleFileUpload" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 dark:file:bg-emerald-900 dark:file:text-emerald-300" />
+                    <div v-if="formData.size_chart_url" class="mt-2">
+                      <p class="text-xs text-gray-500 mb-1">Current Size Chart:</p>
+                      <img :src="formData.size_chart_url" class="h-20 object-contain rounded border border-gray-200 dark:border-gray-800" />
+                    </div>
+                  </UFormField>
                 </div>
 
                 <div v-if="errorMsg" class="p-3 mx-6 mb-4 bg-red-100 text-red-700 rounded-md flex items-center gap-2 text-sm">
@@ -175,8 +182,13 @@ const errorMsg    = ref('')
 const isModalOpen = ref(false)
 const isEditing   = ref(false)
 const editingId   = ref(null)
+const selectedFile = ref(null)
 
-const formData = ref({ name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false })
+const formData = ref({ name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false, size_chart_url: null })
+
+const handleFileUpload = (e) => {
+  selectedFile.value = e.target.files[0]
+}
 
 // Auto-generate slug from name
 const autoSlug = () => {
@@ -202,7 +214,8 @@ const fetchCategories = async (page = 1) => {
 const openAddModal = () => {
   isEditing.value = false
   editingId.value = null
-  formData.value  = { name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false }
+  formData.value  = { name: '', slug: '', description: '', sort_order: 0, is_active: true, is_featured: false, size_chart_url: null }
+  selectedFile.value = null
   errorMsg.value  = ''
   isModalOpen.value = true
 }
@@ -217,7 +230,9 @@ const editCategory = (cat) => {
     sort_order:  cat.sort_order || 0,
     is_active:   cat.is_active,
     is_featured: cat.is_featured,
+    size_chart_url: cat.size_chart_url || null
   }
+  selectedFile.value = null
   errorMsg.value  = ''
   isModalOpen.value = true
 }
@@ -230,9 +245,24 @@ const saveCategory = async () => {
 
   try {
     const url    = isEditing.value ? `${API}/admin/categories/${editingId.value}` : `${API}/admin/categories`
-    const method = isEditing.value ? 'PUT' : 'POST'
+    
+    const payload = new FormData()
+    if (isEditing.value) {
+      payload.append('_method', 'PUT')
+    }
+    payload.append('name', formData.value.name)
+    payload.append('description', formData.value.description || '')
+    payload.append('sort_order', formData.value.sort_order || 0)
+    payload.append('is_active', formData.value.is_active ? '1' : '0')
+    payload.append('is_featured', formData.value.is_featured ? '1' : '0')
+    
+    if (selectedFile.value) {
+      payload.append('size_chart_image', selectedFile.value)
+    }
 
-    const r    = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(formData.value) })
+    const headers = { 'Authorization': `Bearer ${token()}`, 'Accept': 'application/json' }
+    
+    const r    = await fetch(url, { method: 'POST', headers, body: payload })
     const data = await r.json()
 
     if (!r.ok) {
