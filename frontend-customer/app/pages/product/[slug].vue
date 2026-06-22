@@ -50,7 +50,7 @@
         <div class="config-section">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h4 class="config-label" style="margin-bottom: 0;">1. Select Fitting Size:</h4>
-            <button v-if="product.category?.size_chart_url" @click="isSizeChartOpen = true" style="font-size: 0.8rem; font-weight: 700; color: var(--primary-gold); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+            <button v-if="product.size_chart_url" @click="isSizeChartOpen = true" style="font-size: 0.8rem; font-weight: 700; color: var(--primary-gold); background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px;">
               <i class="fa-solid fa-ruler-combined"></i> Size Guide
             </button>
           </div>
@@ -118,14 +118,14 @@
     <div :class="['modal-overlay', { open: isSizeChartOpen }]" @click.self="isSizeChartOpen = false">
       <div class="notify-modal size-chart-modal" style="max-width: 600px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-          <h3 class="luxury-title" style="margin-bottom: 0; font-size: 1.3rem;">Size Guide: {{ product.category?.name }}</h3>
+          <h3 class="luxury-title" style="margin-bottom: 0; font-size: 1.3rem;">Size Guide: {{ product.category_name }}</h3>
           <button @click="isSizeChartOpen = false" style="background: transparent; border: none; cursor: pointer; font-size: 1.2rem; color: inherit;">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
         
         <div style="text-align: center;">
-          <img v-if="product.category?.size_chart_url" :src="product.category.size_chart_url" alt="Size Chart" style="max-width: 100%; height: auto; border-radius: var(--radius-sm);" />
+          <img v-if="product.size_chart_url" :src="product.size_chart_url.replace('http://', 'https://')" alt="Size Chart" style="max-width: 100%; height: auto; border-radius: var(--radius-sm);" />
         </div>
       </div>
     </div>

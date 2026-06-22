@@ -237,6 +237,7 @@ class ProductController extends Controller
             'category_id'       => $product->category_id,
             'category_name'     => $product->category?->name ?? 'Uncategorized',
             'category_slug'     => $product->category?->slug ?? '',
+            'size_chart_url'    => $product->category?->size_chart_url,
             'short_description' => $product->short_description,
             'description'       => $product->description,
             'base_price'        => (float) $product->base_price,
