@@ -66,11 +66,21 @@ class OrderController extends Controller
                 // Lock rows for stock verification
                 foreach ($request->items as $item) {
                     $productId = $item['id'] ?? null;
+                    $size = $item['size'] ?? 'Standard';
                     $quantity = $item['quantity'] ?? 1;
                     if ($productId) {
-                        $product = \App\Models\Product::where('id', $productId)->lockForUpdate()->first();
-                        if ($product && $product->stock < $quantity) {
-                            throw new \Exception("Out of stock: Only {$product->stock} remaining for {$product->name}.");
+                        $variant = \App\Models\ProductVariant::where('product_id', $productId)
+                            ->where('size', $size)
+                            ->lockForUpdate()
+                            ->first();
+
+                        if ($variant && $variant->stock < $quantity) {
+                            throw new \Exception("Out of stock: Only {$variant->stock} remaining for size {$size}.");
+                        } else if (!$variant) {
+                            $product = \App\Models\Product::where('id', $productId)->lockForUpdate()->first();
+                            if ($product && $product->stock < $quantity) {
+                                throw new \Exception("Out of stock: Only {$product->stock} remaining.");
+                            }
                         }
                     }
                 }
@@ -110,6 +120,13 @@ class OrderController extends Controller
 
                     // Auto-deduct stock
                     if ($productId) {
+                        $size = $item['size'] ?? 'Standard';
+                        $variant = \App\Models\ProductVariant::where('product_id', $productId)->where('size', $size)->first();
+                        if ($variant) {
+                            $variant->stock = max(0, $variant->stock - $quantity);
+                            $variant->save();
+                        }
+                        
                         $product = \App\Models\Product::find($productId);
                         if ($product) {
                             $product->stock = max(0, $product->stock - $quantity);
@@ -248,7 +265,26 @@ class OrderController extends Controller
             'status' => 'required|in:pending,confirmed,processing,dispatched,delivered,cancelled'
         ]);
 
-        $order = Order::findOrFail($id);
+        $order = Order::with('orderItems')->findOrFail($id);
+        
+        // Restore stock if cancelling an active order
+        if ($request->status === 'cancelled' && $order->status !== 'cancelled') {
+            foreach ($order->orderItems as $item) {
+                if ($item->product_id) {
+                    $variant = \App\Models\ProductVariant::where('product_id', $item->product_id)->where('size', $item->size)->first();
+                    if ($variant) {
+                        $variant->stock += $item->quantity;
+                        $variant->save();
+                    }
+                    $product = \App\Models\Product::find($item->product_id);
+                    if ($product) {
+                        $product->stock += $item->quantity;
+                        $product->save();
+                    }
+                }
+            }
+        }
+
         $order->status = $request->status;
         
         if ($request->status === 'dispatched') {

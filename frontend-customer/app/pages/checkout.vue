@@ -397,7 +397,8 @@ const completeOrderLocally = async (orderId) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save order to backend');
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.message || 'Failed to save order to backend');
       }
 
       const responseData = await response.json();
@@ -423,7 +424,7 @@ const completeOrderLocally = async (orderId) => {
     } catch (error) {
       console.error(error);
       isPlacing.value = false;
-      openNotify('error', 'Order Failed', 'Error placing order. Please contact support.');
+      openNotify('error', 'Order Failed', error.message || 'Error placing order. Please contact support.');
     }
 }
 
