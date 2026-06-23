@@ -42,14 +42,14 @@ class OrderController extends Controller
         $slipPath = null;
 
         if ($request->payment_method === 'bank_deposit' && !empty($request->bank_slip)) {
-            // The bank_slip is expected to be a base64 encoded data URL, e.g. "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+            // The bank_slip is expected to be a base64 encoded data URL
             $base64_str = substr($request->bank_slip, strpos($request->bank_slip, ",")+1);
             $image = base64_decode($base64_str);
             
             // Get the extension from the mime type, or default to png
             $extension = 'png';
-            if (preg_match('/data:image\/(.*?);/', $request->bank_slip, $match)) {
-                $extension = $match[1];
+            if (preg_match('/data:(image|application)\/(.*?);/', $request->bank_slip, $match)) {
+                $extension = $match[2];
             }
             
             $fileName = "slip_{$orderNumber}_" . time() . '.' . $extension;

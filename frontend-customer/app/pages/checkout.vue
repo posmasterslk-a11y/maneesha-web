@@ -101,16 +101,20 @@
             </div>
 
             <div class="form-group mt-4">
-              <label class="form-label">Upload Transfer Receipt Slip (JPG/PNG)</label>
+              <label class="form-label">Upload Transfer Receipt Slip (JPG/PNG/PDF)</label>
               <div class="file-upload-zone">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <span>{{ slipFileName ? slipFileName : 'Click to select slip receipt' }}</span>
-                <input type="file" @change="handleSlipUpload" accept="image/*" class="file-input-hidden" required />
+                <input type="file" @change="handleSlipUpload" accept="image/*,application/pdf" class="file-input-hidden" required />
               </div>
               
               <!-- Slip Preview overlay -->
-              <div v-if="slipPreviewUrl" class="slip-preview-box">
-                <img :src="slipPreviewUrl" alt="Transfer Slip Preview" />
+              <div v-if="slipPreviewUrl" class="slip-preview-box" style="display:flex; justify-content:center; align-items:center; min-height: 100px;">
+                <img v-if="!slipPreviewUrl.startsWith('data:application/pdf')" :src="slipPreviewUrl" alt="Transfer Slip Preview" />
+                <div v-else style="text-align: center; color: var(--primary-gold); padding: 20px;">
+                  <i class="fa-solid fa-file-pdf" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                  <div style="font-weight: bold;">PDF Document Selected</div>
+                </div>
               </div>
             </div>
           </div>
