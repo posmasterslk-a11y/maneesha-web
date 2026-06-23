@@ -18,6 +18,7 @@ Route::get('/categories',          [CategoryController::class, 'index']);
 Route::get('/products',            [ProductController::class, 'index']);
 Route::get('/products/popular',    [ProductController::class, 'popular']);
 Route::get('/products/{slug}',     [ProductController::class, 'show']);
+Route::post('/cart/validate',      [ProductController::class, 'validateCart']);
 
 Route::get('/run-migrations', function () {
     try {

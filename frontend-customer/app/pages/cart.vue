@@ -20,6 +20,9 @@
             <div class="item-pricing">
               <span class="unit-price">LKR {{ formatNumber(item.price) }} each</span>
             </div>
+            <div v-if="getValidation(item) && !getValidation(item).is_valid" class="text-xs text-red-500 font-bold mt-1">
+              Out of stock (Only {{ getValidation(item).available }} left)
+            </div>
           </div>
 
           <div class="item-qty-actions">
@@ -64,8 +67,8 @@
           </div>
         </div>
 
-        <button @click="proceedToCheckout" class="btn-premium btn-gold btn-block">
-          Proceed To Checkout <i class="fa-solid fa-chevron-right ml-2"></i>
+        <button @click="proceedToCheckout" :disabled="hasOutOfStock" :class="['btn-premium btn-block', hasOutOfStock ? 'opacity-50 cursor-not-allowed bg-gray-500' : 'btn-gold']">
+          {{ hasOutOfStock ? 'Please remove out of stock items' : 'Proceed To Checkout' }} <i v-if="!hasOutOfStock" class="fa-solid fa-chevron-right ml-2"></i>
         </button>
 
         <div class="delivery-highlight">
@@ -89,7 +92,7 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue'
+import { computed, inject, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -123,12 +126,48 @@ const removeItem = (item) => {
 }
 
 const proceedToCheckout = () => {
+  if (hasOutOfStock.value) return;
   router.push('/checkout')
 }
 
 const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
+
+const validations = ref([])
+
+const validateCart = async () => {
+  if (!cart.value || cart.value.length === 0) return;
+  try {
+    const res = await fetch('https://api-maneesha.posmasters.lk/api/cart/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart.value })
+    })
+    if (res.ok) {
+      validations.value = await res.json()
+    }
+  } catch (e) {
+    console.error('Cart validation failed', e)
+  }
+}
+
+onMounted(() => {
+  validateCart()
+})
+
+watch(cart, () => {
+  validateCart()
+}, { deep: true })
+
+const getValidation = (item) => {
+  return validations.value.find(v => v.id === item.id && v.size === item.size)
+}
+
+const hasOutOfStock = computed(() => {
+  if (validations.value.length === 0) return false;
+  return validations.value.some(v => !v.is_valid);
+})
 </script>
 
 <style scoped>

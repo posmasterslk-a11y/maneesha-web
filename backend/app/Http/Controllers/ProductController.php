@@ -264,4 +264,41 @@ class ProductController extends Controller
             ])->values()->toArray(),
         ];
     }
+
+    /** POST /api/cart/validate */
+    public function validateCart(Request $request)
+    {
+        $items = $request->input('items', []);
+        $results = [];
+
+        foreach ($items as $item) {
+            $productId = $item['id'] ?? null;
+            $size = $item['size'] ?? 'Standard';
+            $requestedQty = $item['quantity'] ?? 1;
+
+            if (!$productId) continue;
+
+            $variant = \App\Models\ProductVariant::where('product_id', $productId)->where('size', $size)->first();
+            
+            $availableStock = 0;
+            if ($variant) {
+                $availableStock = $variant->stock;
+            } else {
+                $product = \App\Models\Product::find($productId);
+                if ($product) {
+                    $availableStock = $product->stock;
+                }
+            }
+
+            $results[] = [
+                'id' => $productId,
+                'size' => $size,
+                'requested' => $requestedQty,
+                'available' => $availableStock,
+                'is_valid' => $availableStock >= $requestedQty
+            ];
+        }
+
+        return response()->json($results);
+    }
 }
