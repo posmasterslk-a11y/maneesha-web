@@ -147,8 +147,24 @@ class OrderController extends Controller
 
         // Send email to customer
         try {
-            \Mail::raw("Dear {$request->customer_name},\n\nThank you for your order!\nYour order number is: {$orderNumber}\nTotal Amount: LKR " . number_format($request->total_amount, 2) . "\n\nWe will update you on the progress.\n\nThanks,\nManeesha Fashion Team", function($msg) use ($request) {
-                $msg->to($request->email)->subject("Order Confirmation #{$request->orderNumber} - Maneesha Fashion");
+            $itemDetails = "";
+            foreach ($request->items as $item) {
+                $itemSize = $item['size'] ?? 'Standard';
+                $itemDetails .= "- {$item['name']} (Size: {$itemSize}) x {$item['quantity']} = LKR " . number_format($item['price'] * $item['quantity'], 2) . "\n";
+            }
+
+            $emailBody = "Dear {$request->customer_name},\n\n"
+                       . "Thank you for your order at Maneesha Fashion!\n\n"
+                       . "Your Order Number: {$orderNumber}\n"
+                       . "Order Status: " . ucfirst($status) . "\n\n"
+                       . "Order Details:\n"
+                       . $itemDetails . "\n"
+                       . "Total Amount: LKR " . number_format($request->total_amount, 2) . "\n\n"
+                       . "We will update you on the progress once your order is processed.\n\n"
+                       . "Best Regards,\nManeesha Fashion Team";
+
+            \Mail::raw($emailBody, function($msg) use ($request, $orderNumber) {
+                $msg->to($request->email)->subject("Order Confirmation #{$orderNumber} - Maneesha Fashion");
             });
         } catch (\Exception $e) {
             Log::warning("Failed to send order email: " . $e->getMessage());

@@ -151,8 +151,9 @@
           </div>
           <div class="row">
             <span>Delivery Fee</span>
-            <span :class="{'text-success font-bold': deliveryFee === 0}">
-              {{ deliveryFee === 0 ? 'FREE' : 'LKR ' + formatNumber(deliveryFee) }}
+            <span class="font-bold">
+              <span v-if="deliveryFee === 0" class="text-sm text-gray-500 font-normal mr-2 text-muted">(Select district)</span>
+              LKR {{ formatNumber(deliveryFee) }}
             </span>
           </div>
           <hr class="divider" />
@@ -399,13 +400,24 @@ const completeOrderLocally = async (orderId) => {
         throw new Error('Failed to save order to backend');
       }
 
+      const responseData = await response.json();
+      const actualOrderNumber = responseData.order ? responseData.order.order_number : orderId;
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('maneesha-customer-phone', orderData.value.phone);
+        
+        // Save to order history
+        const history = JSON.parse(localStorage.getItem('maneesha-order-history') || '[]');
+        history.push({
+            order_number: actualOrderNumber,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('maneesha-order-history', JSON.stringify(history));
       }
 
       updateCart([]);
       isPlacing.value = false;
-      openNotify('success', 'Order Confirmed', 'Congratulations! Your order has been successfully registered.', () => {
+      openNotify('success', 'Order Confirmed', `Congratulations! Your order #${actualOrderNumber} has been successfully registered.`, () => {
         router.push('/orders');
       });
     } catch (error) {

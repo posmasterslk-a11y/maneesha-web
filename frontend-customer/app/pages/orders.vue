@@ -10,9 +10,9 @@
           v-model="trackingId" 
           placeholder="Enter your Order ID to track (e.g., MF-2026...)" 
           class="track-input"
-          @keyup.enter="loadOrders"
+          @keyup.enter="trackSingleOrder"
         />
-        <button @click="loadOrders" class="btn-premium btn-gold" :disabled="isLoading">
+        <button @click="trackSingleOrder" class="btn-premium btn-gold" :disabled="isLoading">
           <i class="fa-solid fa-magnifying-glass" v-if="!isLoading"></i>
           <i class="fa-solid fa-spinner fa-spin" v-else></i> 
           Track
@@ -105,7 +105,50 @@ const ordersList = ref([])
 const trackingId = ref('')
 const isLoading = ref(false)
 
-const loadOrders = async () => {
+const loadAllHistoryOrders = async () => {
+  isLoading.value = true;
+  ordersList.value = [];
+  try {
+    const history = JSON.parse(localStorage.getItem('maneesha-order-history') || '[]');
+    if (history.length > 0) {
+      const orderPromises = history.map(async (h) => {
+        try {
+          const res = await fetch(`https://api-maneesha.posmasters.lk/api/track-orders?order_id=${encodeURIComponent(h.order_number)}`);
+          if (res.ok) {
+            const data = await res.json();
+            return data[0] || null;
+          }
+        } catch (e) {
+          console.error(`Failed to fetch order ${h.order_number}`, e);
+        }
+        return null;
+      });
+
+      const results = await Promise.all(orderPromises);
+      const validOrders = results.filter(Boolean);
+      
+      // Map API response to frontend format
+      ordersList.value = validOrders.map(order => ({
+        orderId: order.order_number,
+        createdAt: new Date(order.created_at).toLocaleString(),
+        paymentMethod: order.payment_method,
+        totalAmount: order.total,
+        status: order.status,
+        items: order.order_items.map(item => ({
+          name: item.product_name,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.unit_price
+        }))
+      })).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+  } catch (err) {
+    console.error('Failed to load order history', err);
+  }
+  isLoading.value = false;
+}
+
+const trackSingleOrder = async () => {
   if (!trackingId.value) return;
   
   isLoading.value = true;
@@ -114,8 +157,7 @@ const loadOrders = async () => {
     if (res.ok) {
       const data = await res.json();
       
-      // Map API response to frontend format
-      ordersList.value = data.map(order => ({
+      const mappedOrders = data.map(order => ({
         orderId: order.order_number,
         createdAt: new Date(order.created_at).toLocaleString(),
         paymentMethod: order.payment_method,
@@ -128,9 +170,17 @@ const loadOrders = async () => {
           price: item.unit_price
         }))
       }));
+
+      // Merge with existing list and remove duplicates
+      const existingIds = ordersList.value.map(o => o.orderId);
+      mappedOrders.forEach(mo => {
+        if (!existingIds.includes(mo.orderId)) {
+          ordersList.value.unshift(mo);
+        }
+      });
     }
   } catch (err) {
-    console.error('Failed to load orders', err);
+    console.error('Failed to track single order', err);
   }
   isLoading.value = false;
 }
@@ -162,11 +212,18 @@ const formatNumber = (num) => {
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
+    // Migrate old format to new format
     const savedOrder = localStorage.getItem('maneesha-customer-order-id');
     if (savedOrder) {
-      trackingId.value = savedOrder;
-      loadOrders();
+      const history = JSON.parse(localStorage.getItem('maneesha-order-history') || '[]');
+      if (!history.find(h => h.order_number === savedOrder)) {
+        history.push({ order_number: savedOrder, date: new Date().toISOString() });
+        localStorage.setItem('maneesha-order-history', JSON.stringify(history));
+      }
+      localStorage.removeItem('maneesha-customer-order-id');
     }
+    
+    loadAllHistoryOrders();
   }
 })
 </script>

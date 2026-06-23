@@ -31,7 +31,12 @@ class ProductController extends Controller
                   ->orWhere('short_description', 'like', '%' . $request->search . '%');
             });
         }
-        $products = $query->orderBy('sort_order')->paginate(12);
+        if ($request->query('sort') === 'latest') {
+            $query->orderBy('created_at', 'desc');
+        } else {
+            $query->orderBy('sort_order');
+        }
+        $products = $query->paginate(12);
         $products->through(fn($p) => $this->formatProduct($p));
 
         return response()->json($products);

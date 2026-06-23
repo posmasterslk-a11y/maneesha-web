@@ -55,7 +55,7 @@
           </div>
           <div class="summary-row">
             <span>Delivery Fee</span>
-            <span class="text-success font-bold">FREE</span>
+            <span class="text-muted text-sm font-bold">Calculated at checkout</span>
           </div>
           <hr class="summary-divider" />
           <div class="summary-row total-row">

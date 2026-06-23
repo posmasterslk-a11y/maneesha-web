@@ -31,6 +31,48 @@
       </div>
     </section>
 
+    <!-- Exclusive New Arrivals Section -->
+    <section class="featured-products container mb-20" v-if="exclusiveProducts && exclusiveProducts.length > 0" style="margin-top: -20px;">
+      <div class="section-header-row">
+        <div>
+          <h2 class="luxury-title">Exclusive <span class="gold-gradient-text">New Arrivals</span></h2>
+          <p>Be the first to wear our latest handcrafted designs.</p>
+        </div>
+        <NuxtLink to="/shop" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></NuxtLink>
+      </div>
+
+      <div class="products-grid">
+        <div v-for="prod in exclusiveProducts" :key="prod.id" class="product-card glass-panel">
+          <div class="product-img-wrapper">
+            <div class="product-tag" style="background: var(--primary-gold); color: #fff;">New</div>
+            <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="product-real-img" />
+            <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">
+              <i class="fa-solid fa-shirt"></i>
+            </div>
+            <div class="hover-overlay">
+              <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">View Details &amp; Buy</NuxtLink>
+            </div>
+          </div>
+
+          <div class="product-details">
+            <span class="product-cat">{{ prod.category_name }}</span>
+            <h3 class="luxury-title">{{ prod.name }}</h3>
+            <p class="product-desc">{{ prod.short_description }}</p>
+            
+            <div class="price-row">
+              <div class="price-info">
+                <span class="price-label">Starts from</span>
+                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+              </div>
+              <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
+                <i class="fa-solid fa-circle-chevron-right"></i>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Featured Products Section -->
     <section class="featured-products container" v-if="products && products.length > 0">
       <div class="section-header-row">
@@ -223,12 +265,14 @@ const [
   { data: rawCategories },
   { data: rawFeaturedProducts },
   { data: rawPopularProducts },
-  { data: rawHeroSlides }
+  { data: rawHeroSlides },
+  { data: rawExclusiveProducts }
 ] = await Promise.all([
   useFetch(`${API}/categories`),
   useFetch(`${API}/products?featured=1`),
   useFetch(`${API}/products/popular`),
-  useFetch(`${API}/products?hero_slider=1`)
+  useFetch(`${API}/products?hero_slider=1`),
+  useFetch(`${API}/products?sort=latest`)
 ])
 
 const categories = computed(() => {
@@ -247,6 +291,11 @@ const featuredCategory = computed(() => {
 const products = computed(() => rawFeaturedProducts.value?.data || rawFeaturedProducts.value || [])
 const popularProducts = computed(() => rawPopularProducts.value?.data || rawPopularProducts.value || [])
 const heroSlides = computed(() => rawHeroSlides.value?.data || rawHeroSlides.value || [])
+
+const exclusiveProducts = computed(() => {
+  const data = rawExclusiveProducts.value?.data || rawExclusiveProducts.value || []
+  return data.slice(0, 4) // Show top 4 newest
+})
 
 const currentSlide = ref(0)
 let slideInterval = null

@@ -205,7 +205,7 @@
             <div class="space-y-4">
               <p>Customer: <strong>{{ selectedOrder?.customer_name }}</strong></p>
               <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-2 flex justify-center border border-gray-200 dark:border-gray-800 min-h-[200px]">
-                <img v-if="selectedOrder?.bank_slip_path" :src="'https://api-maneesha.posmasters.lk/api/orders/' + selectedOrder.id + '/view-slip'" alt="Receipt" class="max-w-full max-h-[400px] object-contain" />
+                <img v-if="selectedOrder?.bank_slip_path" :src="'https://api-maneesha.posmasters.lk/storage/' + selectedOrder.bank_slip_path.replace('public/', '')" alt="Receipt" class="max-w-full max-h-[400px] object-contain" />
                 <div v-else class="flex flex-col items-center justify-center text-gray-400">
                   <UIcon name="i-lucide-image" class="w-12 h-12 mb-2" />
                   <span>No slip uploaded</span>
