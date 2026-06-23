@@ -119,6 +119,7 @@
                 <UButton v-if="row.original.status === 'confirmed'" size="xs" color="purple" @click="updateStatus(row.original, 'processing')">Process</UButton>
                 <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
                 <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
+                <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="updateStatus(row.original, 'cancelled')">Cancel</UButton>
               </div>
             </template>
             

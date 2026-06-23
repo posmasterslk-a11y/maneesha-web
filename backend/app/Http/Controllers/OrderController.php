@@ -322,6 +322,22 @@ class OrderController extends Controller
             Log::warning("Failed to send status update SMS: " . $e->getMessage());
         }
 
+        // Send email to customer on cancellation
+        if ($request->status === 'cancelled') {
+            try {
+                $emailBody = "Dear {$order->customer_name},\n\n"
+                           . "We regret to inform you that your order #{$order->order_number} has been cancelled.\n\n"
+                           . "If you have any questions or concerns, please contact our support team.\n\n"
+                           . "Best Regards,\nManeesha Fashion Team";
+
+                \Mail::raw($emailBody, function($msg) use ($order) {
+                    $msg->to($order->customer_email)->subject("Order Cancelled #{$order->order_number} - Maneesha Fashion");
+                });
+            } catch (\Exception $e) {
+                Log::warning("Failed to send order cancellation email: " . $e->getMessage());
+            }
+        }
+
         return response()->json([
             'success' => true,
             'message' => "Order {$order->order_number} transitioned successfully to {$request->status}.",
