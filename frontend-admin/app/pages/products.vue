@@ -148,7 +148,7 @@
                         </UInput>
                       </UFormField>
                       <UFormField label="Total Stock *" required>
-                        <UInput v-model.number="formData.stock" type="number" min="0" required />
+                        <UInput v-model.number="formData.stock" type="number" min="0" required :disabled="formData.variants && formData.variants.length > 0" />
                       </UFormField>
                     </div>
                     <UFormField label="Short Description" class="mb-4 w-full">
@@ -289,6 +289,13 @@ const formData = ref({
 })
 
 watch(formData, (newVal) => {
+  if (newVal.variants && newVal.variants.length > 0) {
+    const totalVariantStock = newVal.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)
+    if (newVal.stock !== totalVariantStock) {
+      newVal.stock = totalVariantStock
+    }
+  }
+
   if (!isEditing.value) {
     localStorage.setItem('maneesha-product-draft', JSON.stringify(newVal))
   }
@@ -466,10 +473,8 @@ const saveProduct = async () => {
   errorMsg.value = ''
 
   const totalVariantStock = formData.value.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0)
-  if (totalVariantStock > formData.value.stock) {
-    errorMsg.value = `Total size variants stock (${totalVariantStock}) cannot exceed the Total Stock (${formData.value.stock}).`
-    saving.value = false
-    return
+  if (formData.value.variants.length > 0 && totalVariantStock !== formData.value.stock) {
+    formData.value.stock = totalVariantStock
   }
 
   try {

@@ -172,9 +172,6 @@ if (product.value) {
 }
 
 const selectedSize = ref('')
-if (product.value?.variants && product.value.variants.length > 0) {
-  selectedSize.value = product.value.variants[0].size
-}
 
 const quantity = ref(1)
 const isSizeChartOpen = ref(false)
@@ -187,6 +184,7 @@ const activePrice = computed(() => {
 
 const activeStock = computed(() => {
   if (!product.value) return 0
+  if (!selectedSize.value) return product.value.stock
   const variant = product.value.variants?.find(v => v.size === selectedSize.value)
   return variant ? variant.stock : product.value.stock
 })
@@ -224,11 +222,19 @@ const closeNotify = () => {
 }
 
 const handleAddToCart = () => {
+  if (!selectedSize.value && product.value.variants?.length > 0) {
+    openNotify('error', 'Select Size', 'Please select a size before adding to cart.')
+    return
+  }
   addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, null)
   openNotify('success', 'Added to Cart', `${product.value.name} has been added to your cart successfully.`)
 }
 
 const handleBuyNow = () => {
+  if (!selectedSize.value && product.value.variants?.length > 0) {
+    openNotify('error', 'Select Size', 'Please select a size before proceeding.')
+    return
+  }
   addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, null)
   router.push('/checkout')
 }
