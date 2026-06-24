@@ -203,7 +203,17 @@ class OrderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $orders = Order::with('orderItems')->orderBy('created_at', 'desc')->paginate(10);
+        $query = Order::with('orderItems');
+
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('payment_method') && $request->payment_method !== 'all') {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
         return response()->json($orders);
     }
 

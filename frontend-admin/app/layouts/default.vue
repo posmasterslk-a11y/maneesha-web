@@ -38,6 +38,11 @@ const links = computed(() => {
       icon: 'i-lucide-shopping-cart',
       to: '/orders',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'All Orders',
+      icon: 'i-lucide-list',
+      to: '/full-orders',
+      onSelect: () => { open.value = false }
     })
   }
 
