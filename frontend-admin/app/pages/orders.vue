@@ -120,6 +120,7 @@
                 <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
                 <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
                 <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="openCancel(row.original)">Cancel</UButton>
+                <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" @click="deleteOrder(row.original)" title="Delete Order" />
               </div>
             </template>
             
@@ -416,6 +417,23 @@ const executeCancel = async () => {
     console.error('Failed to cancel order', err);
   }
   closeCancel();
+}
+
+const deleteOrder = (order) => {
+  openConfirm(`Are you sure you want to permanently delete order #${order.order_number}? This cannot be undone.`, async () => {
+    try {
+      const res = await fetch(`${API}/admin/orders/${order.id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      if (res.ok) {
+        await loadOrders(currentPage.value);
+        await loadDashboardStats();
+      }
+    } catch(err) {
+      console.error('Failed to delete order', err);
+    }
+  });
 }
 
 const viewSlip = async (id) => {

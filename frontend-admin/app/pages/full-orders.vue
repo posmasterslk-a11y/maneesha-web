@@ -55,13 +55,13 @@
               { label: 'Dispatched', value: 'dispatched' },
               { label: 'Delivered', value: 'delivered' },
               { label: 'Cancelled', value: 'cancelled' }
-            ]" class="w-40" @update:model-value="loadOrders(1)" />
+            ]" class="w-40" />
             <USelect v-model="paymentFilter" :options="[
               { label: 'All Payment Methods', value: 'all' },
               { label: 'Bank Deposit', value: 'bank_deposit' },
               { label: 'Cash on Delivery', value: 'cod' },
               { label: 'PayHere Gateway', value: 'payhere' }
-            ]" class="w-48" @update:model-value="loadOrders(1)" />
+            ]" class="w-48" />
             <UButton icon="i-lucide-refresh-cw" color="primary" variant="soft" @click="loadOrders(1)">Refresh</UButton>
           </div>
         </div>
@@ -129,6 +129,7 @@
                 <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
                 <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
                 <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="openCancel(row.original)">Cancel</UButton>
+                <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" @click="deleteOrder(row.original)" title="Delete Order" />
               </div>
             </template>
             
@@ -342,7 +343,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import AdminPagination from '@/components/AdminPagination.vue'
 
 const config = useRuntimeConfig()
@@ -428,6 +429,23 @@ const executeCancel = async () => {
   closeCancel();
 }
 
+const deleteOrder = (order) => {
+  openConfirm(`Are you sure you want to permanently delete order #${order.order_number}? This cannot be undone.`, async () => {
+    try {
+      const res = await fetch(`${API}/admin/orders/${order.id}`, {
+        method: 'DELETE',
+        headers: authHeaders()
+      });
+      if (res.ok) {
+        await loadOrders(currentPage.value);
+        await loadDashboardStats();
+      }
+    } catch(err) {
+      console.error('Failed to delete order', err);
+    }
+  });
+}
+
 const viewSlip = async (id) => {
   try {
     const r = await fetch(`${API}/admin/orders/${id}/view-slip`, { headers: authHeaders() });
@@ -472,6 +490,14 @@ const authHeaders = () => {
     'Accept': 'application/json'
   }
 }
+
+watch(statusFilter, () => {
+  loadOrders(1)
+})
+
+watch(paymentFilter, () => {
+  loadOrders(1)
+})
 
 const loadDashboardStats = async () => {
   try {

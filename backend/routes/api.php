@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/dashboard/stats',     [OrderController::class, 'dashboardStats']);
     Route::get('/admin/orders/{id}/view-slip',    [OrderController::class, 'viewSlip']);
     Route::get('/admin/orders/{id}/download-slip',[OrderController::class, 'downloadSlip']);
+    Route::delete('/admin/orders/{id}',      [OrderController::class, 'destroy']);
 
     // Admin Hero Slides
     Route::get('/hero-slides',         [HeroSlideController::class, 'adminIndex']);
