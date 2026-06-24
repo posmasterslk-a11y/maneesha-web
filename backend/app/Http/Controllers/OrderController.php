@@ -272,7 +272,8 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,dispatched,delivered,cancelled'
+            'status' => 'required|in:pending,confirmed,processing,dispatched,delivered,cancelled',
+            'cancellation_reason' => 'nullable|string'
         ]);
 
         $order = Order::with('orderItems')->findOrFail($id);
@@ -301,6 +302,8 @@ class OrderController extends Controller
             $order->dispatched_at = now();
         } else if ($request->status === 'delivered') {
             $order->delivered_at = now();
+        } else if ($request->status === 'cancelled') {
+            $order->cancellation_reason = $request->cancellation_reason;
         }
         
         $order->save();

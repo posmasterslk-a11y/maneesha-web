@@ -119,7 +119,7 @@
                 <UButton v-if="row.original.status === 'confirmed'" size="xs" color="purple" @click="updateStatus(row.original, 'processing')">Process</UButton>
                 <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
                 <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
-                <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="updateStatus(row.original, 'cancelled')">Cancel</UButton>
+                <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="openCancel(row.original)">Cancel</UButton>
               </div>
             </template>
             
@@ -245,6 +245,24 @@
             </div>
           </template>
         </UModal>
+
+        <!-- Cancel Modal -->
+        <UModal v-model:open="cancelDialog.isOpen" :ui="{ width: 'sm:max-w-sm' }">
+          <template #content>
+            <div class="flex flex-col items-center text-center p-4">
+              <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">
+                <UIcon name="i-lucide-x-circle" class="w-8 h-8" />
+              </div>
+              <h3 class="text-lg font-bold mb-2">Cancel Order</h3>
+              <p class="text-gray-500 mb-4">Please provide a reason for cancelling this order.</p>
+              <UTextarea v-model="cancelDialog.reason" placeholder="Cancellation reason..." class="w-full mb-6" />
+              <div class="flex gap-3 w-full justify-center">
+                <UButton color="gray" variant="solid" @click="closeCancel">Close</UButton>
+                <UButton color="red" :disabled="!cancelDialog.reason" @click="executeCancel">Confirm Cancellation</UButton>
+              </div>
+            </div>
+          </template>
+        </UModal>
         
         <UModal v-model:open="isCustomerModalOpen">
           <template #content>
@@ -362,6 +380,42 @@ const confirmDialog = ref({
 
 const openConfirm = (message, onConfirm) => {
   confirmDialog.value = { isOpen: true, message, onConfirm }
+}
+
+const cancelDialog = ref({
+  isOpen: false,
+  order: null,
+  reason: ''
+})
+
+const openCancel = (order) => {
+  cancelDialog.value = { isOpen: true, order, reason: '' }
+}
+
+const closeCancel = () => {
+  cancelDialog.value.isOpen = false
+}
+
+const executeCancel = async () => {
+  const order = cancelDialog.value.order;
+  const reason = cancelDialog.value.reason;
+  try {
+    const res = await fetch(`${API}/admin/orders/${order.id}/status`, {
+      method: 'PUT',
+      headers: {
+        ...authHeaders(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: 'cancelled', cancellation_reason: reason })
+    });
+    if (res.ok) {
+      await loadOrders(currentPage.value);
+      await loadDashboardStats();
+    }
+  } catch(err) {
+    console.error('Failed to cancel order', err);
+  }
+  closeCancel();
 }
 
 const viewSlip = async (id) => {
