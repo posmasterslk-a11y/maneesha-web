@@ -429,8 +429,11 @@ const deleteOrder = (order) => {
       if (res.ok) {
         await loadOrders(currentPage.value);
         await loadDashboardStats();
+      } else {
+        alert('Failed to delete order: ' + await res.text());
       }
     } catch(err) {
+      alert('Network error while deleting order');
       console.error('Failed to delete order', err);
     }
   });
