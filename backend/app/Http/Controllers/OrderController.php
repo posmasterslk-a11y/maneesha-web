@@ -8,6 +8,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderPlacedCustomer;
+use App\Mail\OrderPlacedAdmin;
+use App\Mail\OrderStatusChanged;
 
 class OrderController extends Controller
 {
@@ -162,27 +166,10 @@ class OrderController extends Controller
             $this->sms->sendOrderPlacedAdmin($smsData);
         }
 
-        // Send email to customer
+        // Send email to customer and admin
         try {
-            $itemDetails = "";
-            foreach ($request->items as $item) {
-                $itemSize = $item['size'] ?? 'Standard';
-                $itemDetails .= "- {$item['name']} (Size: {$itemSize}) x {$item['quantity']} = LKR " . number_format($item['price'] * $item['quantity'], 2) . "\n";
-            }
-
-            $emailBody = "Dear {$request->customer_name},\n\n"
-                       . "Thank you for your order at Maneesha Fashion!\n\n"
-                       . "Your Order Number: {$orderNumber}\n"
-                       . "Order Status: " . ucfirst($status) . "\n\n"
-                       . "Order Details:\n"
-                       . $itemDetails . "\n"
-                       . "Total Amount: LKR " . number_format($request->total_amount, 2) . "\n\n"
-                       . "We will update you on the progress once your order is processed.\n\n"
-                       . "Best Regards,\nManeesha Fashion Team";
-
-            \Mail::raw($emailBody, function($msg) use ($request, $orderNumber) {
-                $msg->to($request->email)->subject("Order Confirmation #{$orderNumber} - Maneesha Fashion");
-            });
+            Mail::to($order->customer_email)->send(new OrderPlacedCustomer($order));
+            Mail::to('hashinirkarunarathne@gmail.com')->send(new OrderPlacedAdmin($order));
         } catch (\Exception $e) {
             Log::warning("Failed to send order email: " . $e->getMessage());
         }
@@ -335,20 +322,11 @@ class OrderController extends Controller
             Log::warning("Failed to send status update SMS: " . $e->getMessage());
         }
 
-        // Send email to customer on cancellation
-        if ($request->status === 'cancelled') {
-            try {
-                $emailBody = "Dear {$order->customer_name},\n\n"
-                           . "We regret to inform you that your order #{$order->order_number} has been cancelled.\n\n"
-                           . "If you have any questions or concerns, please contact our support team.\n\n"
-                           . "Best Regards,\nManeesha Fashion Team";
-
-                \Mail::raw($emailBody, function($msg) use ($order) {
-                    $msg->to($order->customer_email)->subject("Order Cancelled #{$order->order_number} - Maneesha Fashion");
-                });
-            } catch (\Exception $e) {
-                Log::warning("Failed to send order cancellation email: " . $e->getMessage());
-            }
+        // Send email to customer on status update
+        try {
+            Mail::to($order->customer_email)->send(new OrderStatusChanged($order));
+        } catch (\Exception $e) {
+            Log::warning("Failed to send order status email: " . $e->getMessage());
         }
 
         return response()->json([
