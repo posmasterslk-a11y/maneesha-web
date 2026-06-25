@@ -105,7 +105,7 @@
     <footer class="app-footer">
       <div class="container footer-grid">
         <div>
-          <img :src="isDarkMode ? '/images/logo-white.PNG' : '/images/logo-black.PNG'" alt="Maneesha Fashion Logo" class="footer-logo" />
+          <img src="/images/logo-white.PNG" alt="Maneesha Fashion Logo" class="footer-logo" />
           <p>Hand-selected elegance for your unique style. Standard premium sizes with Sri Lanka's finest quality.</p>
         </div>
         <div>
