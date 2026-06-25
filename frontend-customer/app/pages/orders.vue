@@ -43,7 +43,7 @@
         </div>
 
         <!-- 3D status progress timeline bar -->
-        <div class="timeline-wrapper">
+        <div class="timeline-wrapper" v-if="order.status !== 'cancelled'">
           <div class="timeline-progress-bar" :style="{ width: getStatusProgressWidth(order.status) }"></div>
           
           <div class="timeline-nodes">
@@ -67,6 +67,11 @@
               <span class="node-label">Dispatched</span>
             </div>
           </div>
+        </div>
+        
+        <div v-else class="cancelled-banner">
+          <i class="fa-solid fa-circle-xmark"></i>
+          <span>This order has been cancelled.</span>
         </div>
 
         <!-- Tailored items brief list -->
@@ -499,6 +504,20 @@ body.dark-mode .empty-orders p {
   color: var(--text-light-secondary);
 }
 
+.cancelled-banner {
+  margin: 30px 40px;
+  padding: 15px 20px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
 .mt-4 {
   margin-top: 20px;
 }
@@ -527,8 +546,48 @@ body.dark-mode .empty-orders p {
     padding: 24px 15px;
   }
   
-  .timeline-nodes .node-label {
+  .timeline-nodes {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding-left: 10px;
+  }
+  
+  .timeline-wrapper {
+    margin: 20px;
+  }
+  
+  .timeline-wrapper::before {
+    top: 0;
+    bottom: 0;
+    left: 25px;
+    width: 2px;
+    height: 100%;
+  }
+  
+  .timeline-progress-bar {
+    top: 0;
+    left: 25px;
+    width: 2px;
+  }
+  
+  .node {
+    flex-direction: row;
+    gap: 15px;
+    width: 100%;
+  }
+  
+  .node-label {
     display: none;
+    margin-top: 0;
+  }
+  
+  .brief-items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cancelled-banner {
+    margin: 20px;
   }
   
   .brief-item-row {
