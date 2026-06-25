@@ -163,21 +163,29 @@
           </div>
         </div>
         
-        <div class="story-canvas" v-if="!featuredCategory">
-          <div class="stitching-diagram">
+        <div class="story-canvas product-slider-canvas glass-panel">
+          <div v-if="popularProducts.length === 0" class="stitching-diagram">
             <div class="line vertical"></div>
             <div class="line horizontal"></div>
             <i class="fa-solid fa-ruler-horizontal diag-icon"></i>
           </div>
-        </div>
-        <div class="story-canvas featured-category-canvas glass-panel" v-else @click="navigateToCategory(featuredCategory.slug)" style="cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; background: rgba(212,175,55,0.05); border: 1px solid var(--primary-gold-light);">
-           <div class="featured-cat-card p-8">
-              <i :class="featuredCategory.icon" style="font-size: 3rem; color: var(--primary-gold); margin-bottom: 15px;"></i>
-              <h3 class="luxury-title" style="font-size: 2rem; margin-bottom: 10px;">{{ featuredCategory.name }}</h3>
-              <p v-if="featuredCategory.description" class="text-sm opacity-80 mb-6 max-w-sm mx-auto" style="color: var(--text-dark-secondary);">{{ featuredCategory.description }}</p>
-              <p v-else class="text-sm opacity-80 mb-6 max-w-sm mx-auto" style="color: var(--text-dark-secondary);">Discover our most premium featured collection curated just for you.</p>
-              <div><span class="btn-premium btn-gold">Explore {{ featuredCategory.name }} <i class="fa-solid fa-arrow-right ml-2"></i></span></div>
-           </div>
+          <div v-else>
+            <TransitionGroup name="fade">
+              <div v-for="(prod, idx) in popularProducts" :key="prod.id" 
+                   v-show="currentStorySlide === idx"
+                   class="story-slide-wrapper">
+                <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="story-product-img" />
+                <div v-else class="product-visual-placeholder story-placeholder">
+                  <i class="fa-solid fa-shirt"></i>
+                </div>
+                <div class="story-product-overlay">
+                  <h4 class="luxury-title text-white text-2xl mb-1">{{ prod.name }}</h4>
+                  <p class="text-gray-200 mb-4 font-semibold">LKR {{ formatNumber(prod.base_price) }}</p>
+                  <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium btn-gold btn-sm">Shop Now</NuxtLink>
+                </div>
+              </div>
+            </TransitionGroup>
+          </div>
         </div>
       </div>
     </section>
@@ -300,11 +308,23 @@ const exclusiveProducts = computed(() => {
 const currentSlide = ref(0)
 let slideInterval = null
 
+const currentStorySlide = ref(0)
+let storySlideInterval = null
+
 const startSlider = () => {
   if (slideInterval) clearInterval(slideInterval)
   slideInterval = setInterval(() => {
     currentSlide.value = (currentSlide.value + 1) % heroSlides.value.length
   }, 5000)
+}
+
+const startStorySlider = () => {
+  if (storySlideInterval) clearInterval(storySlideInterval)
+  storySlideInterval = setInterval(() => {
+    if (popularProducts.value.length > 0) {
+      currentStorySlide.value = (currentStorySlide.value + 1) % popularProducts.value.length
+    }
+  }, 3500)
 }
 
 const navigateToCategory = (slug) => {
@@ -319,10 +339,12 @@ onMounted(() => {
   if (heroSlides.value.length > 1) {
     startSlider()
   }
+  startStorySlider()
 })
 
 onUnmounted(() => {
   if (slideInterval) clearInterval(slideInterval)
+  if (storySlideInterval) clearInterval(storySlideInterval)
 })
 </script>
 
@@ -919,5 +941,56 @@ body.dark-mode .designer-text p {
     height: 350px;
     margin-top: 30px;
   }
+}
+
+/* Story Product Slider Styles */
+.product-slider-canvas {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.story-slide-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.story-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.story-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-product-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 30px;
+  color: white;
+}
+
+.story-product-overlay .luxury-title {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.story-product-overlay .btn-premium {
+  align-self: flex-start;
 }
 </style>
