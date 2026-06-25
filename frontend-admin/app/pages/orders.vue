@@ -47,7 +47,7 @@
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-gray-900 dark:text-white text-lg">Order Management</h3>
           <div class="flex items-center gap-3">
-            <USelect v-model="statusFilter" :options="[
+            <USelect v-model="statusFilter" option-attribute="label" value-attribute="value" :options="[
               { label: 'All Statuses', value: 'all' },
               { label: 'Pending', value: 'pending' },
               { label: 'Confirmed', value: 'confirmed' },
@@ -56,7 +56,7 @@
               { label: 'Delivered', value: 'delivered' },
               { label: 'Cancelled', value: 'cancelled' }
             ]" class="w-40" @update:model-value="loadOrders(1)" />
-            <USelect v-model="paymentFilter" :options="[
+            <USelect v-model="paymentFilter" option-attribute="label" value-attribute="value" :options="[
               { label: 'All Payment Methods', value: 'all' },
               { label: 'Bank Deposit', value: 'bank_deposit' },
               { label: 'Cash on Delivery', value: 'cod' },
