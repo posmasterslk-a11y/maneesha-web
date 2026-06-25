@@ -73,6 +73,15 @@
 </template>
 
 <script setup>
+useSeoMeta({
+  title: 'Contact Us | Maneesha Fashion Sri Lanka',
+  description: 'Get in touch with Maneesha Fashion for inquiries about our premium clothing, custom tailoring, and orders. We are located in Ganemulla, Sri Lanka.',
+  keywords: 'contact Maneesha Fashion, Maneesha Fashion Ganemulla, Sri Lanka fashion store contact, custom tailoring inquiries, clothing store phone number',
+  ogTitle: 'Contact Us | Maneesha Fashion Sri Lanka',
+  ogDescription: 'Get in touch with Maneesha Fashion for inquiries about our premium clothing, custom tailoring, and orders. We are located in Ganemulla, Sri Lanka.',
+  ogUrl: 'https://maneesha.posmasters.lk/contact',
+  ogType: 'website'
+})
 const submitForm = () => {
   alert('Thank you for your message! Our team will get back to you shortly.');
 }

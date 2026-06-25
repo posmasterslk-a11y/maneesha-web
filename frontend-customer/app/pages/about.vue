@@ -1,3 +1,15 @@
+<script setup>
+useSeoMeta({
+  title: 'About Maneesha Fashion | Premium Women\'s Wear in Sri Lanka',
+  description: 'Learn about Maneesha Fashion, Sri Lanka\'s premier destination for bespoke women\'s clothing. Discover our passion for tailoring elegant sarees, lehengas, and unique frocks.',
+  keywords: 'about Maneesha Fashion, Sri Lankan fashion brand, bespoke tailoring Sri Lanka, premium ladies wear boutique, custom clothing brand',
+  ogTitle: 'About Maneesha Fashion | Premium Women\'s Wear in Sri Lanka',
+  ogDescription: 'Learn about Maneesha Fashion, Sri Lanka\'s premier destination for bespoke women\'s clothing. Discover our passion for tailoring elegant sarees, lehengas, and unique frocks.',
+  ogUrl: 'https://maneesha.posmasters.lk/about',
+  ogType: 'website'
+})
+</script>
+
 <template>
   <div class="static-page-container">
     <div class="static-header glass-panel">

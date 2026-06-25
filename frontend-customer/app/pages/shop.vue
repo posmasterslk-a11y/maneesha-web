@@ -170,6 +170,18 @@ watch(searchQuery, () => {
 
 watch(activeCategory, () => fetchProducts(1, false))
 
+useSeoMeta({
+  title: 'Shop Premium Women\'s Clothing | Maneesha Fashion Sri Lanka',
+  description: 'Browse our exclusive collection of premium women\'s wear, including designer sarees, elegant lehengas, bespoke frocks, and more. Find your perfect fit at Maneesha Fashion.',
+  keywords: 'shop women\'s clothing, buy sarees online Sri Lanka, designer lehengas, bespoke dresses online, custom tailored frocks, premium ladies wear, Maneesha Fashion shop',
+  ogTitle: 'Shop Premium Women\'s Clothing | Maneesha Fashion Sri Lanka',
+  ogDescription: 'Browse our exclusive collection of premium women\'s wear, including designer sarees, elegant lehengas, bespoke frocks, and more. Find your perfect fit at Maneesha Fashion.',
+  ogImage: '/images/hero-banner.jpg',
+  ogUrl: 'https://maneesha.posmasters.lk/shop',
+  ogType: 'website',
+  twitterCard: 'summary_large_image'
+})
+
 onMounted(async () => {
   await fetchProducts(1, false)
 })

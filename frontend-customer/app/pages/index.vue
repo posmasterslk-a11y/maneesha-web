@@ -250,13 +250,19 @@ const config = useRuntimeConfig()
 const API = config.public.apiBase
 const router = useRouter()
 
-// Add SEO Meta Tags
-useHead({
-  title: 'Maneesha Fashion - Elegant Stitches Crafted For Your Shape',
-  meta: [
-    { name: 'description', content: 'Maneesha Fashion offers a carefully curated collection of premium clothing. We specialize in bespoke standard sizes for a perfect fit, including sarees, lehengas, frocks, and wedding collections.' },
-    { name: 'keywords', content: 'Maneesha Fashion, premium clothing, bespoke clothing, online fashion store, Sri Lanka fashion, designer wear, lehengas, sarees, frocks' }
-  ]
+useSeoMeta({
+  title: 'Maneesha Fashion - Premium Women\'s Clothing & Bespoke Fashion in Sri Lanka',
+  description: 'Discover the latest trends in women\'s fashion at Maneesha Fashion. Shop premium quality sarees, lehengas, bespoke frocks, and custom-tailored dresses online in Sri Lanka. Experience perfect fits and elegant styles.',
+  keywords: 'Maneesha Fashion, online clothing store Sri Lanka, women\'s fashion Sri Lanka, buy sarees online, bespoke dresses, custom fit clothing, tailored frocks, lehengas Sri Lanka, premium ladies wear, designer clothing',
+  ogTitle: 'Maneesha Fashion - Premium Women\'s Clothing & Bespoke Fashion in Sri Lanka',
+  ogDescription: 'Shop premium quality sarees, lehengas, bespoke frocks, and custom-tailored dresses online in Sri Lanka. Experience perfect fits and elegant styles at Maneesha Fashion.',
+  ogImage: '/images/hero-banner.jpg',
+  ogUrl: 'https://maneesha.posmasters.lk/',
+  ogType: 'website',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Maneesha Fashion - Premium Women\'s Clothing in Sri Lanka',
+  twitterDescription: 'Discover the latest trends in women\'s fashion at Maneesha Fashion. Shop premium sarees, lehengas, and bespoke frocks online.',
+  twitterImage: '/images/hero-banner.jpg'
 })
 
 const categoryIcons = {
