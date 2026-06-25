@@ -7,18 +7,18 @@
     
     <div class="static-content glass-panel">
       <section>
-        <h2>1. No Refunds or Returns</h2>
-        <p>We do not accept returns, exchanges, or issue refunds for any purchased items under any circumstances. All sales are final.</p>
+        <h2>1. Return & Refund Policy</h2>
+        <p>We do not accept returns, exchanges, or issue refunds for any purchased items, <strong>except</strong> in the case of a mistake on our part (e.g., sending the wrong item) or if the product or parcel arrives damaged.</p>
       </section>
 
       <section>
         <h2>2. Verify Before Ordering</h2>
-        <p>To ensure complete satisfaction, we strongly advise you to carefully review all product details before confirming your order. Please double-check the <strong>price</strong>, <strong>size</strong>, <strong>color</strong>, and any other relevant specifications.</p>
+        <p>To ensure complete satisfaction, we strongly advise you to carefully review all product details before confirming your order. Please double-check the <strong>price</strong>, <strong>size</strong>, <strong>color</strong>, and any other relevant specifications, as we do not accept returns for incorrect selections made by the customer.</p>
       </section>
 
       <section>
-        <h2>3. Defective or Incorrect Items</h2>
-        <p>In the rare event that you receive a defective item or an item different from what you ordered, please contact our customer support team immediately upon delivery with clear photographic evidence. We will review such cases individually to find a fair resolution.</p>
+        <h2>3. Defective, Damaged, or Incorrect Items</h2>
+        <p>If you receive a defective or damaged item, or an item different from what you ordered due to our mistake, please contact our customer support team immediately upon delivery with clear photographic evidence of the damage or mistake. We will review such cases and arrange a return or exchange accordingly.</p>
       </section>
     </div>
   </div>
