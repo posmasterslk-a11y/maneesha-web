@@ -2,33 +2,23 @@
   <div class="static-page-container">
     <div class="static-header glass-panel">
       <h1>Return & Refund Policy</h1>
-      <p>We want you to be completely satisfied with your purchase.</p>
+      <p>Please read our return and refund policy carefully before placing an order.</p>
     </div>
     
     <div class="static-content glass-panel">
       <section>
-        <h2>1. Returns</h2>
-        <p>We accept returns within 7 days of the delivery date. To be eligible for a return, your item must be unused, unwashed, and in the same condition that you received it. It must also be in the original packaging with all tags attached.</p>
+        <h2>1. No Refunds or Returns</h2>
+        <p>We do not accept returns, exchanges, or issue refunds for any purchased items under any circumstances. All sales are final.</p>
       </section>
 
       <section>
-        <h2>2. Non-returnable Items</h2>
-        <p>Several types of goods are exempt from being returned, including intimate apparel, customized items, and sale items. Please contact us if you have questions about your specific item.</p>
+        <h2>2. Verify Before Ordering</h2>
+        <p>To ensure complete satisfaction, we strongly advise you to carefully review all product details before confirming your order. Please double-check the <strong>price</strong>, <strong>size</strong>, <strong>color</strong>, and any other relevant specifications.</p>
       </section>
 
       <section>
-        <h2>3. Refunds</h2>
-        <p>Once your return is received and inspected, we will notify you of the approval or rejection of your refund. If approved, your refund will be processed, and a credit will automatically be applied to your bank account within 5-7 business days.</p>
-      </section>
-
-      <section>
-        <h2>4. Exchanges</h2>
-        <p>We only replace items if they are defective or damaged. If you need to exchange an item for a different size, please return the original item and place a new order, or contact our customer support for assistance.</p>
-      </section>
-
-      <section>
-        <h2>5. Shipping Returns</h2>
-        <p>You will be responsible for paying for your own shipping costs for returning your item. Shipping costs are non-refundable. If you receive a refund, the cost of return shipping will be deducted from your refund.</p>
+        <h2>3. Defective or Incorrect Items</h2>
+        <p>In the rare event that you receive a defective item or an item different from what you ordered, please contact our customer support team immediately upon delivery with clear photographic evidence. We will review such cases individually to find a fair resolution.</p>
       </section>
     </div>
   </div>
