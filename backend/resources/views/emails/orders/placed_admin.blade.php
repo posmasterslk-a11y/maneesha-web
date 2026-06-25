@@ -15,8 +15,8 @@ You have received a new order (**#{{ $order->order_number }}**) from **{{ $order
 <x-mail::table>
 | Item       | Qty         | Price  |
 | :--------- | :---------- | :----- |
-@foreach($order->items as $item)
-| {{ $item->product_name ?? 'Product' }} | {{ $item->quantity }} | Rs. {{ number_format($item->price, 2) }} |
+@foreach($order->orderItems as $item)
+| {{ $item->product_name ?? 'Product' }} | {{ $item->quantity }} | Rs. {{ number_format($item->unit_price, 2) }} |
 @endforeach
 </x-mail::table>
 

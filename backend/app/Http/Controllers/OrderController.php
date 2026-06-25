@@ -170,8 +170,8 @@ class OrderController extends Controller
         try {
             Mail::to($order->customer_email)->send(new OrderPlacedCustomer($order));
             Mail::to('hashinirkarunarathne@gmail.com')->send(new OrderPlacedAdmin($order));
-        } catch (\Exception $e) {
-            Log::warning("Failed to send order email: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::warning("Failed to send order email: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
         }
 
         return response()->json([
@@ -325,8 +325,8 @@ class OrderController extends Controller
         // Send email to customer on status update
         try {
             Mail::to($order->customer_email)->send(new OrderStatusChanged($order));
-        } catch (\Exception $e) {
-            Log::warning("Failed to send order status email: " . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::warning("Failed to send order status email: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
         }
 
         return response()->json([
