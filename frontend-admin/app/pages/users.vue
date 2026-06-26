@@ -14,9 +14,9 @@
           </template>
           
           <template #actions-cell="{ row }">
-            <UDropdown :items="getItems(row.original)">
+            <UDropdownMenu :items="getItems(row.original)">
               <UButton color="neutral" variant="ghost" icon="i-lucide-more-horizontal" />
-            </UDropdown>
+            </UDropdownMenu>
           </template>
         </UTable>
       </div>
@@ -122,13 +122,13 @@ const getItems = (row) => [
   [{
     label: 'Edit',
     icon: 'i-lucide-pencil',
-    click: () => openEditModal(row)
+    onSelect: () => openEditModal(row)
   }],
   [{
     label: 'Delete',
     icon: 'i-lucide-trash-2',
     color: 'error',
-    click: () => deleteUser(row.id)
+    onSelect: () => deleteUser(row.id)
   }]
 ]
 

@@ -123,9 +123,9 @@
             </template>
             
             <template #actions-cell="{ row }">
-              <UDropdown :items="getOrderActions(row.original)">
+              <UDropdownMenu :items="getOrderActions(row.original)">
                 <UButton color="gray" variant="ghost" icon="i-lucide-more-horizontal" />
-              </UDropdown>
+              </UDropdownMenu>
             </template>
             
             <template #empty>
@@ -579,18 +579,18 @@ const getOrderActions = (order) => {
   const items = []
   
   if (order.status === 'pending') {
-    items.push([{ label: 'Confirm Order', icon: 'i-lucide-check', click: () => updateStatus(order, 'confirmed') }])
+    items.push([{ label: 'Confirm Order', icon: 'i-lucide-check', onSelect: () => updateStatus(order, 'confirmed') }])
   } else if (order.status === 'confirmed') {
-    items.push([{ label: 'Process Order', icon: 'i-lucide-settings', click: () => updateStatus(order, 'processing') }])
+    items.push([{ label: 'Process Order', icon: 'i-lucide-settings', onSelect: () => updateStatus(order, 'processing') }])
   } else if (order.status === 'processing') {
-    items.push([{ label: 'Deliver Order', icon: 'i-lucide-check-square', click: () => updateStatus(order, 'delivered') }])
+    items.push([{ label: 'Deliver Order', icon: 'i-lucide-check-square', onSelect: () => updateStatus(order, 'delivered') }])
   }
   
   const secondaryItems = []
   if (['pending', 'confirmed', 'processing'].includes(order.status)) {
-    secondaryItems.push({ label: 'Cancel Order', icon: 'i-lucide-x-circle', color: 'error', click: () => openCancel(order) })
+    secondaryItems.push({ label: 'Cancel Order', icon: 'i-lucide-x-circle', color: 'error', onSelect: () => openCancel(order) })
   }
-  secondaryItems.push({ label: 'Delete Order', icon: 'i-lucide-trash-2', color: 'error', click: () => deleteOrder(order) })
+  secondaryItems.push({ label: 'Delete Order', icon: 'i-lucide-trash-2', color: 'error', onSelect: () => deleteOrder(order) })
   
   items.push(secondaryItems)
   return items

@@ -123,13 +123,9 @@
             </template>
             
             <template #actions-cell="{ row }">
-              <div class="flex gap-1 flex-wrap max-w-[120px]">
-                <UButton v-if="row.original.status === 'pending'" size="xs" color="primary" @click="updateStatus(row.original, 'confirmed')">Confirm</UButton>
-                <UButton v-if="row.original.status === 'confirmed'" size="xs" color="purple" @click="updateStatus(row.original, 'processing')">Process</UButton>
-                <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'delivered')">Deliver</UButton>
-                <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="openCancel(row.original)">Cancel</UButton>
-                <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" @click="deleteOrder(row.original)" title="Delete Order" />
-              </div>
+              <UDropdownMenu :items="getOrderActions(row.original)">
+                <UButton color="gray" variant="ghost" icon="i-lucide-more-horizontal" />
+              </UDropdownMenu>
             </template>
             
             <template #empty>
@@ -583,8 +579,25 @@ const approveSlipFromModal = () => {
   }
 }
 
-const formatNumber = (num) => {
-  return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const getOrderActions = (order) => {
+  const items = []
+  
+  if (order.status === 'pending') {
+    items.push([{ label: 'Confirm Order', icon: 'i-lucide-check', onSelect: () => updateStatus(order, 'confirmed') }])
+  } else if (order.status === 'confirmed') {
+    items.push([{ label: 'Process Order', icon: 'i-lucide-settings', onSelect: () => updateStatus(order, 'processing') }])
+  } else if (order.status === 'processing') {
+    items.push([{ label: 'Deliver Order', icon: 'i-lucide-check-square', onSelect: () => updateStatus(order, 'delivered') }])
+  }
+  
+  const secondaryItems = []
+  if (['pending', 'confirmed', 'processing'].includes(order.status)) {
+    secondaryItems.push({ label: 'Cancel Order', icon: 'i-lucide-x-circle', color: 'error', onSelect: () => openCancel(order) })
+  }
+  secondaryItems.push({ label: 'Delete Order', icon: 'i-lucide-trash-2', color: 'error', onSelect: () => deleteOrder(order) })
+  
+  items.push(secondaryItems)
+  return items
 }
 
 onMounted(() => {
