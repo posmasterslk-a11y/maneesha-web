@@ -246,7 +246,7 @@ class OrderController extends Controller
         return response()->json([
             'totalOrders' => Order::count(),
             'pendingOrders' => Order::where('status', 'pending')->count(),
-            'dispatchedOrders' => Order::whereIn('status', ['dispatched', 'delivered'])->count(),
+            'deliveredOrders' => Order::where('status', 'delivered')->count(),
             'bankDepositOrders' => Order::where('payment_method', 'bank_deposit')->count(),
             'payhereOrders' => Order::where('payment_method', 'payhere')->count(),
             'codOrders' => Order::where('payment_method', 'cod')->count()
@@ -259,7 +259,7 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,dispatched,delivered,cancelled',
+            'status' => 'required|in:pending,confirmed,processing,delivered,cancelled',
             'cancellation_reason' => 'nullable|string'
         ]);
 
@@ -285,9 +285,7 @@ class OrderController extends Controller
 
         $order->status = $request->status;
         
-        if ($request->status === 'dispatched') {
-            $order->dispatched_at = now();
-        } else if ($request->status === 'delivered') {
+        if ($request->status === 'delivered') {
             $order->delivered_at = now();
         } else if ($request->status === 'cancelled') {
             $order->cancellation_reason = $request->cancellation_reason;
@@ -309,7 +307,6 @@ class OrderController extends Controller
                 $statusMessages = [
                     'confirmed' => "Your Maneesha Fashion order #{$order->order_number} has been confirmed.",
                     'processing' => "Your Maneesha Fashion order #{$order->order_number} is now being processed.",
-                    'dispatched' => "Great news! Your Maneesha Fashion order #{$order->order_number} has been dispatched.",
                     'delivered' => "Your Maneesha Fashion order #{$order->order_number} has been delivered. Thank you!",
                     'cancelled' => "Your Maneesha Fashion order #{$order->order_number} has been cancelled."
                 ];

@@ -62,10 +62,7 @@
               <span class="node-label">Processing</span>
             </div>
             
-            <div :class="['node', { active: isNodeActive(order.status, 'dispatched') }]">
-              <div class="node-bullet"><i class="fa-solid fa-truck-fast" v-if="order.status === 'dispatched'"></i><i class="fa-solid fa-check" v-else></i></div>
-              <span class="node-label">Dispatched</span>
-            </div>
+
           </div>
         </div>
         
@@ -201,13 +198,13 @@ const getStatusProgressWidth = (status) => {
   if (status === 'pending') return '0%'
   if (status === 'confirmed') return '33%'
   if (status === 'processing' || status === 'stitching') return '66%'
-  if (status === 'dispatched' || status === 'delivered' || status === 'completed') return '100%'
+  if (status === 'delivered' || status === 'completed') return '100%'
   return '0%'
 }
 
 const isNodeActive = (activeStatus, nodeStatus) => {
-  const normalize = (s) => s === 'stitching' ? 'processing' : (s === 'completed' || s === 'delivered' ? 'dispatched' : s);
-  const ranks = { 'pending': 0, 'confirmed': 1, 'processing': 2, 'dispatched': 3 };
+  const normalize = (s) => s === 'stitching' ? 'processing' : (s === 'completed' ? 'delivered' : s);
+  const ranks = { 'pending': 0, 'confirmed': 1, 'processing': 2, 'delivered': 3 };
   return (ranks[normalize(activeStatus)] || 0) >= (ranks[normalize(nodeStatus)] || 0);
 }
 

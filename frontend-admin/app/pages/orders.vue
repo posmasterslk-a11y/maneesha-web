@@ -25,7 +25,7 @@
           <UPageCard title="Done" icon="i-lucide-truck" variant="subtle"
             :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-emerald-500/10 ring ring-inset ring-emerald-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
             class="lg:rounded-none">
-            <span class="text-2xl font-semibold text-highlighted">{{ stats.dispatchedOrders || 0 }}</span>
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.deliveredOrders || 0 }}</span>
           </UPageCard>
           <UPageCard title="Bank Deposits" icon="i-lucide-building-2" variant="subtle"
             :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-purple-500/10 ring ring-inset ring-purple-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
@@ -52,7 +52,7 @@
               { label: 'Pending', value: 'pending' },
               { label: 'Confirmed', value: 'confirmed' },
               { label: 'Processing', value: 'processing' },
-              { label: 'Dispatched', value: 'dispatched' },
+
               { label: 'Delivered', value: 'delivered' },
               { label: 'Cancelled', value: 'cancelled' }
             ]" class="w-40" @update:model-value="loadOrders(1)" />
@@ -117,7 +117,7 @@
             </template>
             
             <template #status-cell="{ row }">
-              <UBadge :color="row.original.status === 'delivered' ? 'emerald' : row.original.status === 'pending' ? 'amber' : row.original.status === 'processing' ? 'purple' : row.original.status === 'dispatched' ? 'primary' : 'gray'" variant="soft" class="capitalize">
+              <UBadge :color="row.original.status === 'delivered' ? 'emerald' : row.original.status === 'pending' ? 'amber' : row.original.status === 'processing' ? 'purple' : 'gray'" variant="soft" class="capitalize">
                 {{ row.original.status }}
               </UBadge>
             </template>
@@ -583,9 +583,7 @@ const getOrderActions = (order) => {
   } else if (order.status === 'confirmed') {
     items.push([{ label: 'Process Order', icon: 'i-lucide-settings', click: () => updateStatus(order, 'processing') }])
   } else if (order.status === 'processing') {
-    items.push([{ label: 'Dispatch Order', icon: 'i-lucide-truck', click: () => updateStatus(order, 'dispatched') }])
-  } else if (order.status === 'dispatched') {
-    items.push([{ label: 'Mark Delivered', icon: 'i-lucide-check-square', click: () => updateStatus(order, 'delivered') }])
+    items.push([{ label: 'Deliver Order', icon: 'i-lucide-check-square', click: () => updateStatus(order, 'delivered') }])
   }
   
   const secondaryItems = []
@@ -719,14 +717,14 @@ onMounted(() => {
 .modern-badge.pending { background: #fef3c7; color: #d97706; }
 .modern-badge.confirmed { background: #e0e7ff; color: #4f46e5; }
 .modern-badge.processing { background: #f3e8ff; color: #7e22ce; }
-.modern-badge.dispatched { background: #d1fae5; color: #059669; }
+.modern-badge.delivered { background: #dcfce3; color: #166534; }
 .modern-badge.delivered { background: #dcfce3; color: #166534; }
 .modern-badge.cancelled { background: #fee2e2; color: #dc2626; }
 
 body.dark-mode .modern-badge.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 body.dark-mode .modern-badge.confirmed { background: rgba(79, 70, 229, 0.15); color: #818cf8; }
 body.dark-mode .modern-badge.processing { background: rgba(147, 51, 234, 0.15); color: #c084fc; }
-body.dark-mode .modern-badge.dispatched { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+body.dark-mode .modern-badge.delivered { background: rgba(22, 163, 74, 0.15); color: #4ade80; }
 body.dark-mode .modern-badge.delivered { background: rgba(22, 163, 74, 0.15); color: #4ade80; }
 body.dark-mode .modern-badge.cancelled { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 

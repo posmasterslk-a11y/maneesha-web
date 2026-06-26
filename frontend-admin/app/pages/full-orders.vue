@@ -25,7 +25,7 @@
           <UPageCard title="Done" icon="i-lucide-truck" variant="subtle"
             :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-emerald-500/10 ring ring-inset ring-emerald-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
             class="lg:rounded-none">
-            <span class="text-2xl font-semibold text-highlighted">{{ stats.dispatchedOrders || 0 }}</span>
+            <span class="text-2xl font-semibold text-highlighted">{{ stats.deliveredOrders || 0 }}</span>
           </UPageCard>
           <UPageCard title="Bank Deposits" icon="i-lucide-building-2" variant="subtle"
             :ui="{ container: 'gap-y-1.5', wrapper: 'items-start', leading: 'p-2.5 rounded-full bg-purple-500/10 ring ring-inset ring-purple-500/25 flex-col', title: 'font-normal text-muted text-xs uppercase' }"
@@ -52,7 +52,7 @@
               { label: 'Pending', value: 'pending' },
               { label: 'Confirmed', value: 'confirmed' },
               { label: 'Processing', value: 'processing' },
-              { label: 'Dispatched', value: 'dispatched' },
+
               { label: 'Delivered', value: 'delivered' },
               { label: 'Cancelled', value: 'cancelled' }
             ]" class="w-40" />
@@ -117,7 +117,7 @@
             </template>
             
             <template #status-cell="{ row }">
-              <UBadge :color="row.original.status === 'delivered' ? 'emerald' : row.original.status === 'pending' ? 'amber' : row.original.status === 'processing' ? 'purple' : row.original.status === 'dispatched' ? 'primary' : 'gray'" variant="soft" class="capitalize">
+              <UBadge :color="row.original.status === 'delivered' ? 'emerald' : row.original.status === 'pending' ? 'amber' : row.original.status === 'processing' ? 'purple' : 'gray'" variant="soft" class="capitalize">
                 {{ row.original.status }}
               </UBadge>
             </template>
@@ -126,8 +126,7 @@
               <div class="flex gap-1 flex-wrap max-w-[120px]">
                 <UButton v-if="row.original.status === 'pending'" size="xs" color="primary" @click="updateStatus(row.original, 'confirmed')">Confirm</UButton>
                 <UButton v-if="row.original.status === 'confirmed'" size="xs" color="purple" @click="updateStatus(row.original, 'processing')">Process</UButton>
-                <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
-                <UButton v-if="row.original.status === 'dispatched'" size="xs" color="gray" @click="updateStatus(row.original, 'delivered')">Close</UButton>
+                <UButton v-if="row.original.status === 'processing'" size="xs" color="emerald" @click="updateStatus(row.original, 'delivered')">Deliver</UButton>
                 <UButton v-if="['pending', 'confirmed', 'processing'].includes(row.original.status)" size="xs" color="red" variant="soft" @click="openCancel(row.original)">Cancel</UButton>
                 <UButton size="xs" color="red" variant="ghost" icon="i-lucide-trash-2" @click="deleteOrder(row.original)" title="Delete Order" />
               </div>

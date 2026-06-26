@@ -212,13 +212,13 @@
             </div>
           </div>
 
-          <!-- Dispatched -->
+          <!-- Delivered -->
           <div class="modern-card group">
             <div class="card-glow bg-purple-500/20"></div>
             <div class="relative z-10 flex justify-between items-start">
               <div>
-                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Dispatched Orders</p>
-                <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ stats.dispatchedOrders ?? 0 }}</h3>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Delivered Orders</p>
+                <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ stats.deliveredOrders ?? 0 }}</h3>
               </div>
               <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
                 <UIcon name="i-lucide-package" class="w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -293,14 +293,12 @@
                     row.original.status === 'delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' : 
                     row.original.status === 'pending' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' : 
                     row.original.status === 'processing' ? 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800' : 
-                    row.original.status === 'dispatched' ? 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-900/30 dark:text-sky-400 dark:border-sky-800' : 
                     'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
                   ]">
                     <span class="w-1 h-1 rounded-full" :class="[
                       row.original.status === 'delivered' ? 'bg-emerald-500' : 
                       row.original.status === 'pending' ? 'bg-amber-500 animate-pulse' : 
-                      row.original.status === 'processing' ? 'bg-purple-500' : 
-                      row.original.status === 'dispatched' ? 'bg-sky-500' : 'bg-gray-500'
+                      row.original.status === 'processing' ? 'bg-purple-500' : 'bg-gray-500'
                     ]"></span>
                     {{ row.original.status }}
                   </div>
@@ -315,8 +313,7 @@
                 <div class="flex gap-1 flex-wrap">
                   <UButton v-if="row.original.status === 'pending'" size="2xs" color="primary" variant="solid" class="rounded-md font-bold shadow-sm text-[9px]" @click="updateStatus(row.original, 'confirmed')">Confirm</UButton>
                   <UButton v-if="row.original.status === 'confirmed'" size="2xs" color="purple" variant="solid" class="rounded-md font-bold shadow-sm text-[9px]" @click="updateStatus(row.original, 'processing')">Process</UButton>
-                  <UButton v-if="row.original.status === 'processing'" size="2xs" color="emerald" variant="solid" class="rounded-md font-bold shadow-sm text-[9px]" @click="updateStatus(row.original, 'dispatched')">Dispatch</UButton>
-                  <UButton v-if="row.original.status === 'dispatched'" size="2xs" color="gray" variant="solid" class="rounded-md font-bold shadow-sm text-[9px]" @click="updateStatus(row.original, 'delivered')">Close</UButton>
+                  <UButton v-if="row.original.status === 'processing'" size="2xs" color="emerald" variant="solid" class="rounded-md font-bold shadow-sm text-[9px]" @click="updateStatus(row.original, 'delivered')">Deliver</UButton>
                 </div>
               </template>
               
@@ -448,7 +445,7 @@ const stats = ref({
   totalOrders: 0,
   pendingOrders: 0,
   deliveredOrders: 0,
-  dispatchedOrders: 0,
+  deliveredOrders: 0,
   bankDepositOrders: 0,
   codOrders: 0,
   payhereOrders: 0,
