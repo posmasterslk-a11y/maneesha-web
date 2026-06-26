@@ -38,6 +38,7 @@
       <div v-for="prod in products" :key="prod.id" class="product-card glass-panel">
         <div class="product-img-wrapper">
           <div class="product-tag" v-if="prod.is_featured">Featured</div>
+          <div class="product-tag" v-if="getTotalStock(prod) <= 0" style="background: var(--accent-error); color: #fff; left: auto; right: 15px;">Out of Stock</div>
           <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="product-real-img" />
           <div v-else class="product-visual-placeholder">
             <i class="fa-solid fa-shirt"></i>
@@ -159,6 +160,13 @@ const resetFilters = () => {
 
 const formatNumber = (num) => {
   return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const getTotalStock = (prod) => {
+  if (prod.variants && prod.variants.length > 0) {
+    return prod.variants.reduce((sum, v) => sum + v.stock, 0)
+  }
+  return prod.stock || 0
 }
 
 // Debounce search to avoid too many requests
