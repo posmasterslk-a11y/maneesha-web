@@ -169,7 +169,7 @@ class OrderController extends Controller
         // Send email to customer and admin
         try {
             Mail::to($order->customer_email)->send(new OrderPlacedCustomer($order));
-            Mail::to('hashinirkarunarathne@gmail.com')->send(new OrderPlacedAdmin($order));
+            Mail::to(['hashinirkarunarathne@gmail.com', 'manishafashion96@gmail.com'])->send(new OrderPlacedAdmin($order));
         } catch (\Throwable $e) {
             Log::warning("Failed to send order email: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
         }
