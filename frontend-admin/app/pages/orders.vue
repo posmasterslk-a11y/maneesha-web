@@ -248,18 +248,12 @@
         </UModal>
 
         <!-- Image Preview Modal -->
-        <UModal v-model:open="isImagePreviewOpen" :ui="{ width: 'sm:max-w-2xl' }">
-          <template #content>
-            <div class="relative p-2 bg-white dark:bg-gray-900 rounded-lg">
-              <div class="absolute top-4 right-4 z-10">
-                <UButton color="white" variant="solid" icon="i-lucide-x" class="rounded-full shadow-lg" @click="isImagePreviewOpen = false" />
-              </div>
-              <div class="flex justify-center items-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 min-h-[300px]">
-                <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[80vh] object-contain" />
-              </div>
-            </div>
-          </template>
-        </UModal>
+        <div v-if="isImagePreviewOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click="isImagePreviewOpen = false">
+          <div class="relative max-w-4xl w-full flex justify-center" @click.stop>
+            <UButton color="white" variant="solid" icon="i-lucide-x" class="absolute -top-4 -right-4 md:-right-10 rounded-full shadow-lg z-[10000]" @click="isImagePreviewOpen = false" />
+            <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl bg-white dark:bg-gray-900" />
+          </div>
+        </div>
 
         <!-- Confirmation Modal -->
         <UModal v-model:open="confirmDialog.isOpen" :ui="{ width: 'sm:max-w-sm' }">
