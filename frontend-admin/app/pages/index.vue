@@ -436,7 +436,7 @@ import { ref, onMounted, inject } from 'vue'
 
 const config = useRuntimeConfig()
 const API = config.public.apiBase
-const token = () => localStorage.getItem('maneesha-admin-token') || ''
+const token = () => (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token')) || ''
 const adminName = inject('adminName', ref('Admin'))
 const adminRole = inject('adminRole', ref('admin'))
 

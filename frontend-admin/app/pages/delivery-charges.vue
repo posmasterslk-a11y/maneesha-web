@@ -80,7 +80,7 @@ const fetchCharges = async () => {
 const saveCharges = async () => {
   isSaving.value = true
   try {
-    const token = localStorage.getItem('maneesha-admin-token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     await $fetch(`${API}/admin/settings/delivery-charges`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },

@@ -134,7 +134,7 @@ const getItems = (row) => [
 
 const fetchUsers = async () => {
   pending.value = true
-  const token = localStorage.getItem('maneesha-admin-token')
+  const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
   try {
     const res = await fetch(`${API}/admin/users`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -164,7 +164,7 @@ const openEditModal = (user) => {
 
 const saveUser = async () => {
   saving.value = true
-  const token = localStorage.getItem('maneesha-admin-token')
+  const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
   
   const payload = {
     name: form.value.name,
@@ -205,7 +205,7 @@ const saveUser = async () => {
 const deleteUser = async (id) => {
   if (!confirm('Are you sure you want to delete this user?')) return
   
-  const token = localStorage.getItem('maneesha-admin-token')
+  const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
   try {
     const res = await fetch(`${API}/admin/users/${id}`, {
       method: 'DELETE',

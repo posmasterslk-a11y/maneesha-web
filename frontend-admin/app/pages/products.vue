@@ -248,7 +248,7 @@ import { ref, onMounted, watch } from 'vue'
 
 const config = useRuntimeConfig()
 const API = config.public.apiBase
-const token = () => localStorage.getItem('maneesha-admin-token') || ''
+const token = () => (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token')) || ''
 
 const products    = ref([])
 const categories  = ref([])

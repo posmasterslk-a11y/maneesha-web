@@ -107,7 +107,7 @@ const formData = ref({
 const fetchAccounts = async () => {
   isLoading.value = true
   try {
-    const token = localStorage.getItem('maneesha-admin-token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     const response = await $fetch(`${API}/admin/bank-accounts`, {
       headers: { Authorization: `Bearer ${token}` }
     })
@@ -139,7 +139,7 @@ const openModal = (account = null) => {
 const saveAccount = async () => {
   isSaving.value = true
   try {
-    const token = localStorage.getItem('maneesha-admin-token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     const method = editingId.value ? 'PUT' : 'POST'
     const url = editingId.value 
       ? `${API}/admin/bank-accounts/${editingId.value}` 
@@ -165,7 +165,7 @@ const deleteAccount = async (id) => {
   if (!confirm('Are you sure you want to delete this bank account?')) return
   
   try {
-    const token = localStorage.getItem('maneesha-admin-token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     await $fetch(`${API}/admin/bank-accounts/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` }
@@ -179,7 +179,7 @@ const deleteAccount = async (id) => {
 
 const toggleActive = async (account) => {
   try {
-    const token = localStorage.getItem('maneesha-admin-token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     await $fetch(`${API}/admin/bank-accounts/${account.id}/toggle`, {
       method: 'PUT',
       headers: { Authorization: `Bearer ${token}` }

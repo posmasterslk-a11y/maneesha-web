@@ -484,7 +484,7 @@ const executeConfirm = () => {
 
 const authHeaders = () => {
   return {
-    'Authorization': `Bearer ${localStorage.getItem('maneesha-admin-token') || ''}`,
+    'Authorization': `Bearer ${(localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token')) || ''}`,
     'Accept': 'application/json'
   }
 }

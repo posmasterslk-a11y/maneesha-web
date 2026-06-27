@@ -170,7 +170,7 @@ import { ref, onMounted } from 'vue'
 
 const config = useRuntimeConfig()
 const API = config.public.apiBase
-const token = () => localStorage.getItem('maneesha-admin-token') || ''
+const token = () => (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token')) || ''
 const authHeaders = () => ({ 'Authorization': `Bearer ${token()}`, 'Accept': 'application/json', 'Content-Type': 'application/json' })
 
 const categories  = ref([])
