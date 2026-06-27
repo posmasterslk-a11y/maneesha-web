@@ -159,6 +159,7 @@
                   <UButton color="gray" variant="ghost" icon="i-lucide-x" @click="closeItemsModal" />
                 </div>
               <UTable :data="selectedOrderItems || []" :columns="[
+                { id: 'product_image', header: 'Image' },
                 { id: 'product_name', header: 'Product' },
                 { id: 'size', header: 'Size' },
                 { id: 'quantity', header: 'Qty' },
@@ -170,6 +171,14 @@
                 </template>
                 <template #total-cell="{ row }">
                   <span class="font-bold">LKR {{ formatNumber(row.original.subtotal || (row.original.unit_price * row.original.quantity)) }}</span>
+                </template>
+                <template #product_image-cell="{ row }">
+                  <div class="w-12 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                    <img v-if="row.original.product_image && row.original.product_image !== '/placeholder.jpg'" 
+                      :src="row.original.product_image.startsWith('http') ? row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', '')" 
+                      alt="Product" class="w-full h-full object-cover" />
+                    <UIcon v-else name="i-lucide-image" class="w-5 h-5 text-gray-400" />
+                  </div>
                 </template>
                 <template #product_name-cell="{ row }">
                   {{ row.original.product_name }}

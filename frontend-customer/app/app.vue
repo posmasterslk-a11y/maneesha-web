@@ -14,6 +14,11 @@
         </nav>
         
         <div class="header-actions">
+          <form @submit.prevent="performSearch" class="search-form-desktop">
+            <input type="text" v-model="globalSearchQuery" placeholder="Search products..." class="search-input" />
+            <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </form>
+
           <button @click="toggleTheme" class="icon-btn" aria-label="Toggle theme">
             <i :class="isDarkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'"></i>
           </button>
@@ -50,6 +55,13 @@
         </div>
         
         <div class="drawer-body">
+          <div class="drawer-search">
+            <form @submit.prevent="performSearch" class="search-form-mobile">
+              <input type="text" v-model="globalSearchQuery" placeholder="Search products..." class="search-input" />
+              <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+          </div>
+          
           <nav class="drawer-nav">
             <NuxtLink to="/" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-house"></i> Home
@@ -159,10 +171,20 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, provide } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const isDarkMode = ref(false)
 const isDrawerOpen = ref(false)
 const showScrollTop = ref(false)
+const globalSearchQuery = ref('')
+
+const performSearch = () => {
+  if (globalSearchQuery.value.trim()) {
+    isDrawerOpen.value = false
+    router.push({ path: '/shop', query: { search: globalSearchQuery.value.trim() } })
+  }
+}
 
 // Global state for shopping cart synchronized across pages
 const cart = ref([])
@@ -329,7 +351,67 @@ body.dark-mode .desktop-header {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
+}
+
+/* Search Bar Styles */
+.search-form-desktop, .search-form-mobile {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  padding: 5px 15px;
+  border: 1px solid var(--bg-light-border);
+  transition: all 0.3s ease;
+}
+
+body.dark-mode .search-form-desktop, body.dark-mode .search-form-mobile {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--bg-dark-border);
+}
+
+.search-form-desktop:focus-within, .search-form-mobile:focus-within {
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 5px;
+  width: 150px;
+  font-size: 0.9rem;
+  color: inherit;
+  transition: width 0.3s ease;
+}
+
+.search-form-desktop:focus-within .search-input {
+  width: 200px;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dark-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .search-btn {
+  color: var(--text-light-secondary);
+}
+
+.search-btn:hover {
+  color: var(--primary-gold);
+}
+
+.drawer-search {
+  margin-bottom: 25px;
+}
+.search-form-mobile .search-input {
+  width: 100%;
 }
 
 .icon-btn {

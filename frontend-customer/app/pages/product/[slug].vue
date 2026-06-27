@@ -226,7 +226,7 @@ const handleAddToCart = () => {
     openNotify('error', 'Select Size', 'Please select a size before adding to cart.')
     return
   }
-  addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, null)
+  addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, product.value.main_image)
   openNotify('success', 'Added to Cart', `${product.value.name} has been added to your cart successfully.`)
 }
 
@@ -235,7 +235,7 @@ const handleBuyNow = () => {
     openNotify('error', 'Select Size', 'Please select a size before proceeding.')
     return
   }
-  addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, null)
+  addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, product.value.main_image)
   router.push('/checkout')
 }
 
