@@ -250,7 +250,9 @@
         <!-- Image Preview Modal -->
         <Teleport to="body">
           <div v-if="isImagePreviewOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click="isImagePreviewOpen = false">
-            <UButton color="white" variant="solid" icon="i-lucide-x" class="fixed top-4 right-4 md:top-6 md:right-6 rounded-full shadow-lg z-[10000]" @click="isImagePreviewOpen = false" />
+            <button class="fixed top-4 right-4 md:top-6 md:right-6 bg-white text-gray-900 hover:bg-gray-200 rounded-full w-12 h-12 flex items-center justify-center shadow-2xl z-[10000] transition-colors border-2 border-transparent" @click="isImagePreviewOpen = false" title="Close Preview">
+              <UIcon name="i-lucide-x" class="w-7 h-7" />
+            </button>
             <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl bg-white dark:bg-gray-900" @click.stop />
           </div>
         </Teleport>
