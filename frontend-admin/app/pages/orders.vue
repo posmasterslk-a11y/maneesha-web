@@ -173,7 +173,11 @@
                   <span class="font-bold">LKR {{ formatNumber(row.original.subtotal || (row.original.unit_price * row.original.quantity)) }}</span>
                 </template>
                 <template #product_image-cell="{ row }">
-                  <div class="w-12 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                  <div 
+                    class="w-12 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700"
+                    :class="{ 'cursor-pointer hover:opacity-80 transition-opacity': row.original.product_image && row.original.product_image !== '/placeholder.jpg' }"
+                    @click="row.original.product_image && row.original.product_image !== '/placeholder.jpg' ? openImagePreview(row.original.product_image.startsWith('http') ? row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', '')) : null"
+                  >
                     <img v-if="row.original.product_image && row.original.product_image !== '/placeholder.jpg'" 
                       :src="row.original.product_image.startsWith('http') ? row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', '')" 
                       alt="Product" class="w-full h-full object-cover" />
@@ -240,6 +244,20 @@
               </div>
             </template>
             </UCard>
+          </template>
+        </UModal>
+
+        <!-- Image Preview Modal -->
+        <UModal v-model:open="isImagePreviewOpen" :ui="{ width: 'sm:max-w-2xl' }">
+          <template #content>
+            <div class="relative p-2 bg-white dark:bg-gray-900 rounded-lg">
+              <div class="absolute top-4 right-4 z-10">
+                <UButton color="white" variant="solid" icon="i-lucide-x" class="rounded-full shadow-lg" @click="isImagePreviewOpen = false" />
+              </div>
+              <div class="flex justify-center items-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 min-h-[300px]">
+                <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[80vh] object-contain" />
+              </div>
+            </div>
           </template>
         </UModal>
 
@@ -364,6 +382,14 @@ const selectedOrder = ref(null)
 const isItemsModalOpen = ref(false)
 const selectedOrderItems = ref([])
 const selectedOrderItemsOrder = ref(null)
+
+const isImagePreviewOpen = ref(false)
+const previewImageUrl = ref('')
+
+const openImagePreview = (url) => {
+  previewImageUrl.value = url
+  isImagePreviewOpen.value = true
+}
 
 const openItemsModal = (order) => {
   selectedOrderItems.value = order.order_items || []
