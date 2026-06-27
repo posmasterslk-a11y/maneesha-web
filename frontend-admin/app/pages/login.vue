@@ -14,7 +14,7 @@
 
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input type="email" v-model="email" class="form-input" required placeholder="admin@maneeshafashion.lk" autocomplete="email" />
+          <input type="email" v-model="email" class="form-input" required autocomplete="email" />
         </div>
 
         <div class="form-group">
