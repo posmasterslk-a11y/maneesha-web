@@ -89,7 +89,7 @@
         <!-- Stock indicators -->
         <div v-if="activeStock > 0" class="stock-info">
           <i class="fa-solid fa-circle-check text-success"></i>
-          <span>{{ activeStock }} In stock. Orders dispatched within 3-4 working days.</span>
+          <span>{{ activeStock }} In stock. Orders delivered within 3-4 working days.</span>
         </div>
         <div v-else class="stock-info" style="color: var(--accent-error);">
           <i class="fa-solid fa-triangle-exclamation"></i>

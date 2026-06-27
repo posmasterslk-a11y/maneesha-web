@@ -1,16 +1,17 @@
 <x-mail::message>
-# New Order Received!
+# 📦 New Order Received!
 
 You have received a new order (**#{{ $order->order_number }}**) from **{{ $order->customer_name }}**.
 
-### Order Details
-
+<x-mail::panel>
+### 📄 Order Details
 - **Total Amount:** Rs. {{ number_format($order->total, 2) }}
 - **Payment Method:** {{ strtoupper($order->payment_method) }}
 - **Customer Phone:** {{ $order->customer_phone }}
 - **Customer Email:** {{ $order->customer_email }}
+</x-mail::panel>
 
-### Items
+### 🛍️ Items Ordered
 
 <x-mail::table>
 | Item       | Qty         | Price  |

@@ -37,7 +37,6 @@ return new class extends Migration
                 'pending',      // Just placed
                 'confirmed',    // Admin confirmed
                 'processing',   // Being prepared
-                'dispatched',   // Shipped out
                 'delivered',    // Delivered to customer
                 'cancelled',    // Cancelled
             ])->default('pending');

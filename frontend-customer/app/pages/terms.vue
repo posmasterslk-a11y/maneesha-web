@@ -18,7 +18,7 @@
 
       <section>
         <h2>3. Orders and Payments</h2>
-        <p>When you place an order, you will receive an order confirmation email. For Bank Deposits, your order will not be processed or dispatched until the funds have cleared in our account. Please ensure you upload the correct payment slip.</p>
+        <p>When you place an order, you will receive an order confirmation email. For Bank Deposits, your order will not be processed or delivered until the funds have cleared in our account. Please ensure you upload the correct payment slip.</p>
       </section>
 
       <section>

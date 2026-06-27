@@ -1,11 +1,11 @@
 <x-mail::message>
-# Thank you for your order!
+# 🎉 Thank you for your order!
 
-Hi {{ $order->customer_name }},
+Hi **{{ $order->customer_name }}**,
 
-We've received your order **#{{ $order->order_number }}** and are currently processing it. Thank you for shopping with Maneesha Fashion!
+We've received your order **#{{ $order->order_number }}** and are currently processing it. Thank you for shopping with **Maneesha Fashion**!
 
-### Order Summary
+### 🛍️ Order Summary
 
 <x-mail::table>
 | Item       | Qty         | Price  |
@@ -15,11 +15,12 @@ We've received your order **#{{ $order->order_number }}** and are currently proc
 @endforeach
 </x-mail::table>
 
-**Total Amount:** Rs. {{ number_format($order->total, 2) }}
-
+<x-mail::panel>
+**Total Amount:** Rs. {{ number_format($order->total, 2) }}  
 **Payment Method:** {{ strtoupper($order->payment_method) }}
+</x-mail::panel>
 
-**Shipping Address:**
+### 📍 Shipping Address
 {{ $order->customer_address }}<br>
 {{ $order->customer_city }} {{ $order->customer_postal_code }}
 
