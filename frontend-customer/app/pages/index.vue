@@ -44,7 +44,7 @@
       <div class="products-grid">
         <div v-for="prod in exclusiveProducts" :key="prod.id" class="product-card glass-panel">
           <div class="product-img-wrapper">
-            <div class="product-tag" style="background: var(--primary-gold); color: #fff;">New</div>
+            <div class="product-tag" v-if="getTotalStock(prod) > 0" style="background: var(--primary-gold); color: #fff;">New</div>
             <div class="product-tag" v-if="getTotalStock(prod) <= 0" style="background: var(--accent-error); color: #fff; left: auto; right: 15px;">Out of Stock</div>
             <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="product-real-img" />
             <div v-else class="product-visual-placeholder" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%)">

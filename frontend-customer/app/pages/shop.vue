@@ -98,7 +98,7 @@ useHead({
   ]
 })
 
-const searchQuery    = ref('')
+const searchQuery    = ref(route.query.search?.toString() || '')
 const activeCategory = ref(route.query.category?.toString() || 'all')
 const products       = ref([])
 const loading        = ref(true)
@@ -177,6 +177,12 @@ watch(searchQuery, () => {
 })
 
 watch(activeCategory, () => fetchProducts(1, false))
+
+watch(() => route.query.search, (newVal) => {
+  if (newVal !== undefined && newVal !== searchQuery.value) {
+    searchQuery.value = newVal
+  }
+})
 
 useSeoMeta({
   title: 'Shop Premium Women\'s Clothing | Maneesha Fashion Sri Lanka',
