@@ -248,12 +248,14 @@
         </UModal>
 
         <!-- Image Preview Modal -->
-        <div v-if="isImagePreviewOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click="isImagePreviewOpen = false">
-          <div class="relative max-w-4xl w-full flex justify-center" @click.stop>
-            <UButton color="white" variant="solid" icon="i-lucide-x" class="absolute -top-4 -right-4 md:-right-10 rounded-full shadow-lg z-[10000]" @click="isImagePreviewOpen = false" />
-            <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl bg-white dark:bg-gray-900" />
+        <Teleport to="body">
+          <div v-if="isImagePreviewOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click="isImagePreviewOpen = false">
+            <div class="relative max-w-4xl w-full flex justify-center" @click.stop>
+              <UButton color="white" variant="solid" icon="i-lucide-x" class="absolute -top-4 -right-4 md:-right-10 rounded-full shadow-lg z-[10000]" @click="isImagePreviewOpen = false" />
+              <img :src="previewImageUrl" alt="Product Preview" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl bg-white dark:bg-gray-900" />
+            </div>
           </div>
-        </div>
+        </Teleport>
 
         <!-- Confirmation Modal -->
         <UModal v-model:open="confirmDialog.isOpen" :ui="{ width: 'sm:max-w-sm' }">
