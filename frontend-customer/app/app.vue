@@ -142,14 +142,27 @@
         <p>&copy; 2026 Maneesha Fashion. All Rights Reserved. Designed for visual excellence. | Web By <a href="https://www.facebook.com/profile.php?id=61590317867191" target="_blank" style="color: var(--primary-gold); font-weight: bold; text-decoration: none; transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">W E B R I X</a></p>
       </div>
     </footer>
+
+    <!-- Scroll to Top Button -->
+    <Transition name="fade">
+      <button 
+        v-if="showScrollTop" 
+        @click="scrollToTop" 
+        class="scroll-top-btn" 
+        aria-label="Scroll to top"
+      >
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, provide } from 'vue'
 
 const isDarkMode = ref(false)
 const isDrawerOpen = ref(false)
+const showScrollTop = ref(false)
 
 // Global state for shopping cart synchronized across pages
 const cart = ref([])
@@ -224,8 +237,23 @@ onMounted(() => {
     if (isDarkMode.value) {
       document.body.classList.add('dark-mode')
     }
+    window.addEventListener('scroll', handleScroll)
   }
 })
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', handleScroll)
+  }
+})
+
+const handleScroll = () => {
+  showScrollTop.value = window.scrollY > 300
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 </script>
 
 <style>
@@ -637,6 +665,49 @@ body.dark-mode .nav-item {
   
   .app-footer {
     padding-bottom: 100px;
+  }
+}
+
+/* Scroll to Top Button */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--primary-gold);
+  color: #fff;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.scroll-top-btn:hover {
+  transform: translateY(-5px);
+  background: #c39b2b;
+}
+
+@media (max-width: 768px) {
+  .scroll-top-btn {
+    bottom: 85px; /* Stay above the mobile bottom nav */
+    right: 20px;
   }
 }
 </style>
