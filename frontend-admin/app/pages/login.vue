@@ -22,6 +22,11 @@
           <input type="password" v-model="password" class="form-input" required placeholder="••••••••" autocomplete="current-password" />
         </div>
 
+        <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
+          <input type="checkbox" id="rememberMe" v-model="rememberMe" style="accent-color: var(--admin-gold);" />
+          <label for="rememberMe" class="form-label" style="margin-bottom: 0; cursor: pointer;">Remember me on this device</label>
+        </div>
+
         <button type="submit" :disabled="isLoading" class="btn-admin btn-block">
           <span v-if="isLoading"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Verifying...</span>
           <span v-else>Authorize & Enter <i class="fa-solid fa-key ml-2"></i></span>
@@ -43,6 +48,7 @@ const router = useRouter()
 
 const email    = ref('')
 const password = ref('')
+const rememberMe = ref(false)
 const isLoading = ref(false)
 const errorMsg  = ref('')
 
@@ -61,10 +67,11 @@ const handleLogin = async () => {
     const data = await res.json()
 
     if (res.ok && data.token) {
-      localStorage.setItem('maneesha-admin-auth', 'true')
-      localStorage.setItem('maneesha-admin-token', data.token)
-      localStorage.setItem('maneesha-admin-name', data.user?.name || 'Admin')
-      localStorage.setItem('maneesha-admin-role', data.user?.role || 'admin')
+      const storage = rememberMe.value ? localStorage : sessionStorage
+      storage.setItem('maneesha-admin-auth', 'true')
+      storage.setItem('maneesha-admin-token', data.token)
+      storage.setItem('maneesha-admin-name', data.user?.name || 'Admin')
+      storage.setItem('maneesha-admin-role', data.user?.role || 'admin')
       router.push('/')
     } else {
       errorMsg.value = data.message || 'Invalid email or password.'

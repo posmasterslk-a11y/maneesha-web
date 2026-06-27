@@ -98,6 +98,12 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
   onSelect: () => {
     localStorage.removeItem('maneesha-admin-auth');
     localStorage.removeItem('maneesha-admin-token');
+    localStorage.removeItem('maneesha-admin-name');
+    localStorage.removeItem('maneesha-admin-role');
+    sessionStorage.removeItem('maneesha-admin-auth');
+    sessionStorage.removeItem('maneesha-admin-token');
+    sessionStorage.removeItem('maneesha-admin-name');
+    sessionStorage.removeItem('maneesha-admin-role');
     window.location.href = '/login';
   }
 }]]))
