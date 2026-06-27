@@ -28,6 +28,7 @@ Route::get('/run-migrations', function () {
         return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
     }
 });
+Route::get('/fix-order-images', [OrderController::class, 'fixOrderImages']);
 Route::get('/hero-slides',         [HeroSlideController::class, 'index']);
 
 // ── Public: Settings ──────────────────────────────────────────────────────

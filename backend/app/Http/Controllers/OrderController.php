@@ -410,4 +410,27 @@ class OrderController extends Controller
             'message' => 'Order deleted successfully'
         ]);
     }
+
+    /**
+     * Temporary endpoint to fix missing product images on old order items
+     */
+    public function fixOrderImages()
+    {
+        $items = OrderItem::whereNull('product_image')->orWhere('product_image', '/placeholder.jpg')->get();
+        $count = 0;
+        foreach ($items as $item) {
+            if ($item->product_id) {
+                $product = \App\Models\Product::find($item->product_id);
+                if ($product) {
+                    $item->product_image = $product->main_image;
+                    $item->save();
+                    $count++;
+                }
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'message' => "Fixed $count order items successfully."
+        ]);
+    }
 }
