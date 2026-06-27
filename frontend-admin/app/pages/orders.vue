@@ -176,10 +176,10 @@
                   <div 
                     class="w-12 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center border border-gray-200 dark:border-gray-700"
                     :class="{ 'cursor-pointer hover:opacity-80 transition-opacity': row.original.product_image && row.original.product_image !== '/placeholder.jpg' }"
-                    @click="row.original.product_image && row.original.product_image !== '/placeholder.jpg' ? openImagePreview(row.original.product_image.startsWith('http') ? row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', '')) : null"
+                    @click="row.original.product_image && row.original.product_image !== '/placeholder.jpg' ? openImagePreview(row.original.product_image.startsWith('http') ? row.original.product_image : (row.original.product_image.startsWith('storage/') ? 'https://api-maneesha.posmasters.lk/' + row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', ''))) : null"
                   >
                     <img v-if="row.original.product_image && row.original.product_image !== '/placeholder.jpg'" 
-                      :src="row.original.product_image.startsWith('http') ? row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', '')" 
+                      :src="row.original.product_image.startsWith('http') ? row.original.product_image : (row.original.product_image.startsWith('storage/') ? 'https://api-maneesha.posmasters.lk/' + row.original.product_image : 'https://api-maneesha.posmasters.lk/storage/' + row.original.product_image.replace('public/', ''))" 
                       alt="Product" class="w-full h-full object-cover" />
                     <UIcon v-else name="i-lucide-image" class="w-5 h-5 text-gray-400" />
                   </div>
