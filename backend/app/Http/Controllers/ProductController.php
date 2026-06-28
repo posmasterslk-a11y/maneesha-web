@@ -109,6 +109,11 @@ class ProductController extends Controller
             'sort_order'        => 'integer',
         ]);
 
+        $request->validate([
+            'main_image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'gallery_images.*'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
         // Boolean from FormData strings '1'/'0'
         $data['is_active']      = $request->input('is_active', '1')   === '1';
         $data['is_featured']    = $request->input('is_featured', '0') === '1';
@@ -165,6 +170,11 @@ class ProductController extends Controller
             'fabric'            => 'nullable|string',
             'care_instructions' => 'nullable|string',
             'sort_order'        => 'integer',
+        ]);
+
+        $request->validate([
+            'main_image'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'gallery_images.*'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
         // Boolean from FormData strings

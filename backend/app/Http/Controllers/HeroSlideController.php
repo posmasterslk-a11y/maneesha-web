@@ -51,7 +51,7 @@ class HeroSlideController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|max:5120', // Max 5MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
         ]);
 
         $path = $request->file('image')->store('hero_slides', 'public');
