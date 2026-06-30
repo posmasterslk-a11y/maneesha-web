@@ -75,6 +75,45 @@
           </div>
         </div>
 
+        <!-- Today's Stats -->
+        <div v-if="adminRole === 'admin' || adminRole === 'sales'" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Today's Revenue -->
+          <div class="modern-card group border-l-4 border-l-indigo-500">
+            <div class="card-glow bg-indigo-500/20"></div>
+            <div class="relative z-10 flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Today's Revenue</p>
+                <h3 class="text-2xl font-black text-gray-900 dark:text-white">LKR {{ formatNumber(stats.todayRevenue) }}</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900 dark:to-indigo-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <UIcon name="i-lucide-coins" class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              </div>
+            </div>
+            <div class="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-indigo-500">
+              <UIcon name="i-lucide-calendar-clock" class="w-4 h-4" />
+              <span>Earnings for today</span>
+            </div>
+          </div>
+
+          <!-- Today's Orders -->
+          <div class="modern-card group border-l-4 border-l-cyan-500">
+            <div class="card-glow bg-cyan-500/20"></div>
+            <div class="relative z-10 flex justify-between items-start">
+              <div>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Today's Orders</p>
+                <h3 class="text-2xl font-black text-gray-900 dark:text-white">{{ stats.todayOrders }}</h3>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-100 to-cyan-200 dark:from-cyan-900 dark:to-cyan-800 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
+                <UIcon name="i-lucide-shopping-cart" class="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+              </div>
+            </div>
+            <div class="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-cyan-500">
+              <UIcon name="i-lucide-clock" class="w-4 h-4" />
+              <span>Orders placed today</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Sales KPI Cards -->
         <div v-if="adminRole === 'admin' || adminRole === 'sales'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Total Revenue -->
@@ -442,9 +481,10 @@ const adminRole = inject('adminRole', ref('admin'))
 
 const stats = ref({
   totalRevenue: 0,
+  todayRevenue: 0,
   totalOrders: 0,
+  todayOrders: 0,
   pendingOrders: 0,
-  deliveredOrders: 0,
   deliveredOrders: 0,
   bankDepositOrders: 0,
   codOrders: 0,

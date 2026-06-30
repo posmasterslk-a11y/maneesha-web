@@ -215,10 +215,17 @@ class OrderController extends Controller
      */
     public function dashboardStats()
     {
+        $today = \Carbon\Carbon::today();
+
         $totalRevenue = Order::whereNotIn('status', ['cancelled'])->sum('total');
         $totalOrders = Order::count();
         $pendingOrders = Order::where('status', 'pending')->count();
         $deliveredOrders = Order::where('status', 'delivered')->count();
+
+        $todayOrders = Order::whereDate('created_at', $today)->count();
+        $todayRevenue = Order::whereDate('created_at', $today)
+                             ->whereNotIn('status', ['cancelled'])
+                             ->sum('total');
 
         // Get recent orders
         $recentOrders = Order::with('orderItems')->orderBy('created_at', 'desc')->take(5)->get();
@@ -238,6 +245,8 @@ class OrderController extends Controller
             'totalOrders' => $totalOrders,
             'pendingOrders' => $pendingOrders,
             'deliveredOrders' => $deliveredOrders,
+            'todayOrders' => $todayOrders,
+            'todayRevenue' => $todayRevenue,
             'recentOrders' => $recentOrders,
             'districtStats' => $districtStats,
             'activeVisitors' => $activeVisitors
