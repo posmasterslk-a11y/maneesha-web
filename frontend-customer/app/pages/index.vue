@@ -316,7 +316,7 @@ const exclusiveProducts = computed(() => {
   return data.slice(0, 4) // Show top 4 newest
 })
 
-const sliderImages = ['1.jpeg', '2.jpeg', '3.jpeg', '4.jpg']
+const sliderImages = ['1.webp', '2.webp', '3.webp', '4.webp']
 const currentHeroSlide = ref(0)
 let heroSlideInterval = null
 
