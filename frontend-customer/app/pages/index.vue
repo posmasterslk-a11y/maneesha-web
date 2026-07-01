@@ -1,31 +1,33 @@
 <template>
   <div class="homepage">
-    <!-- Hero Banner Section -->
-    <section class="hero-section glass-panel">
-      <div class="hero-content container">
-        <span class="hero-subtitle animate-slide-left">Premium ready-to-wear clothing</span>
-        <h1 class="luxury-title animate-fade-up">
-          Elegant Stitches <br />
-          Crafted For <span class="gold-gradient-text">Your Shape</span>
-        </h1>
-        <p class="hero-desc animate-fade-up">
-          At Maneesha Fashion, we offer a carefully curated collection of premium clothing. Choose from our standard premium sizes for a perfect fit.
-        </p>
-        <div class="hero-ctas animate-fade-up">
-          <NuxtLink to="/shop" class="btn-premium btn-gold">Explore Collection</NuxtLink>
-          <NuxtLink to="/orders" class="btn-premium secondary-btn">Track Order</NuxtLink>
-        </div>
-      </div>
-      
-      <!-- Designer Focus Visual -->
-      <div class="hero-visual">
-        <div class="ambient-glow"></div>
-        <div class="designer-hero-images">
-          <div class="img-wrapper img-1 animate-slide-left">
-            <img src="/images/designer-1.jpeg" alt="Maneesha Fashion Designer" />
+    <!-- Hero Banner Section (Slider) -->
+    <section class="hero-section hero-slider-section">
+      <!-- Full Background Slider -->
+      <div class="hero-slider-bg">
+        <Transition name="hero-fade">
+          <div 
+            :key="currentHeroSlide"
+            class="hero-slide-item"
+          >
+            <img :src="`/slider/${sliderImages[currentHeroSlide]}`" class="slider-bg-img" alt="Hero Banner" />
           </div>
-          <div class="img-wrapper img-2 animate-fade-up" style="animation-delay: 0.3s;">
-            <img src="/images/designer-2.jpeg" alt="Maneesha Fashion Studio" />
+        </Transition>
+      </div>
+
+      <!-- Content over the slider on the left side -->
+      <div class="hero-content-overlay container">
+        <div class="hero-content-box glass-panel-light animate-slide-left">
+          <span class="hero-subtitle">Premium ready-to-wear clothing</span>
+          <h1 class="luxury-title">
+            Elegant Stitches <br />
+            Crafted For <span class="gold-gradient-text">Your Shape</span>
+          </h1>
+          <p class="hero-desc">
+            At Maneesha Fashion, we offer a carefully curated collection of premium clothing. Choose from our standard premium sizes for a perfect fit.
+          </p>
+          <div class="hero-ctas">
+            <NuxtLink to="/shop" class="btn-premium btn-gold">Explore Collection</NuxtLink>
+            <NuxtLink to="/orders" class="btn-premium secondary-btn">Track Order</NuxtLink>
           </div>
         </div>
       </div>
@@ -314,16 +316,17 @@ const exclusiveProducts = computed(() => {
   return data.slice(0, 4) // Show top 4 newest
 })
 
-const currentSlide = ref(0)
-let slideInterval = null
+const sliderImages = ['1.jpeg', '2.jpeg', '3.jpeg', '4.jpg']
+const currentHeroSlide = ref(0)
+let heroSlideInterval = null
 
 const currentStorySlide = ref(0)
 let storySlideInterval = null
 
-const startSlider = () => {
-  if (slideInterval) clearInterval(slideInterval)
-  slideInterval = setInterval(() => {
-    currentSlide.value = (currentSlide.value + 1) % heroSlides.value.length
+const startHeroSlider = () => {
+  if (heroSlideInterval) clearInterval(heroSlideInterval)
+  heroSlideInterval = setInterval(() => {
+    currentHeroSlide.value = (currentHeroSlide.value + 1) % sliderImages.length
   }, 5000)
 }
 
@@ -352,14 +355,12 @@ const getTotalStock = (prod) => {
 }
 
 onMounted(() => {
-  if (heroSlides.value.length > 1) {
-    startSlider()
-  }
+  startHeroSlider()
   startStorySlider()
 })
 
 onUnmounted(() => {
-  if (slideInterval) clearInterval(slideInterval)
+  if (heroSlideInterval) clearInterval(heroSlideInterval)
   if (storySlideInterval) clearInterval(storySlideInterval)
 })
 </script>
@@ -369,16 +370,57 @@ onUnmounted(() => {
 .hero-section {
   position: relative;
   min-height: 80vh;
-  margin: 0 20px 60px 20px;
+  margin: 0;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  display: flex;
   align-items: center;
+  margin-bottom: 60px;
 }
 
-.hero-content {
-  padding: 60px 40px;
+.hero-slider-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-slide-item {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.slider-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+}
+
+.hero-content-overlay {
+  position: relative;
   z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero-content-box {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 50px 40px;
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+body.dark-mode .hero-content-box {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 .hero-subtitle {
@@ -391,16 +433,20 @@ onUnmounted(() => {
   margin-bottom: 15px;
 }
 
-.hero-section h1 {
-  font-size: 3.8rem;
+.hero-content-box h1 {
+  font-size: 3.5rem;
   line-height: 1.1;
   margin-bottom: 25px;
+  color: var(--text-dark-primary);
+}
+
+body.dark-mode .hero-content-box h1 {
+  color: var(--text-light-primary);
 }
 
 .hero-desc {
   font-size: 1.05rem;
   color: var(--text-dark-secondary);
-  max-width: 520px;
   margin-bottom: 35px;
 }
 
@@ -431,98 +477,6 @@ body.dark-mode .secondary-btn {
 
 body.dark-mode .secondary-btn:hover {
   background: rgba(255,255,255,0.05);
-}
-
-.hero-visual {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-}
-
-.ambient-glow {
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%);
-  filter: blur(40px);
-}
-
-.visual-badge {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 36px;
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  color: #fff;
-  animation: pulse-soft 4s infinite ease-in-out;
-  z-index: 2;
-}
-
-.visual-badge i {
-  font-size: 2.2rem;
-  color: var(--primary-gold);
-}
-
-.visual-badge span {
-  font-family: var(--font-serif);
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-}
-
-/* Designer Hero Image Styles */
-.designer-hero-images {
-  position: relative;
-  width: 100%;
-  height: 80%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-}
-
-.designer-hero-images .img-wrapper {
-  position: absolute;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-  border: 2px solid rgba(212,175,55,0.3);
-  transition: transform 0.4s ease;
-}
-
-.designer-hero-images .img-wrapper:hover {
-  transform: scale(1.05);
-  z-index: 10;
-}
-
-.designer-hero-images .img-1 {
-  width: 65%;
-  height: 85%;
-  left: 5%;
-  top: 5%;
-  z-index: 2;
-}
-
-.designer-hero-images .img-2 {
-  width: 55%;
-  height: 75%;
-  right: 5%;
-  bottom: -5%;
-  z-index: 3;
-}
-
-.designer-hero-images img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 /* Slider Styles */
@@ -578,13 +532,13 @@ body.dark-mode .secondary-btn:hover {
 .mt-2 { margin-top: 10px; }
 .btn-sm { padding: 8px 16px; font-size: 0.9rem; }
 
-.fade-enter-active,
-.fade-leave-active {
+.hero-fade-enter-active,
+.hero-fade-leave-active {
   transition: opacity 1.5s ease-in-out;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.hero-fade-enter-from,
+.hero-fade-leave-to {
   opacity: 0;
 }
 
@@ -831,6 +785,15 @@ body.dark-mode .story-text p {
 }
 
 @media (max-width: 768px) {
+  .hero-slider-bg {
+    display: none;
+  }
+  
+  .hero-section {
+    min-height: auto;
+    padding: 20px 0;
+  }
+
   .hero-section h1 {
     font-size: 2.6rem;
   }

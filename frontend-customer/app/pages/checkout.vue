@@ -134,7 +134,7 @@
           <div v-for="(item, idx) in cart" :key="idx" class="summary-item-row" style="display: flex; justify-content: space-between; align-items: center; padding-right: 5px;">
             <div style="flex: 1;">
               <strong class="item-name">{{ item.name }}</strong>
-              <span class="item-size">{{ item.size }}</span>
+              <span class="item-size">{{ item.size }} <span v-if="item.color_name" style="margin-left:5px;">{{ item.color_name }}</span></span>
               <span class="item-qty">Qty: {{ item.quantity }}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 15px;">

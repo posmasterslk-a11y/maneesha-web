@@ -10,13 +10,15 @@
       <div class="cart-items-wrapper glass-panel">
         <div v-for="(item, idx) in cart" :key="idx" class="cart-item-row">
           <!-- HSL Icon Design indicator -->
-          <div class="item-visual-preview">
-            <i class="fa-solid fa-scissors"></i>
+          <div class="item-visual-preview" style="background: transparent; border: 1px solid var(--bg-light-border); overflow: hidden;">
+            <img v-if="item.variant_image || item.image" :src="item.variant_image || item.image" alt="Product" style="width: 100%; height: 100%; object-fit: cover;" />
+            <i v-else class="fa-solid fa-scissors"></i>
           </div>
 
           <div class="item-details">
             <h3 class="luxury-title">{{ item.name }}</h3>
             <span class="item-size-badge">{{ item.size }}</span>
+            <span v-if="item.color_name" class="item-size-badge" style="margin-left: 5px;">{{ item.color_name }}</span>
             <div class="item-pricing">
               <span class="unit-price">LKR {{ formatNumber(item.price) }} each</span>
             </div>
@@ -110,7 +112,7 @@ const subtotal = computed(() => {
 
 const adjustQty = (item, diff) => {
   const current = [...cart.value]
-  const idx = current.findIndex(i => i.id === item.id && i.size === item.size)
+  const idx = current.findIndex(i => i.id === item.id && i.size === item.size && i.color_name === item.color_name)
   if (idx > -1) {
     const nextQty = current[idx].quantity + diff
     if (nextQty >= 1) {
@@ -121,7 +123,7 @@ const adjustQty = (item, diff) => {
 }
 
 const removeItem = (item) => {
-  const current = [...cart.value].filter(i => !(i.id === item.id && i.size === item.size))
+  const current = [...cart.value].filter(i => !(i.id === item.id && i.size === item.size && i.color_name === item.color_name))
   updateCart(current)
 }
 
@@ -161,7 +163,7 @@ watch(cart, () => {
 }, { deep: true })
 
 const getValidation = (item) => {
-  return validations.value.find(v => v.id === item.id && v.size === item.size)
+  return validations.value.find(v => v.id === item.id && v.size === item.size && v.color_name === item.color_name)
 }
 
 const hasOutOfStock = computed(() => {
