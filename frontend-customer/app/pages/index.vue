@@ -943,6 +943,7 @@ body.dark-mode .designer-text p {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 10%;
 }
 
 .story-placeholder {
