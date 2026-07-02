@@ -103,6 +103,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
+
 const ordersList = ref([])
 const trackingId = ref('')
 const isLoading = ref(false)
@@ -115,7 +118,7 @@ const loadAllHistoryOrders = async () => {
     if (history.length > 0) {
       const orderPromises = history.map(async (h) => {
         try {
-          const res = await fetch(`https://api-maneesha.posmasters.lk/api/track-orders?order_id=${encodeURIComponent(h.order_number)}`);
+          const res = await fetch(`${apiBase}/track-orders?order_id=${encodeURIComponent(h.order_number)}`);
           if (res.ok) {
             const data = await res.json();
             return data[0] || null;
@@ -155,7 +158,7 @@ const trackSingleOrder = async () => {
   
   isLoading.value = true;
   try {
-    const res = await fetch(`https://api-maneesha.posmasters.lk/api/track-orders?order_id=${encodeURIComponent(trackingId.value)}`);
+    const res = await fetch(`${apiBase}/track-orders?order_id=${encodeURIComponent(trackingId.value)}`);
     if (res.ok) {
       const data = await res.json();
       

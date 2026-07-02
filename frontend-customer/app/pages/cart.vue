@@ -98,6 +98,8 @@ import { computed, inject, ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 const cart = inject('cart')
 const updateCart = inject('updateCart')
@@ -141,7 +143,7 @@ const validations = ref([])
 const validateCart = async () => {
   if (!cart.value || cart.value.length === 0) return;
   try {
-    const res = await fetch('https://api-maneesha.posmasters.lk/api/cart/validate', {
+    const res = await fetch(`${apiBase}/cart/validate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items: cart.value })

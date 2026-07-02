@@ -200,6 +200,8 @@ import { ref, computed, inject, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBase
 
 const cart = inject('cart')
 const updateCart = inject('updateCart')
@@ -265,17 +267,35 @@ const grandTotal = computed(() => subtotal.value + deliveryFee.value)
 
 onMounted(async () => {
   try {
-    const res = await fetch('https://api-maneesha.posmasters.lk/api/settings/delivery-charges')
+    const res = await fetch(`${apiBase}/settings/delivery-charges`)
     deliveryCharges.value = await res.json()
   } catch (err) {
     console.error('Failed to load delivery charges', err)
   }
 
   try {
-    const resBanks = await fetch('https://api-maneesha.posmasters.lk/api/bank-accounts')
+    const resBanks = await fetch(`${apiBase}/bank-accounts`)
+    if (!resBanks.ok) throw new Error('API request failed')
     bankAccounts.value = await resBanks.json()
   } catch (err) {
-    console.error('Failed to load bank accounts', err)
+    console.error('Failed to load bank accounts, using fallback data', err)
+    // Fallback hardcoded details
+    bankAccounts.value = [
+      {
+        id: 'fallback-1',
+        bank_name: 'BOC',
+        account_number: '3224096',
+        account_name: 'TM Sanjeewani Fernando',
+        branch: 'Seeduwa'
+      },
+      {
+        id: 'fallback-2',
+        bank_name: 'Commercial Bank',
+        account_number: '8020123273',
+        account_name: 'TM Sanjeewani Fernando',
+        branch: 'Seeduwa'
+      }
+    ]
   }
 })
 
@@ -307,7 +327,7 @@ const placeOrder = async () => {
   if (orderData.value.paymentMethod === 'payhere') {
     try {
       const formattedAmount = Number(grandTotal.value).toFixed(2);
-      const response = await fetch('https://api-maneesha.posmasters.lk/api/payhere/hash', {
+      const response = await fetch(`${apiBase}/payhere/hash`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -333,7 +353,7 @@ const placeOrder = async () => {
         "merchant_id": data.merchant_id, 
         "return_url": window.location.origin + "/orders",
         "cancel_url": window.location.origin + "/checkout",
-        "notify_url": "https://api-maneesha.posmasters.lk/api/payhere/ipn",
+        "notify_url": `${apiBase}/payhere/ipn`,
         "order_id": orderIdStr,
         "items": "Maneesha Fashion Clothing",
         "amount": formattedAmount,
@@ -394,7 +414,7 @@ const completeOrderLocally = async (orderId) => {
         }))
       };
 
-      const response = await fetch('https://api-maneesha.posmasters.lk/api/checkout/order', {
+      const response = await fetch(`${apiBase}/checkout/order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
