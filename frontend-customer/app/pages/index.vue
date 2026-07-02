@@ -416,6 +416,7 @@ onUnmounted(() => {
   max-width: 600px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   border: 1px solid rgba(255,255,255,0.4);
+  margin-left: -30px; /* Shifted slightly to the left as requested */
 }
 
 body.dark-mode .hero-content-box {
