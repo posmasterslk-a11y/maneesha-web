@@ -88,11 +88,17 @@
                 <div class="bank-row" style="margin-bottom: 10px;">
                   <strong style="font-size: 1.1em; color: var(--primary-gold);">{{ bank.bank_name }}</strong>
                 </div>
-                <div class="bank-row">
-                  <strong>Account Number:</strong> {{ bank.account_number }}
+                <div class="bank-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                  <div><strong>Account Number:</strong> {{ bank.account_number }}</div>
+                  <button type="button" @click.prevent="copyText(bank.account_number)" title="Copy Account Number" style="background: none; border: none; cursor: pointer; color: var(--primary-gold); font-size: 1.1em; padding: 4px;">
+                    <i class="fa-regular fa-copy"></i>
+                  </button>
                 </div>
-                <div class="bank-row">
-                  <strong>Account Name:</strong> {{ bank.account_name }}
+                <div class="bank-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                  <div><strong>Account Name:</strong> {{ bank.account_name }}</div>
+                  <button type="button" @click.prevent="copyText(bank.account_name)" title="Copy Account Name" style="background: none; border: none; cursor: pointer; color: var(--primary-gold); font-size: 1.1em; padding: 4px;">
+                    <i class="fa-regular fa-copy"></i>
+                  </button>
                 </div>
                 <div class="bank-row">
                   <strong>Branch:</strong> {{ bank.branch }}
@@ -227,6 +233,16 @@ const closeNotify = () => {
     notifyDialog.value.onClose()
   }
   notifyDialog.value.isOpen = false
+}
+
+const copyText = (text) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      openNotify('success', 'Copied!', `Copied to clipboard successfully.`);
+    }).catch(err => {
+      console.error('Copy failed', err);
+    });
+  }
 }
 
 const districts = [
