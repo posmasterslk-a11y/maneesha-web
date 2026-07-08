@@ -323,14 +323,64 @@ const removeItem = (index) => {
 
 const handleSlipUpload = (event) => {
   const file = event.target.files[0]
-  if (file) {
-    slipFileName.value = file.name
-    // Generate preview
+  if (!file) return;
+
+  slipFileName.value = file.name
+
+  // If it's a PDF, just read as base64 without compression
+  if (file.type === 'application/pdf') {
+    if (file.size > 5 * 1024 * 1024) {
+      openNotify('error', 'File Too Large', 'PDF file size must be less than 5MB.');
+      event.target.value = '';
+      return;
+    }
     const reader = new FileReader()
     reader.onload = (e) => {
       slipPreviewUrl.value = e.target.result
     }
     reader.readAsDataURL(file)
+    return;
+  }
+
+  // If it's an image, compress it
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        const MAX_WIDTH = 1200;
+        const MAX_HEIGHT = 1200;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round(height * (MAX_WIDTH / width));
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round(width * (MAX_HEIGHT / height));
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Compress to JPEG with 0.7 quality
+        slipPreviewUrl.value = canvas.toDataURL('image/jpeg', 0.7);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    openNotify('error', 'Invalid File', 'Please upload a valid image or PDF file.');
+    event.target.value = '';
   }
 }
 

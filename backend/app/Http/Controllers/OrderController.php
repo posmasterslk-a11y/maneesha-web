@@ -52,13 +52,13 @@ class OrderController extends Controller
             
             // Get the extension from the mime type, or default to png
             $extension = 'png';
-            if (preg_match('/data:image\/(jpeg|png|jpg|gif|webp);/', $request->bank_slip, $match)) {
-                $extension = $match[1];
+            if (preg_match('/data:(image\/(jpeg|png|jpg|gif|webp)|application\/pdf);/', $request->bank_slip, $match)) {
+                $extension = str_replace(['image/', 'application/'], '', $match[1]);
                 if ($extension === 'jpeg') $extension = 'jpg';
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid image format for bank slip.'
+                    'message' => 'Invalid file format for bank slip. Please upload an image or PDF.'
                 ], 400);
             }
             
