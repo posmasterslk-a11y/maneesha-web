@@ -1,9 +1,26 @@
+<IfModule mod_headers.c>
+    SetEnvIf Request_Method "OPTIONS" IS_OPTIONS
+    SetEnvIf Origin "^(.*)$" ORIGIN_SUB_DOMAIN=$1
+    
+    # Add CORS headers only for OPTIONS requests
+    Header always set Access-Control-Allow-Origin "%{ORIGIN_SUB_DOMAIN}e" env=IS_OPTIONS
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" env=IS_OPTIONS
+    Header always set Access-Control-Allow-Headers "Authorization, Content-Type, Accept, Origin, User-Agent, DNT, Cache-Control, X-Mx-ReqToken, Keep-Alive, X-Requested-With, If-Modified-Since" env=IS_OPTIONS
+    Header always set Access-Control-Allow-Credentials "true" env=IS_OPTIONS
+    Header always set Access-Control-Max-Age "1728000" env=IS_OPTIONS
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
     RewriteEngine On
+
+    # Intercept OPTIONS requests and return 204 (No Content) to bypass strict server firewalls
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ - [R=204,L]
+
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

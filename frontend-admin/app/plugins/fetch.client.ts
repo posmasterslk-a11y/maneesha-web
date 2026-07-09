@@ -17,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
           // If not already on login page, redirect
           if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
+            window.location.href = '/login?reason=duplicate';
           }
         }
 

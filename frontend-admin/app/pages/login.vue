@@ -37,20 +37,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 definePageMeta({
   layout: false
 })
 
 const router = useRouter()
+const route = useRoute()
 
 const email    = ref('')
 const password = ref('')
 const rememberMe = ref(false)
 const isLoading = ref(false)
 const errorMsg  = ref('')
+
+onMounted(() => {
+  if (route.query.reason === 'duplicate') {
+    errorMsg.value = 'Another person logged into this user account. You have been disconnected.'
+    // Optional: remove query param from url without reloading
+    router.replace({ query: {} })
+  }
+})
 
 const handleLogin = async () => {
   isLoading.value = true
