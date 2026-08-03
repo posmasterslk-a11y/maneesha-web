@@ -11,13 +11,40 @@
           <NuxtLink to="/" active-class="active-nav">Home</NuxtLink>
           <NuxtLink to="/shop" active-class="active-nav">Shop Collection</NuxtLink>
           <NuxtLink to="/orders" active-class="active-nav">My Orders</NuxtLink>
+          <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-nav">
+            <i class="fa-brands fa-whatsapp"></i> 076 153 7772
+          </a>
         </nav>
         
         <div class="header-actions">
-          <form @submit.prevent="performSearch" class="search-form-desktop">
-            <input type="text" v-model="globalSearchQuery" placeholder="Search products..." class="search-input" />
-            <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-          </form>
+          <div class="search-container">
+            <form @submit.prevent="performSearch" class="search-form-desktop">
+              <input type="text" v-model="globalSearchQuery" @input="onSearchInput" placeholder="Search products..." class="search-input" />
+              <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            <!-- Dropdown for Desktop -->
+            <div v-if="globalSearchQuery && searchResults.length > 0" class="search-dropdown glass-panel">
+              <NuxtLink 
+                v-for="prod in searchResults" 
+                :key="prod.id" 
+                :to="`/product/${prod.slug}`"
+                @click="closeSearch"
+                class="search-result-item"
+              >
+                <img :src="prod.main_image ? prod.main_image : '/images/placeholder.jpg'" alt="" class="search-result-img" />
+                <div class="search-result-info">
+                  <span class="search-result-name">{{ prod.name }}</span>
+                  <span class="search-result-price">Rs. {{ formatNumber(prod.base_price) }}</span>
+                </div>
+              </NuxtLink>
+            </div>
+            <div v-else-if="globalSearchQuery && isSearching" class="search-dropdown glass-panel" style="padding: 15px; text-align: center;">
+              <i class="fa-solid fa-spinner fa-spin" style="color: #a0a5ab;"></i> <span style="color: #a0a5ab; font-size: 0.9rem;">Searching...</span>
+            </div>
+            <div v-else-if="globalSearchQuery && !isSearching && searchResults.length === 0" class="search-dropdown glass-panel" style="padding: 15px; text-align: center; color: #a0a5ab; font-size: 0.9rem;">
+              No products found.
+            </div>
+          </div>
 
           <button @click="toggleTheme" class="icon-btn" aria-label="Toggle theme">
             <i :class="isDarkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'"></i>
@@ -55,11 +82,33 @@
         </div>
         
         <div class="drawer-body">
-          <div class="drawer-search">
+          <div class="drawer-search search-container">
             <form @submit.prevent="performSearch" class="search-form-mobile">
-              <input type="text" v-model="globalSearchQuery" placeholder="Search products..." class="search-input" />
+              <input type="text" v-model="globalSearchQuery" @input="onSearchInput" placeholder="Search products..." class="search-input" />
               <button type="submit" class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
+            <!-- Dropdown for Mobile -->
+            <div v-if="globalSearchQuery && searchResults.length > 0" class="search-dropdown glass-panel">
+              <NuxtLink 
+                v-for="prod in searchResults" 
+                :key="prod.id" 
+                :to="`/product/${prod.slug}`"
+                @click="closeSearch"
+                class="search-result-item"
+              >
+                <img :src="prod.main_image ? prod.main_image : '/images/placeholder.jpg'" alt="" class="search-result-img" />
+                <div class="search-result-info">
+                  <span class="search-result-name">{{ prod.name }}</span>
+                  <span class="search-result-price">Rs. {{ formatNumber(prod.base_price) }}</span>
+                </div>
+              </NuxtLink>
+            </div>
+            <div v-else-if="globalSearchQuery && isSearching" class="search-dropdown glass-panel" style="padding: 15px; text-align: center;">
+              <i class="fa-solid fa-spinner fa-spin" style="color: #a0a5ab;"></i> <span style="color: #a0a5ab; font-size: 0.9rem;">Searching...</span>
+            </div>
+            <div v-else-if="globalSearchQuery && !isSearching && searchResults.length === 0" class="search-dropdown glass-panel" style="padding: 15px; text-align: center; color: #a0a5ab; font-size: 0.9rem;">
+              No products found.
+            </div>
           </div>
           
           <nav class="drawer-nav">
@@ -75,6 +124,9 @@
             <NuxtLink to="/orders" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-receipt"></i> Track Orders
             </NuxtLink>
+            <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-mobile">
+              <i class="fa-brands fa-whatsapp"></i> 076 153 7772
+            </a>
           </nav>
           
           <div class="drawer-footer">
@@ -178,6 +230,51 @@ const isDarkMode = ref(false)
 const isDrawerOpen = ref(false)
 const showScrollTop = ref(false)
 const globalSearchQuery = ref('')
+const searchResults = ref([])
+const isSearching = ref(false)
+let searchDebounceTimer = null
+const config = useRuntimeConfig()
+const API = config.public.apiBase
+
+const formatNumber = (num) => {
+  return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+const onSearchInput = () => {
+  const query = globalSearchQuery.value.trim()
+  if (!query) {
+    searchResults.value = []
+    isSearching.value = false
+    return
+  }
+
+  isSearching.value = true
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  
+  searchDebounceTimer = setTimeout(async () => {
+    try {
+      const { data } = await useFetch(`${API}/products?search=${encodeURIComponent(query)}&limit=5`)
+      if (data.value && data.value.data) {
+        searchResults.value = data.value.data.slice(0, 5)
+      } else if (Array.isArray(data.value)) {
+        searchResults.value = data.value.slice(0, 5)
+      } else {
+        searchResults.value = []
+      }
+    } catch (err) {
+      console.error('Search error', err)
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }, 300)
+}
+
+const closeSearch = () => {
+  globalSearchQuery.value = ''
+  searchResults.value = []
+  isDrawerOpen.value = false
+}
 
 const performSearch = () => {
   if (globalSearchQuery.value.trim()) {
@@ -339,6 +436,7 @@ body.dark-mode .desktop-header {
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 30px;
   font-weight: 500;
   font-size: 0.95rem;
@@ -789,7 +887,110 @@ body.dark-mode .nav-item {
 @media (max-width: 768px) {
   .scroll-top-btn {
     bottom: 85px; /* Stay above the mobile bottom nav */
-    right: 20px;
   }
+}
+
+.whatsapp-btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #25D366;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+.whatsapp-btn-nav:hover {
+  background-color: #128C7E;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);
+}
+
+.whatsapp-btn-mobile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #25D366;
+  color: white !important;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin: 15px 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.whatsapp-btn-mobile:hover {
+  background-color: #128C7E;
+}
+
+/* Search Dropdown Styles */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 5px;
+  background: var(--bg-light-surface);
+  border: 1px solid var(--bg-light-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-premium);
+  max-height: 350px;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+body.dark-mode .search-dropdown {
+  background: var(--bg-dark-surface);
+  border-color: var(--bg-dark-border);
+}
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--bg-light-border);
+  gap: 12px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+body.dark-mode .search-result-item {
+  border-bottom-color: var(--bg-dark-border);
+}
+.search-result-item:hover {
+  background: rgba(0,0,0,0.03);
+}
+body.dark-mode .search-result-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+.search-result-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+}
+.search-result-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dark-primary);
+}
+body.dark-mode .search-result-name {
+  color: var(--text-light-primary);
+}
+.search-result-price {
+  font-size: 0.8rem;
+  color: var(--primary-gold);
+  font-weight: 700;
 }
 </style>

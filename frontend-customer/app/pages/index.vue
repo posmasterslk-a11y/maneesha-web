@@ -2,33 +2,81 @@
   <div class="homepage">
     <!-- Hero Banner Section (Slider) -->
     <section class="hero-section hero-slider-section">
-      <!-- Full Background Slider -->
       <div class="hero-slider-bg">
         <Transition name="hero-fade">
           <div 
             :key="currentHeroSlide"
             class="hero-slide-item"
           >
-            <img :src="`/slider/${sliderImages[currentHeroSlide]}`" class="slider-bg-img" alt="Hero Banner" />
+            <img :src="`/slider/${sliderImages[currentHeroSlide].img}`" class="slider-bg-img" alt="Hero Banner" />
+            
+            <div class="hero-content-overlay container">
+              <div class="hero-content-box animate-slide-left text-glow">
+                <span class="hero-subtitle">{{ sliderImages[currentHeroSlide].subtitle }}</span>
+                <h1 class="luxury-title">
+                  <span class="dark-text">{{ sliderImages[currentHeroSlide].titleTop }}</span>
+                  <span class="pink-text">{{ sliderImages[currentHeroSlide].titleBottom }}</span>
+                </h1>
+                <p class="hero-desc">
+                  {{ sliderImages[currentHeroSlide].desc }}
+                </p>
+                <div class="hero-ctas">
+                  <NuxtLink to="/shop" class="btn-shop-now">SHOP NOW</NuxtLink>
+                </div>
+              </div>
+            </div>
           </div>
         </Transition>
       </div>
 
-      <!-- Content over the slider on the left side -->
-      <div class="hero-content-overlay container">
-        <div class="hero-content-box glass-panel-light animate-slide-left">
-          <span class="hero-subtitle">Premium ready-to-wear clothing</span>
-          <h1 class="luxury-title">
-            Elegant Stitches <br />
-            Crafted For <span class="gold-gradient-text">Your Shape</span>
-          </h1>
-          <p class="hero-desc">
-            At Maneesha Fashion, we offer a carefully curated collection of premium clothing. Choose from our standard premium sizes for a perfect fit.
-          </p>
-          <div class="hero-ctas">
-            <NuxtLink to="/shop" class="btn-premium btn-gold">Explore Collection</NuxtLink>
-            <NuxtLink to="/orders" class="btn-premium secondary-btn">Track Order</NuxtLink>
-          </div>
+      <!-- Slider Controls -->
+      <button class="slider-nav-btn prev-btn" @click="prevHeroSlide" aria-label="Previous Slide">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button class="slider-nav-btn next-btn" @click="nextHeroSlide" aria-label="Next Slide">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
+      <!-- Slider Pagination -->
+      <div class="slider-pagination">
+        <span 
+          v-for="(slide, index) in sliderImages" 
+          :key="index"
+          class="slider-dot"
+          :class="{ active: currentHeroSlide === index }"
+          @click="currentHeroSlide = index"
+        ></span>
+      </div>
+    </section>
+
+    <!-- Features Banner -->
+    <section class="features-banner container">
+      <div class="feature-item">
+        <i class="fa-solid fa-truck-fast feature-icon"></i>
+        <div class="feature-text">
+          <h4>ISLAND WIDE DELIVERY</h4>
+          <p>Delivered to your doorstep</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-award feature-icon"></i>
+        <div class="feature-text">
+          <h4>PREMIUM QUALITY</h4>
+          <p>Finest fabrics & stitching</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-headset feature-icon"></i>
+        <div class="feature-text">
+          <h4>CUSTOMER SUPPORT</h4>
+          <p>Always here to help you</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <i class="fa-solid fa-shield-halved feature-icon"></i>
+        <div class="feature-text">
+          <h4>SECURE PAYMENT</h4>
+          <p>100% protected</p>
         </div>
       </div>
     </section>
@@ -316,7 +364,13 @@ const exclusiveProducts = computed(() => {
   return data.slice(0, 4) // Show top 4 newest
 })
 
-const sliderImages = ['1.jpeg', '2.webp', '3.webp', '4.webp', '5.webp']
+const sliderImages = [
+  { img: '1.jpeg', subtitle: 'New Season', titleTop: 'TIMELESS', titleBottom: 'ELEGANCE', desc: 'Discover chic styles and premium quality crafted for the modern woman.' },
+  { img: '2.webp', subtitle: 'Latest Trends', titleTop: 'MODERN', titleBottom: 'CLASSICS', desc: 'Elevate your everyday wardrobe with our exclusive new arrivals.' },
+  { img: '3.webp', subtitle: 'Bespoke Fit', titleTop: 'PERFECT', titleBottom: 'SILHOUETTE', desc: 'Custom-tailored fashion designed to celebrate your unique shape.' },
+  { img: '4.webp', subtitle: 'Luxury Wear', titleTop: 'BOLD', titleBottom: 'STATEMENTS', desc: 'Make an impression with our meticulously crafted premium pieces.' },
+  { img: '5.webp', subtitle: 'Signature Collection', titleTop: 'FLAWLESS', titleBottom: 'BEAUTY', desc: 'Step out in confidence with our signature dresses and frocks.' }
+]
 const currentHeroSlide = ref(0)
 let heroSlideInterval = null
 
@@ -328,6 +382,16 @@ const startHeroSlider = () => {
   heroSlideInterval = setInterval(() => {
     currentHeroSlide.value = (currentHeroSlide.value + 1) % sliderImages.length
   }, 5000)
+}
+
+const prevHeroSlide = () => {
+  currentHeroSlide.value = (currentHeroSlide.value - 1 + sliderImages.length) % sliderImages.length
+  startHeroSlider()
+}
+
+const nextHeroSlide = () => {
+  currentHeroSlide.value = (currentHeroSlide.value + 1) % sliderImages.length
+  startHeroSlider()
 }
 
 const startStorySlider = () => {
@@ -401,70 +465,200 @@ onUnmounted(() => {
 }
 
 .hero-content-overlay {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 10;
   width: 100%;
+  height: 100%;
   display: flex;
+  align-items: center;
   justify-content: flex-start;
 }
 
 .hero-content-box {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  padding: 50px 40px;
-  border-radius: var(--radius-lg);
+  background: transparent;
+  padding: 0;
   max-width: 600px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255,255,255,0.4);
-  margin-left: -30px; /* Shifted slightly to the left as requested */
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  margin-left: 0;
 }
 
 body.dark-mode .hero-content-box {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  border: none;
 }
 
 .hero-subtitle {
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 3px;
+  font-family: 'Great Vibes', cursive;
+  font-size: 3.5rem;
   color: var(--primary-gold);
-  font-weight: 700;
+  font-weight: 400;
   display: inline-block;
-  margin-bottom: 15px;
+  margin-bottom: 0px;
+  text-transform: none;
+  letter-spacing: normal;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
 }
 
 .hero-content-box h1 {
-  font-size: 3.5rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
   line-height: 1.1;
   margin-bottom: 25px;
-  color: var(--text-dark-primary);
+  text-transform: uppercase;
 }
 
-body.dark-mode .hero-content-box h1 {
-  color: var(--text-light-primary);
+.hero-content-box h1 .dark-text {
+  color: #2c2c2c;
+  display: block;
+  text-shadow: 2px 2px 12px rgba(255,255,255,0.7);
+}
+
+.hero-content-box h1 .pink-text {
+  color: var(--primary-gold);
+  display: block;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .hero-content-box h1 .dark-text {
+  color: #f1f1f1;
 }
 
 .hero-desc {
-  font-size: 1.05rem;
-  color: var(--text-dark-secondary);
+  font-size: 1.1rem;
+  color: #4a4a4a;
   margin-bottom: 35px;
+  max-width: 400px;
+  font-weight: 600;
+  text-shadow: 1px 1px 8px rgba(255,255,255,0.8);
 }
 
 body.dark-mode .hero-desc {
-  color: var(--text-light-secondary);
+  color: #b0b0b0;
 }
 
 .hero-ctas {
   display: flex;
+}
+
+.btn-shop-now {
+  background: var(--primary-gold);
+  color: #fff;
+  padding: 15px 40px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-shop-now:hover {
+  background: var(--primary-gold-dark);
+  transform: translateY(-2px);
+}
+
+/* Slider Controls */
+.slider-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #333;
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+.slider-nav-btn:hover {
+  background: #f1f1f1;
+}
+
+.prev-btn {
+  left: 30px;
+}
+
+.next-btn {
+  right: 30px;
+}
+
+.slider-pagination {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+
+.slider-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+  background: var(--primary-gold);
+}
+
+/* Features Banner */
+.features-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  margin-bottom: 60px;
+  flex-wrap: wrap;
   gap: 20px;
 }
 
-.secondary-btn {
-  background: transparent;
-  border: 1px solid var(--text-dark-primary);
+body.dark-mode .features-banner {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.feature-icon {
+  font-size: 2rem;
+  color: var(--primary-gold);
+}
+
+.feature-text h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 2px;
   color: var(--text-dark-primary);
-  box-shadow: none;
+}
+
+body.dark-mode .feature-text h4 {
+  color: var(--text-light-primary);
+}
+
+.feature-text p {
+  font-size: 0.85rem;
+  color: var(--text-dark-secondary);
+}
+
+body.dark-mode .feature-text p {
+  color: var(--text-light-secondary);
 }
 
 body.dark-mode .secondary-btn {
