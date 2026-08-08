@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api-maneesha.posmasters.lk/api'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api'
+    }
+  },
+  routeRules: {
+    '/api/**': {
+      proxy: process.env.NUXT_BACKEND_API_URL ? `${process.env.NUXT_BACKEND_API_URL}/**` : 'https://api-maneesha.posmasters.lk/api/**'
     }
   },
   app: {
