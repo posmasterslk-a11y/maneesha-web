@@ -963,7 +963,7 @@ body.dark-mode .story-text p {
 @media (max-width: 991px) {
   .hero-section {
     grid-template-columns: 1fr;
-    min-height: auto;
+    min-height: 600px; /* Fixed collapsing slider height on tablet */
   }
   
   .hero-visual {
@@ -980,21 +980,22 @@ body.dark-mode .story-text p {
 }
 
 @media (max-width: 768px) {
-  .hero-slider-bg {
-    display: none;
-  }
-  
   .hero-section {
-    min-height: auto;
-    padding: 20px 0;
+    min-height: 500px;
+    padding: 0;
   }
 
-  .hero-section h1 {
-    font-size: 2.6rem;
+  .hero-subtitle {
+    font-size: 2.5rem;
+  }
+
+  .hero-content-box h1 {
+    font-size: 3rem;
   }
   
-  .hero-content {
-    padding: 40px 20px;
+  .hero-desc {
+    font-size: 1rem;
+    margin-bottom: 25px;
   }
   
   .hero-ctas {
@@ -1003,7 +1004,7 @@ body.dark-mode .story-text p {
     gap: 15px;
   }
   
-  .hero-ctas .btn-premium {
+  .btn-shop-now {
     width: 100%;
     text-align: center;
   }
