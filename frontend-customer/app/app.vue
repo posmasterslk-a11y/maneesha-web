@@ -10,7 +10,9 @@
         <nav class="nav-links">
           <NuxtLink to="/" active-class="active-nav">Home</NuxtLink>
           <NuxtLink to="/shop" active-class="active-nav">Shop Collection</NuxtLink>
+          <NuxtLink to="/about" active-class="active-nav">About Us</NuxtLink>
           <NuxtLink to="/orders" active-class="active-nav">My Orders</NuxtLink>
+          <NuxtLink to="/contact" active-class="active-nav">Contact Us</NuxtLink>
           <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-nav">
             <i class="fa-brands fa-whatsapp"></i> 076 153 7772
           </a>
@@ -118,11 +120,17 @@
             <NuxtLink to="/shop" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-bag-shopping"></i> Shop Collection
             </NuxtLink>
+            <NuxtLink to="/about" @click="toggleDrawer" active-class="active-drawer-nav">
+              <i class="fa-solid fa-circle-info"></i> About Us
+            </NuxtLink>
             <NuxtLink to="/cart" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-cart-shopping"></i> Shopping Cart
             </NuxtLink>
             <NuxtLink to="/orders" @click="toggleDrawer" active-class="active-drawer-nav">
-              <i class="fa-solid fa-receipt"></i> Track Orders
+              <i class="fa-solid fa-receipt"></i> My Orders
+            </NuxtLink>
+            <NuxtLink to="/contact" @click="toggleDrawer" active-class="active-drawer-nav">
+              <i class="fa-solid fa-phone"></i> Contact Us
             </NuxtLink>
             <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-mobile">
               <i class="fa-brands fa-whatsapp"></i> 076 153 7772
@@ -894,7 +902,7 @@ body.dark-mode .nav-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: #25D366;
+  background-color: #f472b6;
   color: white !important;
   padding: 8px 16px;
   border-radius: var(--radius-md);
@@ -905,16 +913,16 @@ body.dark-mode .nav-item {
 }
 
 .whatsapp-btn-nav:hover {
-  background-color: #128C7E;
+  background-color: #ec4899;
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 4px 10px rgba(244, 114, 182, 0.4);
 }
 
 .whatsapp-btn-mobile {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #25D366;
+  background-color: #f472b6;
   color: white !important;
   padding: 12px 20px;
   border-radius: var(--radius-md);
@@ -924,7 +932,7 @@ body.dark-mode .nav-item {
 }
 
 .whatsapp-btn-mobile:hover {
-  background-color: #128C7E;
+  background-color: #ec4899;
 }
 
 /* Search Dropdown Styles */

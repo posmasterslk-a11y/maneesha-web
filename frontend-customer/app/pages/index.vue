@@ -81,6 +81,38 @@
       </div>
     </section>
 
+    <!-- Categories Showcase -->
+    <section class="categories-section container">
+      <div class="section-header">
+        <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
+        <p>Curated designs ready to be stitched by hand.</p>
+      </div>
+
+      <div class="category-slider-wrapper">
+        <button class="cat-nav-btn cat-prev" @click="scrollCategories(-300)" aria-label="Previous Category">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <div class="categories-grid" ref="categoriesGridRef" @mouseenter="pauseCategoryScroll" @mouseleave="resumeCategoryScroll" @touchstart="pauseCategoryScroll" @touchend="resumeCategoryScroll">
+          <div v-for="cat in categories" :key="cat.id" class="category-card glass-panel" @click="navigateToCategory(cat.slug)">
+            <div class="category-overlay"></div>
+            <div class="category-icon">
+              <i :class="cat.icon"></i>
+            </div>
+            <div class="category-info">
+              <h3 class="luxury-title">{{ cat.name }}</h3>
+              <span>{{ cat.products_count ?? cat.itemCount ?? 0 }} Designs</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="cat-nav-btn cat-next" @click="scrollCategories(300)" aria-label="Next Category">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
+
+
     <!-- Exclusive New Arrivals Section -->
     <section class="featured-products container mb-20" v-if="exclusiveProducts && exclusiveProducts.length > 0" style="margin-top: -20px;">
       <div class="section-header-row">
@@ -168,89 +200,13 @@
       </div>
     </section>
 
-    <!-- Categories Showcase -->
-    <section class="categories-section container">
-      <div class="section-header">
-        <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
-        <p>Curated designs ready to be stitched by hand.</p>
-      </div>
 
-      <div class="categories-grid">
-        <div v-for="cat in categories" :key="cat.id" class="category-card glass-panel" @click="navigateToCategory(cat.slug)">
-          <div class="category-overlay"></div>
-          <div class="category-icon">
-            <i :class="cat.icon"></i>
-          </div>
-          <div class="category-info">
-            <h3 class="luxury-title">{{ cat.name }}</h3>
-            <span>{{ cat.products_count ?? cat.itemCount ?? 0 }} Designs</span>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Our Values / Stitching story -->
-    <section class="stitching-story glass-panel">
-      <div class="container story-grid">
-        <div class="story-text">
-          <span class="gold-gradient-text text-uppercase font-bold">The Craftsmanship</span>
-          <h2 class="luxury-title">Why Choose Our Premium Collection</h2>
-          <p>We believe fashion is about individuality. At Maneesha Fashion, we respect your style. When you purchase, select your exact size from our premium standard measurements. Our carefully crafted apparel is inspected and prepared for unmatched luxury comfort.</p>
-          
-          <div class="highlights-row">
-            <div class="hl-item">
-              <i class="fa-solid fa-ruler-combined"></i>
-              <div>
-                <h5>Perfect Fit</h5>
-                <p>Fashion changes, true style remains.</p>
-              </div>
-            </div>
-            <div class="hl-item">
-              <i class="fa-solid fa-building-columns"></i>
-              <div>
-                <h5>Secure Bank Deposit</h5>
-                <p>Direct bank transfers for your convenience.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div class="story-canvas product-slider-canvas glass-panel">
-          <div v-if="popularProducts.length === 0" class="stitching-diagram">
-            <div class="line vertical"></div>
-            <div class="line horizontal"></div>
-            <i class="fa-solid fa-ruler-horizontal diag-icon"></i>
-          </div>
-          <div v-else>
-            <TransitionGroup name="fade">
-              <div v-for="(prod, idx) in popularProducts" :key="prod.id" 
-                   v-show="currentStorySlide === idx"
-                   class="story-slide-wrapper">
-                <img v-if="prod.main_image" :src="prod.main_image.replace('http://', 'https://')" :alt="prod.name" class="story-product-img" />
-                <div v-else class="product-visual-placeholder story-placeholder">
-                  <i class="fa-solid fa-shirt"></i>
-                </div>
-                <div class="story-product-overlay">
-                  <h4 class="luxury-title text-white text-2xl mb-1">{{ prod.name }}</h4>
-                  <p class="text-gray-200 mb-4 font-semibold">LKR {{ formatNumber(prod.base_price) }}</p>
-                  <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium btn-gold btn-sm">Shop Now</NuxtLink>
-                </div>
-              </div>
-            </TransitionGroup>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- Why Choose Our Premium Collection -->
+    <PremiumCollection :products="popularProducts" />
 
-    <!-- Meet the Designer Section (Simplified text) -->
-    <section class="meet-designer-section container mb-20 glass-panel" style="text-align: center; max-width: 800px; margin: 0 auto 80px auto; padding: 40px;">
-        <span class="gold-gradient-text text-uppercase font-bold">Behind The Brand</span>
-        <h2 class="luxury-title mt-2">Crafted with <span class="gold-gradient-text">Passion</span></h2>
-        <p class="mt-4" style="color: var(--text-dark-secondary);">
-          Every stitch, every cut, and every detail is guided by a passion for perfection. 
-          At Maneesha Fashion, we believe in bringing your dream outfits to life with a personal touch.
-        </p>
-    </section>
+    <!-- Meet the Designer Section / Behind the Brand -->
+    <BehindTheBrand />
 
     <!-- Popular / Most Viewed Products Section -->
     <section class="popular-products container mb-20" v-if="popularProducts.length > 0">
@@ -403,6 +359,37 @@ const startStorySlider = () => {
   }, 3500)
 }
 
+const categoriesGridRef = ref(null)
+let categoryScrollInterval = null
+
+const scrollCategories = (amount) => {
+  if (categoriesGridRef.value) {
+    categoriesGridRef.value.scrollBy({ left: amount, behavior: 'smooth' })
+  }
+}
+
+const startCategoryScroll = () => {
+  if (categoryScrollInterval) clearInterval(categoryScrollInterval)
+  categoryScrollInterval = setInterval(() => {
+    if (categoriesGridRef.value) {
+      const { scrollLeft, scrollWidth, clientWidth } = categoriesGridRef.value
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        categoriesGridRef.value.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        categoriesGridRef.value.scrollBy({ left: 265, behavior: 'smooth' })
+      }
+    }
+  }, 3000)
+}
+
+const pauseCategoryScroll = () => {
+  if (categoryScrollInterval) clearInterval(categoryScrollInterval)
+}
+
+const resumeCategoryScroll = () => {
+  startCategoryScroll()
+}
+
 const navigateToCategory = (slug) => {
   router.push(`/shop?category=${slug}`)
 }
@@ -421,11 +408,13 @@ const getTotalStock = (prod) => {
 onMounted(() => {
   startHeroSlider()
   startStorySlider()
+  startCategoryScroll()
 })
 
 onUnmounted(() => {
   if (heroSlideInterval) clearInterval(heroSlideInterval)
   if (storySlideInterval) clearInterval(storySlideInterval)
+  if (categoryScrollInterval) clearInterval(categoryScrollInterval)
 })
 </script>
 
@@ -637,8 +626,8 @@ body.dark-mode .features-banner {
 }
 
 .feature-icon {
-  font-size: 2rem;
-  color: var(--primary-gold);
+  font-size: 2.2rem;
+  color: #f472b6;
 }
 
 .feature-text h4 {
@@ -788,15 +777,67 @@ body.dark-mode .section-header-row p {
   letter-spacing: 1px;
 }
 
-/* Category Grid */
+/* Category Slider Wrapper */
+.category-slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cat-nav-btn {
+  position: absolute;
+  top: calc(50% - 40px);
+  transform: translateY(-50%);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--primary-gold);
+  cursor: pointer;
+  z-index: 20;
+  transition: all 0.3s ease;
+}
+
+body.dark-mode .cat-nav-btn {
+  background: #1e293b;
+  border-color: rgba(212, 175, 55, 0.2);
+}
+
+.cat-nav-btn:hover {
+  background: var(--primary-gold);
+  color: #fff;
+}
+
+.cat-prev { left: -20px; }
+.cat-next { right: -20px; }
+
+/* Category Grid Slider */
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  overflow-x: auto;
   gap: 25px;
+  padding-bottom: 20px;
   margin-bottom: 80px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
+}
+
+.categories-grid::-webkit-scrollbar {
+  display: none; /* Hide standard scrollbar for cleaner look */
 }
 
 .category-card {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
   position: relative;
   padding: 40px 30px;
   text-align: center;
