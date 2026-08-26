@@ -104,9 +104,10 @@
                   </UFormField>
                 </div>
 
-                <UFormField label="Show Text Overlay on Slide">
+                <div class="flex items-center justify-between pt-2">
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Show Text Overlay on Slide</span>
                   <UToggle v-model="formData.show_text" />
-                </UFormField>
+                </div>
 
                 <div class="flex justify-end gap-3 mt-4">
                   <UButton color="gray" variant="ghost" @click="isModalOpen = false">Cancel</UButton>
