@@ -1,5 +1,21 @@
 <template>
   <div v-if="product" class="product-detail-page container">
+    <!-- Decorative Florals -->
+    <svg class="product-floral-left" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10,200 C10,100 150,20 180,0 C160,60 100,160 20,200 Z" fill="url(#prodPinkGrad)" opacity="0.2"/>
+      <path d="M30,240 C10,140 120,60 140,40 C120,100 80,180 30,240 Z" fill="url(#prodPinkGrad)" opacity="0.3"/>
+      <path d="M60,300 C20,220 140,120 170,100 C140,160 100,240 60,300 Z" fill="url(#prodPinkGrad)" opacity="0.4"/>
+      <defs>
+        <linearGradient id="prodPinkGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f9a8d4" />
+          <stop offset="100%" stop-color="#f472b6" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <svg class="product-floral-right" viewBox="0 0 150 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+       <path d="M140,150 C140,75 35,15 20,0 C35,45 80,120 140,150 Z" fill="url(#prodPinkGrad)" opacity="0.3"/>
+       <path d="M120,200 C80,120 10,60 0,45 C20,90 60,160 120,200 Z" fill="url(#prodPinkGrad)" opacity="0.4"/>
+    </svg>
     <div class="breadcrumb">
       <NuxtLink to="/">Home</NuxtLink> <i class="fa-solid fa-angle-right"></i> 
       <NuxtLink to="/shop">Shop</NuxtLink> <i class="fa-solid fa-angle-right"></i> 
@@ -263,6 +279,36 @@ const setCurrentImage = (imgUrl) => {
 </script>
 
 <style scoped>
+.product-detail-page {
+  position: relative;
+}
+
+.product-floral-left {
+  position: absolute;
+  left: -80px;
+  top: 80px;
+  width: 150px;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.product-floral-right {
+  position: absolute;
+  right: -80px;
+  top: 300px;
+  width: 120px;
+  height: auto;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@media (max-width: 1300px) {
+  .product-floral-left, .product-floral-right {
+    display: none;
+  }
+}
+
 .breadcrumb {
   display: flex;
   flex-wrap: wrap;
