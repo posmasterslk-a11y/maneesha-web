@@ -38,62 +38,65 @@ Route::post('/payhere/hash',       [PayHereController::class, 'generateHash']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/logout', [AuthController::class, 'adminLogout']);
 
-    // User Management (RBAC)
-    Route::get('/admin/users',               [UserController::class, 'index']);
-    Route::post('/admin/users',              [UserController::class, 'store']);
-    Route::put('/admin/users/{id}',          [UserController::class, 'update']);
-    Route::delete('/admin/users/{id}',       [UserController::class, 'destroy']);
-    
-    // Activity Logs
-    Route::get('/admin/activity-logs',       [\App\Http\Controllers\ActivityLogController::class, 'index']);
+    // ── ONLY ADMIN ──
+    Route::middleware('role:admin')->group(function () {
+        // User Management
+        Route::get('/admin/users',               [UserController::class, 'index']);
+        Route::post('/admin/users',              [UserController::class, 'store']);
+        Route::put('/admin/users/{id}',          [UserController::class, 'update']);
+        Route::delete('/admin/users/{id}',       [UserController::class, 'destroy']);
+        
+        // Activity Logs
+        Route::get('/admin/activity-logs',       [\App\Http\Controllers\ActivityLogController::class, 'index']);
 
-    // Categories CRUD
-    Route::get('/admin/categories',          [CategoryController::class, 'adminIndex']);
-    Route::post('/admin/categories',         [CategoryController::class, 'store']);
-    Route::put('/admin/categories/{id}',     [CategoryController::class, 'update']);
-    Route::delete('/admin/categories/{id}',  [CategoryController::class, 'destroy']);
+        // SMS & Settings
+        Route::get('/admin/sms/settings',        [\App\Http\Controllers\SmsController::class, 'getSettings']);
+        Route::post('/admin/sms/settings',       [\App\Http\Controllers\SmsController::class, 'updateSettings']);
+        Route::post('/admin/settings/delivery-charges', [SettingController::class, 'saveDeliveryCharges']);
+        Route::get('/admin/sms/logs',            [\App\Http\Controllers\SmsController::class, 'getLogs']);
+        Route::get('/admin/sms/billing',         [\App\Http\Controllers\SmsController::class, 'getBillingSummary']);
+        Route::post('/admin/sms/promotional',    [\App\Http\Controllers\SmsController::class, 'sendPromotional']);
 
-    // Size Charts CRUD (Controller missing - commented out)
-    // Route::get('/admin/size-charts',         [\App\Http\Controllers\SizeChartController::class, 'index']);
-    // Route::post('/admin/size-charts',        [\App\Http\Controllers\SizeChartController::class, 'store']);
-    // Route::put('/admin/size-charts/{id}',    [\App\Http\Controllers\SizeChartController::class, 'update']);
-    // Route::delete('/admin/size-charts/{id}', [\App\Http\Controllers\SizeChartController::class, 'destroy']);
+        // Bank Accounts
+        Route::get('/admin/bank-accounts',       [BankAccountController::class, 'adminIndex']);
+        Route::post('/admin/bank-accounts',      [BankAccountController::class, 'store']);
+        Route::put('/admin/bank-accounts/{id}',  [BankAccountController::class, 'update']);
+        Route::delete('/admin/bank-accounts/{id}',[BankAccountController::class, 'destroy']);
+        Route::put('/admin/bank-accounts/{id}/toggle',[BankAccountController::class, 'toggleActive']);
+    });
 
-    // Products CRUD
-    Route::get('/admin/dashboard/products-stats', [ProductController::class, 'dashboardStats']);
-    Route::get('/admin/products',            [ProductController::class, 'adminIndex']);
-    Route::post('/admin/products',           [ProductController::class, 'store']);
-    Route::post('/admin/products/{id}',      [ProductController::class, 'update']); // POST for FormData (file upload)
-    Route::delete('/admin/products/{id}',    [ProductController::class, 'destroy']);
+    // ── ADMIN & INVENTORY ──
+    Route::middleware('role:admin,inventory')->group(function () {
+        // Categories CRUD
+        Route::get('/admin/categories',          [CategoryController::class, 'adminIndex']);
+        Route::post('/admin/categories',         [CategoryController::class, 'store']);
+        Route::put('/admin/categories/{id}',     [CategoryController::class, 'update']);
+        Route::delete('/admin/categories/{id}',  [CategoryController::class, 'destroy']);
 
-    // Orders
-    Route::get('/admin/orders',              [OrderController::class, 'listOrders']);
-    Route::get('/admin/orders/stats',        [OrderController::class, 'orderStats']);
-    Route::put('/admin/orders/{id}/status',  [OrderController::class, 'updateOrderStatus']);
-    Route::get('/admin/dashboard/stats',     [OrderController::class, 'dashboardStats']);
-    Route::get('/admin/orders/{id}/view-slip',    [OrderController::class, 'viewSlip']);
-    Route::get('/admin/orders/{id}/download-slip',[OrderController::class, 'downloadSlip']);
-    Route::delete('/admin/orders/{id}',      [OrderController::class, 'destroy']);
+        // Products CRUD
+        Route::get('/admin/dashboard/products-stats', [ProductController::class, 'dashboardStats']);
+        Route::get('/admin/products',            [ProductController::class, 'adminIndex']);
+        Route::post('/admin/products',           [ProductController::class, 'store']);
+        Route::post('/admin/products/{id}',      [ProductController::class, 'update']);
+        Route::delete('/admin/products/{id}',    [ProductController::class, 'destroy']);
 
-    // Admin Hero Slides
-    Route::get('/admin/hero-slides',         [HeroSlideController::class, 'adminIndex']);
+        // Hero Slides
+        Route::get('/admin/hero-slides',         [HeroSlideController::class, 'adminIndex']);
+        Route::post('/admin/hero-slides',        [HeroSlideController::class, 'store']);
+        Route::put('/admin/hero-slides/{id}',    [HeroSlideController::class, 'update']);
+        Route::put('/admin/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
+        Route::delete('/admin/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
+    });
 
-    // SMS & Settings
-    Route::get('/admin/sms/settings',        [\App\Http\Controllers\SmsController::class, 'getSettings']);
-    Route::post('/admin/sms/settings',       [\App\Http\Controllers\SmsController::class, 'updateSettings']);
-    Route::post('/admin/settings/delivery-charges', [SettingController::class, 'saveDeliveryCharges']);
-    Route::get('/admin/sms/logs',            [\App\Http\Controllers\SmsController::class, 'getLogs']);
-    Route::get('/admin/sms/billing',         [\App\Http\Controllers\SmsController::class, 'getBillingSummary']);
-    Route::post('/admin/sms/promotional',    [\App\Http\Controllers\SmsController::class, 'sendPromotional']);
-    Route::post('/admin/hero-slides',        [HeroSlideController::class, 'store']);
-    Route::put('/admin/hero-slides/{id}',    [HeroSlideController::class, 'update']);
-    Route::put('/admin/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
-    Route::delete('/admin/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
-
-    // Bank Accounts
-    Route::get('/admin/bank-accounts',       [BankAccountController::class, 'adminIndex']);
-    Route::post('/admin/bank-accounts',      [BankAccountController::class, 'store']);
-    Route::put('/admin/bank-accounts/{id}',  [BankAccountController::class, 'update']);
-    Route::delete('/admin/bank-accounts/{id}',[BankAccountController::class, 'destroy']);
-    Route::put('/admin/bank-accounts/{id}/toggle',[BankAccountController::class, 'toggleActive']);
+    // ── ADMIN & SALES ──
+    Route::middleware('role:admin,sales')->group(function () {
+        // Orders
+        Route::get('/admin/orders',              [OrderController::class, 'listOrders']);
+        Route::get('/admin/orders/stats',        [OrderController::class, 'orderStats']);
+        Route::put('/admin/orders/{id}/status',  [OrderController::class, 'updateOrderStatus']);
+        Route::get('/admin/dashboard/stats',     [OrderController::class, 'dashboardStats']);
+        Route::get('/admin/orders/{id}/view-slip',    [OrderController::class, 'viewSlip']);
+        Route::get('/admin/orders/{id}/download-slip',[OrderController::class, 'downloadSlip']);
+        Route::delete('/admin/orders/{id}',      [OrderController::class, 'destroy']);
+    });
 });
