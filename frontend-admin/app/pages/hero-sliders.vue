@@ -261,13 +261,16 @@ const saveSlide = async () => {
     
     if (formData.value.id) {
       // Update text fields only
+      const updateData = { ...formData.value }
+      updateData.show_text = updateData.show_text ? 1 : 0
+      
       await $fetch(`${API}/admin/hero-slides/${formData.value.id}`, {
         method: 'PUT',
         headers: { 
           Authorization: `Bearer ${token}`,
           Accept: 'application/json'
         },
-        body: formData.value
+        body: updateData
       })
       toast.add({ title: 'Success', description: 'Slide text updated', color: 'green' })
     } else {
@@ -279,7 +282,9 @@ const saveSlide = async () => {
       const keys = ['subtitle', 'title_top', 'title_bottom', 'desc', 'btn_text', 'btn_link', 'show_text']
       keys.forEach(k => {
         if (formData.value[k] !== undefined && formData.value[k] !== null) {
-          fd.append(k, formData.value[k])
+          let val = formData.value[k]
+          if (k === 'show_text') val = val ? 1 : 0
+          fd.append(k, val)
         }
       })
         
