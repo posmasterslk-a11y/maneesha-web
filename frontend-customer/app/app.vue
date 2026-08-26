@@ -52,10 +52,10 @@
             <i :class="isDarkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'"></i>
           </button>
           
-          <NuxtLink to="/cart" class="cart-btn-desktop">
+          <button @click="toggleCartDrawer" class="cart-btn-desktop" style="background: transparent; border: none; cursor: pointer; color: inherit;">
             <i class="fa-solid fa-bag-shopping"></i>
             <span v-if="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
-          </NuxtLink>
+          </button>
         </div>
       </div>
     </header>
@@ -123,9 +123,9 @@
             <NuxtLink to="/about" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-circle-info"></i> About Us
             </NuxtLink>
-            <NuxtLink to="/cart" @click="toggleDrawer" active-class="active-drawer-nav">
+            <a href="#" @click.prevent="toggleCartDrawer(); toggleDrawer()" class="drawer-nav-item">
               <i class="fa-solid fa-cart-shopping"></i> Shopping Cart
-            </NuxtLink>
+            </a>
             <NuxtLink to="/orders" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-receipt"></i> My Orders
             </NuxtLink>
@@ -150,6 +150,8 @@
       <NuxtPage />
     </main>
 
+    <CartDrawer />
+
     <!-- Mobile Bottom Navigation Bar -->
     <nav class="mobile-bottom-nav glass-panel">
       <NuxtLink to="/" class="nav-item" active-class="active-nav-item">
@@ -160,13 +162,13 @@
         <i class="fa-solid fa-bag-shopping"></i>
         <span>Shop</span>
       </NuxtLink>
-      <NuxtLink to="/cart" class="nav-item cart-item" active-class="active-nav-item">
+      <a href="#" @click.prevent="toggleCartDrawer" class="nav-item cart-item">
         <div class="icon-wrapper">
           <i class="fa-solid fa-cart-shopping"></i>
           <span v-if="cartCount > 0" class="cart-badge-bottom">{{ cartCount }}</span>
         </div>
         <span>Cart</span>
-      </NuxtLink>
+      </a>
       <NuxtLink to="/orders" class="nav-item" active-class="active-nav-item">
         <i class="fa-solid fa-receipt"></i>
         <span>Orders</span>
@@ -236,6 +238,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const isDarkMode = ref(false)
 const isDrawerOpen = ref(false)
+const isCartDrawerOpen = ref(false)
 const showScrollTop = ref(false)
 const globalSearchQuery = ref('')
 const searchResults = ref([])
@@ -314,6 +317,10 @@ const toggleDrawer = () => {
   isDrawerOpen.value = !isDrawerOpen.value
 }
 
+const toggleCartDrawer = () => {
+  isCartDrawerOpen.value = !isCartDrawerOpen.value
+}
+
 // Global functions to manage cart provided to child pages
 const loadCart = () => {
   if (typeof window !== 'undefined') {
@@ -352,6 +359,8 @@ const addToCart = (product, selectedSize, price, quantity = 1, image) => {
 
 // Provide cart context globally
 provide('cart', computed(() => cart.value))
+provide('isCartDrawerOpen', computed(() => isCartDrawerOpen.value))
+provide('toggleCartDrawer', toggleCartDrawer)
 provide('addToCart', addToCart)
 provide('updateCart', updateCart)
 provide('loadCart', loadCart)
