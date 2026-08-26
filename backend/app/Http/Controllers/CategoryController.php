@@ -67,6 +67,8 @@ class CategoryController extends Controller
         }
 
         $category = Category::create($data);
+        
+        \App\Services\ActivityLogger::log('Created Category', "Category created: {$category->name}");
 
         return response()->json($category, 201);
     }
@@ -101,6 +103,8 @@ class CategoryController extends Controller
         }
 
         $category->update($data);
+        
+        \App\Services\ActivityLogger::log('Updated Category', "Category updated: {$category->name}");
 
         return response()->json($category);
     }
@@ -114,7 +118,10 @@ class CategoryController extends Controller
             \Storage::disk('public')->delete($category->size_chart_image);
         }
         
+        $categoryName = $category->name;
         $category->delete();
+        
+        \App\Services\ActivityLogger::log('Deleted Category', "Category deleted: {$categoryName}");
 
         return response()->json(['message' => 'Category deleted.']);
     }

@@ -80,6 +80,8 @@ class HeroSlideController extends Controller
         ]);
 
         $slide->image_url = asset('storage/' . $slide->image_path);
+        
+        \App\Services\ActivityLogger::log('Created Hero Slide', "Hero Slide ID {$slide->id} created");
 
         return response()->json([
             'success' => true,
@@ -96,6 +98,9 @@ class HeroSlideController extends Controller
         $slide = HeroSlide::findOrFail($id);
         $slide->is_active = !$slide->is_active;
         $slide->save();
+        
+        $statusStr = $slide->is_active ? 'Activated' : 'Deactivated';
+        \App\Services\ActivityLogger::log('Toggled Hero Slide', "Hero Slide ID {$slide->id} {$statusStr}");
 
         return response()->json([
             'success' => true,
@@ -132,6 +137,8 @@ class HeroSlideController extends Controller
         ]);
 
         $slide->image_url = asset('storage/' . $slide->image_path);
+        
+        \App\Services\ActivityLogger::log('Updated Hero Slide', "Hero Slide ID {$slide->id} updated");
 
         return response()->json([
             'success' => true,
@@ -152,7 +159,10 @@ class HeroSlideController extends Controller
             Storage::disk('public')->delete($slide->image_path);
         }
 
+        $slideId = $slide->id;
         $slide->delete();
+        
+        \App\Services\ActivityLogger::log('Deleted Hero Slide', "Hero Slide ID {$slideId} deleted");
 
         return response()->json([
             'success' => true,

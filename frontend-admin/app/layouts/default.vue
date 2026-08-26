@@ -72,6 +72,11 @@ const links = computed(() => {
       icon: 'i-lucide-building-2',
       to: '/bank-accounts',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'Activity Logs',
+      icon: 'i-lucide-activity',
+      to: '/logs',
+      onSelect: () => { open.value = false }
     })
   }
 

@@ -43,6 +43,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/users',              [UserController::class, 'store']);
     Route::put('/admin/users/{id}',          [UserController::class, 'update']);
     Route::delete('/admin/users/{id}',       [UserController::class, 'destroy']);
+    
+    // Activity Logs
+    Route::get('/admin/activity-logs',       [\App\Http\Controllers\ActivityLogController::class, 'index']);
 
     // Categories CRUD
     Route::get('/admin/categories',          [CategoryController::class, 'adminIndex']);

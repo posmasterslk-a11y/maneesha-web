@@ -340,6 +340,8 @@ class OrderController extends Controller
         } catch (\Throwable $e) {
             Log::warning("Failed to send order status email: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
         }
+        
+        \App\Services\ActivityLogger::log('Updated Order Status', "Order {$order->order_number} status changed to {$request->status}");
 
         return response()->json([
             'success' => true,
@@ -418,7 +420,10 @@ class OrderController extends Controller
         $order->orderItems()->delete();
         
         // Delete the order itself
+        $orderNumber = $order->order_number;
         $order->delete();
+        
+        \App\Services\ActivityLogger::log('Deleted Order', "Order deleted: {$orderNumber}");
         
         return response()->json([
             'success' => true,

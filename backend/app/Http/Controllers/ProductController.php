@@ -159,6 +159,8 @@ class ProductController extends Controller
             ]);
         }
 
+        \App\Services\ActivityLogger::log('Created Product', "Product created: {$product->name}");
+
         return response()->json($this->formatProduct($product->load(['category', 'variants'])), 201);
     }
 
@@ -223,6 +225,8 @@ class ProductController extends Controller
                 ]);
             }
         }
+        
+        \App\Services\ActivityLogger::log('Updated Product', "Product updated: {$product->name}");
 
         return response()->json($this->formatProduct($product->fresh(['category', 'variants'])));
     }
@@ -231,7 +235,12 @@ class ProductController extends Controller
     /** DELETE /api/admin/products/{id} */
     public function destroy($id)
     {
-        Product::findOrFail($id)->delete();
+        $product = Product::findOrFail($id);
+        $productName = $product->name;
+        $product->delete();
+        
+        \App\Services\ActivityLogger::log('Deleted Product', "Product deleted: {$productName}");
+        
         return response()->json(['message' => 'Product deleted.']);
     }
 

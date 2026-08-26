@@ -48,6 +48,8 @@ class SettingController extends Controller
         $setting = Setting::firstOrCreate(['key' => 'delivery_charges']);
         $setting->value = json_encode($charges);
         $setting->save();
+        
+        \App\Services\ActivityLogger::log('Updated Settings', 'Delivery charges updated');
 
         return response()->json([
             'success' => true,
