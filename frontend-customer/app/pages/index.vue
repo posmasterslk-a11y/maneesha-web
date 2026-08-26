@@ -323,7 +323,7 @@ const exclusiveProducts = computed(() => {
 const activeSlides = computed(() => {
   if (heroSlides.value && heroSlides.value.length > 0) {
     return heroSlides.value.map(slide => ({
-      img: slide.image_path ? `${API.replace('/api', '')}/storage/${slide.image_path}` : slide.image_url,
+      img: slide.image_url,
       subtitle: slide.subtitle || '',
       titleTop: slide.title_top || '',
       titleBottom: slide.title_bottom || '',
