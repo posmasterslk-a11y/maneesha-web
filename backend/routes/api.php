@@ -57,11 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin/categories/{id}',     [CategoryController::class, 'update']);
     Route::delete('/admin/categories/{id}',  [CategoryController::class, 'destroy']);
 
-    // Size Charts CRUD
-    Route::get('/admin/size-charts',         [\App\Http\Controllers\SizeChartController::class, 'index']);
-    Route::post('/admin/size-charts',        [\App\Http\Controllers\SizeChartController::class, 'store']);
-    Route::put('/admin/size-charts/{id}',    [\App\Http\Controllers\SizeChartController::class, 'update']);
-    Route::delete('/admin/size-charts/{id}', [\App\Http\Controllers\SizeChartController::class, 'destroy']);
+    // Size Charts CRUD (Controller missing - commented out)
+    // Route::get('/admin/size-charts',         [\App\Http\Controllers\SizeChartController::class, 'index']);
+    // Route::post('/admin/size-charts',        [\App\Http\Controllers\SizeChartController::class, 'store']);
+    // Route::put('/admin/size-charts/{id}',    [\App\Http\Controllers\SizeChartController::class, 'update']);
+    // Route::delete('/admin/size-charts/{id}', [\App\Http\Controllers\SizeChartController::class, 'destroy']);
 
     // Products CRUD
     Route::get('/admin/dashboard/products-stats', [ProductController::class, 'dashboardStats']);
@@ -80,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/admin/orders/{id}',      [OrderController::class, 'destroy']);
 
     // Admin Hero Slides
-    Route::get('/hero-slides',         [HeroSlideController::class, 'adminIndex']);
+    Route::get('/admin/hero-slides',         [HeroSlideController::class, 'adminIndex']);
 
     // SMS & Settings
     Route::get('/admin/sms/settings',        [\App\Http\Controllers\SmsController::class, 'getSettings']);
@@ -89,9 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/sms/logs',            [\App\Http\Controllers\SmsController::class, 'getLogs']);
     Route::get('/admin/sms/billing',         [\App\Http\Controllers\SmsController::class, 'getBillingSummary']);
     Route::post('/admin/sms/promotional',    [\App\Http\Controllers\SmsController::class, 'sendPromotional']);
-    Route::post('/hero-slides',        [HeroSlideController::class, 'store']);
-    Route::put('/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
-    Route::delete('/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
+    Route::post('/admin/hero-slides',        [HeroSlideController::class, 'store']);
+    Route::put('/admin/hero-slides/{id}',    [HeroSlideController::class, 'update']);
+    Route::put('/admin/hero-slides/{id}/toggle', [HeroSlideController::class, 'toggleActive']);
+    Route::delete('/admin/hero-slides/{id}', [HeroSlideController::class, 'destroy']);
 
     // Bank Accounts
     Route::get('/admin/bank-accounts',       [BankAccountController::class, 'adminIndex']);

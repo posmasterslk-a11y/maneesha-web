@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api-maneesha.posmasters.lk/api'
+      apiBase: 'http://127.0.0.1:8000/api'
     }
   },
   css: ['~/assets/css/main.css'],

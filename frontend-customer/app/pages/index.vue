@@ -8,20 +8,20 @@
             :key="currentHeroSlide"
             class="hero-slide-item"
           >
-            <img :src="`/slider/${sliderImages[currentHeroSlide].img}`" class="slider-bg-img" alt="Hero Banner" />
+            <img :src="activeSlides[currentHeroSlide].img" class="slider-bg-img" alt="Hero Banner" />
             
-            <div class="hero-content-overlay container">
+            <div class="hero-content-overlay container" v-if="(activeSlides[currentHeroSlide].titleTop || activeSlides[currentHeroSlide].subtitle || !activeSlides[currentHeroSlide].isDynamic) && activeSlides[currentHeroSlide].showText !== false">
               <div class="hero-content-box animate-slide-left text-glow">
-                <span class="hero-subtitle">{{ sliderImages[currentHeroSlide].subtitle }}</span>
-                <h1 class="luxury-title">
-                  <span class="dark-text">{{ sliderImages[currentHeroSlide].titleTop }}</span>
-                  <span class="pink-text">{{ sliderImages[currentHeroSlide].titleBottom }}</span>
+                <span class="hero-subtitle" v-if="activeSlides[currentHeroSlide].subtitle">{{ activeSlides[currentHeroSlide].subtitle }}</span>
+                <h1 class="luxury-title" v-if="activeSlides[currentHeroSlide].titleTop || activeSlides[currentHeroSlide].titleBottom">
+                  <span class="dark-text">{{ activeSlides[currentHeroSlide].titleTop }}</span>
+                  <span class="pink-text">{{ activeSlides[currentHeroSlide].titleBottom }}</span>
                 </h1>
-                <p class="hero-desc">
-                  {{ sliderImages[currentHeroSlide].desc }}
+                <p class="hero-desc" v-if="activeSlides[currentHeroSlide].desc">
+                  {{ activeSlides[currentHeroSlide].desc }}
                 </p>
-                <div class="hero-ctas">
-                  <NuxtLink to="/shop" class="btn-shop-now">SHOP NOW</NuxtLink>
+                <div class="hero-ctas" v-if="activeSlides[currentHeroSlide].btnText">
+                  <NuxtLink :to="activeSlides[currentHeroSlide].btnLink || '/shop'" class="btn-shop-now">{{ activeSlides[currentHeroSlide].btnText }}</NuxtLink>
                 </div>
               </div>
             </div>
@@ -40,7 +40,7 @@
       <!-- Slider Pagination -->
       <div class="slider-pagination">
         <span 
-          v-for="(slide, index) in sliderImages" 
+          v-for="(slide, index) in activeSlides" 
           :key="index"
           class="slider-dot"
           :class="{ active: currentHeroSlide === index }"
@@ -294,7 +294,7 @@ const [
   useFetch(`${API}/categories`),
   useFetch(`${API}/products?featured=1`),
   useFetch(`${API}/products/popular`),
-  useFetch(`${API}/products?hero_slider=1`),
+  useFetch(`${API}/hero-slides`),
   useFetch(`${API}/products?sort=latest`)
 ])
 
@@ -320,13 +320,29 @@ const exclusiveProducts = computed(() => {
   return data.slice(0, 4) // Show top 4 newest
 })
 
-const sliderImages = [
-  { img: '1.jpeg', subtitle: 'New Season', titleTop: 'TIMELESS', titleBottom: 'ELEGANCE', desc: 'Discover chic styles and premium quality crafted for the modern woman.' },
-  { img: '2.webp', subtitle: 'Latest Trends', titleTop: 'MODERN', titleBottom: 'CLASSICS', desc: 'Elevate your everyday wardrobe with our exclusive new arrivals.' },
-  { img: '3.webp', subtitle: 'Bespoke Fit', titleTop: 'PERFECT', titleBottom: 'SILHOUETTE', desc: 'Custom-tailored fashion designed to celebrate your unique shape.' },
-  { img: '4.webp', subtitle: 'Luxury Wear', titleTop: 'BOLD', titleBottom: 'STATEMENTS', desc: 'Make an impression with our meticulously crafted premium pieces.' },
-  { img: '5.webp', subtitle: 'Signature Collection', titleTop: 'FLAWLESS', titleBottom: 'BEAUTY', desc: 'Step out in confidence with our signature dresses and frocks.' }
-]
+const activeSlides = computed(() => {
+  if (heroSlides.value && heroSlides.value.length > 0) {
+    return heroSlides.value.map(slide => ({
+      img: slide.image_path ? `${API.replace('/api', '')}/storage/${slide.image_path}` : slide.image_url,
+      subtitle: slide.subtitle || '',
+      titleTop: slide.title_top || '',
+      titleBottom: slide.title_bottom || '',
+      desc: slide.desc || '',
+      btnText: slide.btn_text || '',
+      btnLink: slide.btn_link || '/shop',
+      showText: slide.show_text === undefined ? true : !!slide.show_text,
+      isDynamic: true
+    }))
+  }
+  return [
+    { img: '/slider/1.jpeg', subtitle: 'New Season', titleTop: 'TIMELESS', titleBottom: 'ELEGANCE', desc: 'Discover chic styles and premium quality crafted for the modern woman.', isDynamic: false },
+    { img: '/slider/2.webp', subtitle: 'Latest Trends', titleTop: 'MODERN', titleBottom: 'CLASSICS', desc: 'Elevate your everyday wardrobe with our exclusive new arrivals.', isDynamic: false },
+    { img: '/slider/3.webp', subtitle: 'Bespoke Fit', titleTop: 'PERFECT', titleBottom: 'SILHOUETTE', desc: 'Custom-tailored fashion designed to celebrate your unique shape.', isDynamic: false },
+    { img: '/slider/4.webp', subtitle: 'Luxury Wear', titleTop: 'BOLD', titleBottom: 'STATEMENTS', desc: 'Make an impression with our meticulously crafted premium pieces.', isDynamic: false },
+    { img: '/slider/5.webp', subtitle: 'Signature Collection', titleTop: 'FLAWLESS', titleBottom: 'BEAUTY', desc: 'Step out in confidence with our signature dresses and frocks.', isDynamic: false }
+  ]
+})
+
 const currentHeroSlide = ref(0)
 let heroSlideInterval = null
 
@@ -336,17 +352,17 @@ let storySlideInterval = null
 const startHeroSlider = () => {
   if (heroSlideInterval) clearInterval(heroSlideInterval)
   heroSlideInterval = setInterval(() => {
-    currentHeroSlide.value = (currentHeroSlide.value + 1) % sliderImages.length
+    currentHeroSlide.value = (currentHeroSlide.value + 1) % activeSlides.value.length
   }, 5000)
 }
 
 const prevHeroSlide = () => {
-  currentHeroSlide.value = (currentHeroSlide.value - 1 + sliderImages.length) % sliderImages.length
+  currentHeroSlide.value = (currentHeroSlide.value - 1 + activeSlides.value.length) % activeSlides.value.length
   startHeroSlider()
 }
 
 const nextHeroSlide = () => {
-  currentHeroSlide.value = (currentHeroSlide.value + 1) % sliderImages.length
+  currentHeroSlide.value = (currentHeroSlide.value + 1) % activeSlides.value.length
   startHeroSlider()
 }
 
@@ -465,18 +481,26 @@ onUnmounted(() => {
 }
 
 .hero-content-box {
-  background: transparent;
-  padding: 0;
-  max-width: 600px;
+  position: relative;
+  padding: 40px 60px 40px 0;
+  max-width: 650px;
   border: none;
   box-shadow: none;
-  backdrop-filter: none;
-  margin-left: 0;
+  z-index: 1;
 }
 
-body.dark-mode .hero-content-box {
-  background: transparent;
-  border: none;
+.hero-content-box::before {
+  content: '';
+  position: absolute;
+  inset: -40px -60px -40px -40px; /* Spread out the glow */
+  background: radial-gradient(ellipse at 40% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 50%, transparent 80%);
+  z-index: -1;
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+body.dark-mode .hero-content-box::before {
+  background: radial-gradient(ellipse at 40% 50%, rgba(15, 15, 15, 0.95) 0%, rgba(15, 15, 15, 0.7) 50%, transparent 80%);
 }
 
 .hero-subtitle {

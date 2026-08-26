@@ -86,9 +86,16 @@ class ProductController extends Controller
     }
 
     /** GET /api/admin/products — full list for admin */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $products = Product::with(['category', 'variants'])->orderBy('sort_order')->paginate(10);
+        $query = Product::with(['category', 'variants'])->orderBy('sort_order');
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('short_description', 'like', '%' . $request->search . '%');
+            });
+        }
+        $products = $query->paginate(24);
         $products->through(fn($p) => $this->formatProduct($p));
 
         return response()->json($products);

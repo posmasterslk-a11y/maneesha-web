@@ -29,6 +29,11 @@ const links = computed(() => {
       icon: 'i-lucide-tags',
       to: '/categories',
       onSelect: () => { open.value = false }
+    }, {
+      label: 'Hero Sliders',
+      icon: 'i-lucide-image',
+      to: '/hero-sliders',
+      onSelect: () => { open.value = false }
     })
   }
 

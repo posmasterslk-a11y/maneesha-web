@@ -19,7 +19,12 @@
 
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input type="password" v-model="password" class="form-input" required placeholder="••••••••" autocomplete="current-password" />
+          <div class="password-input-wrapper">
+            <input :type="showPassword ? 'text' : 'password'" v-model="password" class="form-input" required placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="password-toggle" @click="showPassword = !showPassword" tabindex="-1">
+              <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
         </div>
 
         <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 24px;">
@@ -49,6 +54,7 @@ const route = useRoute()
 
 const email    = ref('')
 const password = ref('')
+const showPassword = ref(false)
 const rememberMe = ref(false)
 const isLoading = ref(false)
 const errorMsg  = ref('')
@@ -100,7 +106,7 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  background: #f4f7f6; /* Clean soft white/grey background */
   padding: 20px;
 }
 
@@ -108,11 +114,11 @@ const handleLogin = async () => {
   width: 100%;
   max-width: 440px;
   padding: 40px;
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-  color: #fff;
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.01);
+  color: #374151;
+  border-radius: 12px;
 }
 
 .login-header {
@@ -122,22 +128,23 @@ const handleLogin = async () => {
 
 .login-icon {
   font-size: 3rem;
-  color: var(--admin-gold);
+  color: var(--admin-gold, #d4af37);
   margin-bottom: 15px;
 }
 
 .login-header h2 {
   font-size: 2rem;
-  color: #fff;
+  color: #111827;
+  font-weight: 600;
 }
 
 .login-header h2 span {
-  color: var(--admin-gold);
+  color: var(--admin-gold, #d4af37);
 }
 
 .login-header p {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: 0.85rem;
+  color: #6b7280;
   margin-top: 8px;
 }
 
@@ -146,37 +153,67 @@ const handleLogin = async () => {
 }
 
 .form-label {
-  color: #94a3b8;
+  color: #4b5563;
   display: block;
   margin-bottom: 8px;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .form-input {
   width: 100%;
   padding: 12px 16px;
-  border-radius: var(--radius-md, 8px);
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(15, 23, 42, 0.6);
-  color: #fff;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #1f2937;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--admin-gold);
+  border-color: var(--admin-gold, #d4af37);
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-input {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  outline: none;
+}
+
+.password-toggle:hover, .password-toggle:focus {
+  color: #4b5563;
+}
+
 .btn-admin {
-  background: var(--admin-gold, #d4af37);
-  color: #000;
-  font-weight: 700;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 600;
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: var(--radius-md, 8px);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1.05rem;
@@ -186,8 +223,9 @@ const handleLogin = async () => {
 }
 
 .btn-admin:hover {
-  background: #b8901c;
+  background: #1f2937;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .btn-block {
@@ -199,9 +237,9 @@ const handleLogin = async () => {
 }
 
 .error-banner {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;

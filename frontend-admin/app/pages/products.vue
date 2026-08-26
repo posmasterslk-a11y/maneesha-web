@@ -12,7 +12,14 @@
       <div class="flex flex-col gap-6">
         <div class="flex justify-between items-center">
           <h3 class="font-semibold text-gray-900 dark:text-white text-lg">Apparel Catalog</h3>
-          <UButton icon="i-lucide-plus" color="primary" @click="openAddModal">Add New Product</UButton>
+          <div class="flex items-center gap-4">
+            <UInput v-model="searchQuery" icon="i-lucide-search" placeholder="Search products..." class="w-64" @input="onSearchInput" @keyup.enter="handleSearch" :ui="{ icon: { trailing: { pointer: '' } } }">
+              <template #trailing>
+                <UButton v-show="searchQuery !== ''" color="gray" variant="link" icon="i-lucide-x" :padded="false" @click="clearSearch" />
+              </template>
+            </UInput>
+            <UButton icon="i-lucide-plus" color="primary" @click="openAddModal">Add New Product</UButton>
+          </div>
         </div>
 
 
@@ -254,6 +261,7 @@ const products    = ref([])
 const categories  = ref([])
 const currentPage = ref(1)
 const lastPage    = ref(1)
+const searchQuery = ref('')
 const loading     = ref(true)
 const saving      = ref(false)
 const errorMsg    = ref('')
@@ -316,7 +324,8 @@ const getImageUrl = (path) => {
 const fetchProducts = async (page = 1) => {
   loading.value = true
   try {
-    const r = await fetch(`${API}/admin/products?page=${page}`, { headers: authHeaders() })
+    const q = searchQuery.value ? `&search=${encodeURIComponent(searchQuery.value)}` : ''
+    const r = await fetch(`${API}/admin/products?page=${page}${q}`, { headers: authHeaders() })
     const data = await r.json()
     products.value = data.data
     currentPage.value = data.current_page
@@ -325,6 +334,23 @@ const fetchProducts = async (page = 1) => {
     errorMsg.value = 'Failed to load products.'
   }
   loading.value = false
+}
+
+const handleSearch = () => {
+  fetchProducts(1)
+}
+
+let searchTimeout = null
+const onSearchInput = () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    fetchProducts(1)
+  }, 400)
+}
+
+const clearSearch = () => {
+  searchQuery.value = ''
+  fetchProducts(1)
 }
 
 const fetchCategories = async () => {

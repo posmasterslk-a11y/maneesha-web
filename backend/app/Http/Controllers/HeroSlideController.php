@@ -52,6 +52,13 @@ class HeroSlideController extends Controller
     {
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120', // Max 5MB
+            'subtitle' => 'nullable|string|max:255',
+            'title_top' => 'nullable|string|max:255',
+            'title_bottom' => 'nullable|string|max:255',
+            'desc' => 'nullable|string',
+            'btn_text' => 'nullable|string|max:255',
+            'btn_link' => 'nullable|string|max:255',
+            'show_text' => 'nullable|boolean',
         ]);
 
         $path = $request->file('image')->store('hero_slides', 'public');
@@ -63,6 +70,13 @@ class HeroSlideController extends Controller
             'image_path' => $path,
             'order_index' => $maxOrder !== null ? $maxOrder + 1 : 0,
             'is_active' => true,
+            'subtitle' => $request->subtitle,
+            'title_top' => $request->title_top,
+            'title_bottom' => $request->title_bottom,
+            'desc' => $request->desc,
+            'btn_text' => $request->btn_text,
+            'btn_link' => $request->btn_link,
+            'show_text' => $request->has('show_text') ? filter_var($request->show_text, FILTER_VALIDATE_BOOLEAN) : true,
         ]);
 
         $slide->image_url = asset('storage/' . $slide->image_path);
@@ -87,6 +101,42 @@ class HeroSlideController extends Controller
             'success' => true,
             'message' => 'Slide status updated.',
             'is_active' => $slide->is_active
+        ]);
+    }
+
+    /**
+     * Update slide text/details
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'subtitle' => 'nullable|string|max:255',
+            'title_top' => 'nullable|string|max:255',
+            'title_bottom' => 'nullable|string|max:255',
+            'desc' => 'nullable|string',
+            'btn_text' => 'nullable|string|max:255',
+            'btn_link' => 'nullable|string|max:255',
+            'show_text' => 'nullable|boolean',
+        ]);
+
+        $slide = HeroSlide::findOrFail($id);
+        
+        $slide->update([
+            'subtitle' => $request->subtitle,
+            'title_top' => $request->title_top,
+            'title_bottom' => $request->title_bottom,
+            'desc' => $request->desc,
+            'btn_text' => $request->btn_text,
+            'btn_link' => $request->btn_link,
+            'show_text' => $request->has('show_text') ? filter_var($request->show_text, FILTER_VALIDATE_BOOLEAN) : true,
+        ]);
+
+        $slide->image_url = asset('storage/' . $slide->image_path);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Slide updated successfully.',
+            'slide' => $slide
         ]);
     }
 
