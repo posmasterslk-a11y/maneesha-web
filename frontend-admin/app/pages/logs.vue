@@ -73,7 +73,7 @@ const columns = [
 const fetchLogs = async () => {
   pending.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = (localStorage.getItem('maneesha-admin-token') || sessionStorage.getItem('maneesha-admin-token'))
     const query = new URLSearchParams({
       page: currentPage.value.toString(),
       ...(search.value && { action_type: search.value })
