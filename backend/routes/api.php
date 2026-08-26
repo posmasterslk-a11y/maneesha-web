@@ -20,14 +20,7 @@ Route::get('/products/popular',    [ProductController::class, 'popular']);
 Route::get('/products/{slug}',     [ProductController::class, 'show']);
 Route::post('/cart/validate',      [ProductController::class, 'validateCart']);
 
-Route::get('/run-migrations', function () {
-    try {
-        \Artisan::call('migrate', ['--force' => true]);
-        return response()->json(['status' => 'success', 'message' => 'Migrations ran successfully!', 'output' => \Artisan::output()]);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-    }
-});
+
 Route::get('/fix-order-images', [OrderController::class, 'fixOrderImages']);
 Route::get('/hero-slides',         [HeroSlideController::class, 'index']);
 
