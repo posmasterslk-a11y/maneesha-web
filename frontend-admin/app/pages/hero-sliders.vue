@@ -263,7 +263,10 @@ const saveSlide = async () => {
       // Update text fields only
       await $fetch(`${API}/admin/hero-slides/${formData.value.id}`, {
         method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json'
+        },
         body: formData.value
       })
       toast.add({ title: 'Success', description: 'Slide text updated', color: 'green' })
@@ -282,7 +285,10 @@ const saveSlide = async () => {
         
       await $fetch(`${API}/admin/hero-slides`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }, // Do not set Content-Type; browser sets it with boundary
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json'
+        }, // Do not set Content-Type; browser sets it with boundary
         body: fd
       })
       toast.add({ title: 'Success', description: 'Slide uploaded', color: 'green' })

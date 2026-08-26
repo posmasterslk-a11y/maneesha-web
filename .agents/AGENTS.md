@@ -30,5 +30,5 @@ The project is decoupled into three main repositories/folders:
 ## 6. Core Rules for Development
 1. **API Communications**: Both frontends MUST use the Nuxt runtime config (`useRuntimeConfig().public.apiBase`) for all backend API calls. Avoid hardcoding URLs.
 2. **Styling**: Both frontends utilize Tailwind CSS or plain CSS. The admin panel heavily relies on `@nuxt/ui`.
-3. **Database Migrations**: Any changes to the database structure must be done through Laravel Migrations in the `backend` folder.
+3. **Database Migrations & Security**: Any changes to the database structure must be done through Laravel Migrations via Terminal ONLY. **STRICTLY PROHIBITED:** NEVER create public API routes (e.g., `/run-migrations`) to execute database commands like migrations or deletions. Do not expose any database manipulation commands via HTTP URLs under any circumstances.
 4. **Environment Variables**: Local `.env` variables should never be committed. Ensure that changes in `.env` requirements are documented.
