@@ -321,6 +321,10 @@ const toggleCartDrawer = () => {
   isCartDrawerOpen.value = !isCartDrawerOpen.value
 }
 
+const openCartDrawer = () => {
+  isCartDrawerOpen.value = true
+}
+
 // Global functions to manage cart provided to child pages
 const loadCart = () => {
   if (typeof window !== 'undefined') {
@@ -361,6 +365,7 @@ const addToCart = (product, selectedSize, price, quantity = 1, image) => {
 provide('cart', computed(() => cart.value))
 provide('isCartDrawerOpen', computed(() => isCartDrawerOpen.value))
 provide('toggleCartDrawer', toggleCartDrawer)
+provide('openCartDrawer', openCartDrawer)
 provide('addToCart', addToCart)
 provide('updateCart', updateCart)
 provide('loadCart', loadCart)

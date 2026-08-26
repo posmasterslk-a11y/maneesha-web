@@ -157,6 +157,8 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const addToCart = inject('addToCart')
+const toggleCartDrawer = inject('toggleCartDrawer')
+const openCartDrawer = inject('openCartDrawer')
 
 const slugParam = route.params.slug
 
@@ -243,7 +245,9 @@ const handleAddToCart = () => {
     return
   }
   addToCart(product.value, selectedSize.value, activePrice.value, quantity.value, product.value.main_image)
-  openNotify('success', 'Added to Cart', `${product.value.name} has been added to your cart successfully.`)
+  if (openCartDrawer) {
+    openCartDrawer()
+  }
 }
 
 const handleBuyNow = () => {
