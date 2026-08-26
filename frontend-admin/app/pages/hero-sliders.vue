@@ -194,15 +194,62 @@ const openEditModal = (slide) => {
   isModalOpen.value = true
 }
 
-const onImageChange = (e) => {
+const convertToWebP = (file) => {
+  return new Promise((resolve) => {
+    // If it's already a webp and very small, just return it
+    if (file.type === 'image/webp' && file.size < 1 * 1024 * 1024) {
+      resolve(file)
+      return
+    }
+    
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+        
+        // Scale down if it's too large (e.g. > 1920px wide) to save even more space
+        if (width > 1920) {
+          height = Math.round((height * 1920) / width)
+          width = 1920
+        }
+        
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+        
+        canvas.toBlob((blob) => {
+          const newFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + '.webp', {
+            type: 'image/webp',
+            lastModified: Date.now()
+          })
+          resolve(newFile)
+        }, 'image/webp', 0.85) // 85% quality for a good balance
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+const onImageChange = async (e) => {
   const file = e.target.files[0]
   if (!file) return
-  if (file.size > 5 * 1024 * 1024) {
-    toast.add({ title: 'Image too large', description: 'Maximum 5MB allowed', color: 'red' })
+  
+  toast.add({ title: 'Optimizing image...', description: 'Converting to WebP...', color: 'blue', timeout: 2000 })
+  
+  const optimizedFile = await convertToWebP(file)
+  
+  if (optimizedFile.size > 5 * 1024 * 1024) {
+    toast.add({ title: 'Image too large', description: 'Maximum 5MB allowed even after compression', color: 'red' })
     return
   }
-  imageFile.value = file
-  imagePreview.value = URL.createObjectURL(file)
+  
+  imageFile.value = optimizedFile
+  imagePreview.value = URL.createObjectURL(optimizedFile)
 }
 
 const saveSlide = async () => {
