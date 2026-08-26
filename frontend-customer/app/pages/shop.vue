@@ -44,7 +44,7 @@
             <i class="fa-solid fa-shirt"></i>
           </div>
           <div class="hover-overlay">
-            <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">Add to Cart</NuxtLink>
+            <NuxtLink :to="`/product/${prod.slug}`" class="btn-premium quick-view-btn">View</NuxtLink>
           </div>
         </div>
 
