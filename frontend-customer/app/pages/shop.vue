@@ -1,5 +1,5 @@
 <template>
-  <div class="shop-page container">
+  <div class="shop-page container-fluid">
     <div class="shop-header">
       <h1 class="luxury-title" v-if="!isSale">The <span class="gold-gradient-text">Collection</span></h1>
       <h1 class="luxury-title" v-else>Special <span class="gold-gradient-text">Sale</span></h1>
