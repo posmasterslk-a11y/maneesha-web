@@ -146,9 +146,16 @@
                         </select>
                       </UFormField>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
                       <UFormField label="Base Price (LKR) *" required>
                         <UInput v-model.number="formData.base_price" type="number" min="0" step="0.01" required>
+                          <template #leading>
+                            <span class="text-gray-500 dark:text-gray-400 text-xs">Rs.</span>
+                          </template>
+                        </UInput>
+                      </UFormField>
+                      <UFormField label="Discount Price (LKR)">
+                        <UInput v-model.number="formData.discount_price" type="number" min="0" step="0.01">
                           <template #leading>
                             <span class="text-gray-500 dark:text-gray-400 text-xs">Rs.</span>
                           </template>
@@ -290,7 +297,7 @@ const defaultVariants = () => [
 ]
 
 const formData = ref({
-  name: '', category_id: '', base_price: 2000, stock: 0,
+  name: '', category_id: '', base_price: 2000, discount_price: null, stock: 0,
   short_description: '', description: '', fabric: '',
   care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
   main_image: '', variants: defaultVariants()
@@ -424,7 +431,7 @@ const openAddModal = () => {
       formData.value = JSON.parse(draft)
     } catch(e) {
       formData.value = {
-        name: '', category_id: '', base_price: 2000, stock: 0,
+        name: '', category_id: '', base_price: 2000, discount_price: null, stock: 0,
         short_description: '', description: '', fabric: '',
         care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
         main_image: '', variants: defaultVariants()
@@ -432,7 +439,7 @@ const openAddModal = () => {
     }
   } else {
     formData.value = {
-      name: '', category_id: '', base_price: 2000, stock: 0,
+      name: '', category_id: '', base_price: 2000, discount_price: null, stock: 0,
       short_description: '', description: '', fabric: '',
       care_instructions: '', is_active: true, is_featured: false, in_hero_slider: false,
       main_image: '', variants: defaultVariants()
@@ -463,6 +470,7 @@ const editProduct = (prod) => {
     name:              prod.name,
     category_id:       prod.category_id,
     base_price:        prod.base_price,
+    discount_price:    prod.discount_price,
     stock:             prod.stock,
     short_description: prod.short_description || '',
     description:       prod.description || '',
@@ -509,6 +517,7 @@ const saveProduct = async () => {
     fd.append('name',              formData.value.name)
     fd.append('category_id',       formData.value.category_id || '')
     fd.append('base_price',        formData.value.base_price)
+    fd.append('discount_price',    formData.value.discount_price !== null && formData.value.discount_price !== undefined ? formData.value.discount_price : '')
     fd.append('stock',             formData.value.stock)
     fd.append('short_description', formData.value.short_description || '')
     fd.append('description',       formData.value.description || '')

@@ -8,7 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'short_description',
-        'base_price', 'stock', 'main_image', 'gallery_images',
+        'base_price', 'discount_price', 'stock', 'main_image', 'gallery_images',
         'fabric', 'care_instructions', 'is_active', 'is_featured', 'in_hero_slider', 'sort_order',
     ];
 
@@ -17,6 +17,7 @@ class Product extends Model
         'is_active'      => 'boolean',
         'is_featured'    => 'boolean',
         'base_price'     => 'float',
+        'discount_price' => 'float',
     ];
 
     public function category()
