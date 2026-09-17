@@ -375,6 +375,17 @@ body.dark-mode .price-label {
   font-size: 1.1rem;
 }
 
+.old-price {
+  text-decoration: line-through;
+  color: var(--text-dark-secondary);
+  font-size: 0.85em;
+  margin-right: 6px;
+  font-weight: normal;
+}
+body.dark-mode .old-price {
+  color: var(--text-light-secondary);
+}
+
 .add-to-cart-quick {
   font-size: 1.8rem;
   color: var(--primary-gold);

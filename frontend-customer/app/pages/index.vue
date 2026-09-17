@@ -145,7 +145,10 @@
             <div class="price-row">
               <div class="price-info">
                 <span class="price-label">Starts from</span>
-                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                <div class="product-price">
+                  <span v-if="prod.discount_price" class="old-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                  <span>LKR {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                </div>
               </div>
               <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
                 <i class="fa-solid fa-circle-chevron-right"></i>
@@ -189,7 +192,10 @@
             <div class="price-row">
               <div class="price-info">
                 <span class="price-label">Starts from</span>
-                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                <div class="product-price">
+                  <span v-if="prod.discount_price" class="old-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                  <span>LKR {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                </div>
               </div>
               <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
                 <i class="fa-solid fa-circle-chevron-right"></i>
@@ -238,7 +244,10 @@
             <div class="price-row">
               <div class="price-info">
                 <span class="price-label">Starts from</span>
-                <span class="product-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                <div class="product-price">
+                  <span v-if="prod.discount_price" class="old-price">LKR {{ formatNumber(prod.base_price) }}</span>
+                  <span>LKR {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                </div>
               </div>
               <NuxtLink :to="`/product/${prod.slug}`" class="add-to-cart-quick" aria-label="Add to cart">
                 <i class="fa-solid fa-circle-chevron-right"></i>

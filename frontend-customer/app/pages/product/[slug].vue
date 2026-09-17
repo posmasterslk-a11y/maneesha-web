@@ -57,7 +57,10 @@
         <!-- Live dynamic price projection based on active selection -->
         <div class="price-container">
           <span class="price-label">Price for selected size:</span>
-          <span class="active-price">LKR {{ formatNumber(activePrice) }}</span>
+          <div>
+            <span v-if="originalPrice > 0" class="old-price" style="font-size: 1.2rem;">LKR {{ formatNumber(originalPrice) }}</span>
+            <span class="active-price">LKR {{ formatNumber(activePrice) }}</span>
+          </div>
         </div>
 
         <p class="desc">{{ product.description || product.short_description }}</p>
@@ -197,7 +200,15 @@ const isSizeChartOpen = ref(false)
 const activePrice = computed(() => {
   if (!product.value) return 0
   const variant = product.value.variants?.find(v => v.size === selectedSize.value)
-  return variant && Number(variant.price) > 0 ? Number(variant.price) : Number(product.value.base_price)
+  if (variant && Number(variant.price) > 0) return Number(variant.price)
+  return product.value.discount_price ? Number(product.value.discount_price) : Number(product.value.base_price)
+})
+
+const originalPrice = computed(() => {
+  if (!product.value) return 0
+  const variant = product.value.variants?.find(v => v.size === selectedSize.value)
+  if (variant && Number(variant.price) > 0) return 0 // No discount for variants currently
+  return product.value.discount_price ? Number(product.value.base_price) : 0
 })
 
 const activeStock = computed(() => {

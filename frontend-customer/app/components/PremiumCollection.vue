@@ -95,7 +95,10 @@
                   </div>
                   
                   <div class="image-overlay-content">
-                    <p class="overlay-text">{{ prod.name }} <br><span class="overlay-italic">LKR {{ formatNumber(prod.base_price) }}</span></p>
+                    <p class="overlay-text">{{ prod.name }} <br>
+                      <span v-if="prod.discount_price" class="old-price overlay-italic" style="color: #ffffff; opacity: 0.7;">LKR {{ formatNumber(prod.base_price) }}</span>
+                      <span class="overlay-italic">LKR {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                    </p>
                     <NuxtLink :to="`/product/${prod.slug}`" class="btn-shop-pink">
                       SHOP NOW <i class="fa-solid fa-arrow-right"></i>
                     </NuxtLink>

@@ -36,7 +36,10 @@
                 <img :src="prod.main_image ? prod.main_image : '/images/placeholder.jpg'" alt="" class="search-result-img" />
                 <div class="search-result-info">
                   <span class="search-result-name">{{ prod.name }}</span>
-                  <span class="search-result-price">Rs. {{ formatNumber(prod.base_price) }}</span>
+                  <div class="search-result-price-wrapper">
+                    <span v-if="prod.discount_price" class="old-price" style="font-size: 0.8em;">Rs. {{ formatNumber(prod.base_price) }}</span>
+                    <span class="search-result-price">Rs. {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                  </div>
                 </div>
               </NuxtLink>
             </div>
@@ -101,7 +104,10 @@
                 <img :src="prod.main_image ? prod.main_image : '/images/placeholder.jpg'" alt="" class="search-result-img" />
                 <div class="search-result-info">
                   <span class="search-result-name">{{ prod.name }}</span>
-                  <span class="search-result-price">Rs. {{ formatNumber(prod.base_price) }}</span>
+                  <div class="search-result-price-wrapper">
+                    <span v-if="prod.discount_price" class="old-price" style="font-size: 0.8em;">Rs. {{ formatNumber(prod.base_price) }}</span>
+                    <span class="search-result-price">Rs. {{ formatNumber(prod.discount_price || prod.base_price) }}</span>
+                  </div>
                 </div>
               </NuxtLink>
             </div>
