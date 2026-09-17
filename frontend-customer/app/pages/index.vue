@@ -633,13 +633,13 @@ body.dark-mode .hero-desc {
 /* Features Banner */
 .features-banner {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 30px 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
   margin-bottom: 60px;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 8vw;
 }
 
 body.dark-mode .features-banner {
