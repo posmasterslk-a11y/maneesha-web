@@ -25,6 +25,10 @@ class ProductController extends Controller
             $query->where('in_hero_slider', true);
         }
 
+        if ($request->filled('sale')) {
+            $query->whereNotNull('discount_price')->where('discount_price', '>', 0);
+        }
+
         if ($request->filled('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')

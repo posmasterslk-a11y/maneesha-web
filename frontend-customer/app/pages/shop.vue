@@ -1,8 +1,10 @@
 <template>
   <div class="shop-page container">
     <div class="shop-header">
-      <h1 class="luxury-title">The <span class="gold-gradient-text">Collection</span></h1>
-      <p>Select your favorite design. We will cut and stitch it perfectly to fit your shape.</p>
+      <h1 class="luxury-title" v-if="!isSale">The <span class="gold-gradient-text">Collection</span></h1>
+      <h1 class="luxury-title" v-else>Special <span class="gold-gradient-text">Sale</span></h1>
+      <p v-if="!isSale">Select your favorite design. We will cut and stitch it perfectly to fit your shape.</p>
+      <p v-else>Enjoy exclusive discounts on premium designs. Limited time offers.</p>
     </div>
 
     <!-- Filters & Search Toolbar -->
@@ -101,6 +103,7 @@ useHead({
 
 const searchQuery    = ref(route.query.search?.toString() || '')
 const activeCategory = ref(route.query.category?.toString() || 'all')
+const isSale         = ref(route.query.sale === 'true')
 const products       = ref([])
 const loading        = ref(true)
 const loadingMore    = ref(false)
@@ -121,8 +124,9 @@ const fetchProducts = async (page = 1, append = false) => {
   try {
     let url = `${API}/products`
     const params = new URLSearchParams()
-    if (activeCategory.value !== 'all') params.set('category', activeCategory.value)
+    if (activeCategory.value !== 'all' && !isSale.value) params.set('category', activeCategory.value)
     if (searchQuery.value.trim())        params.set('search', searchQuery.value.trim())
+    if (isSale.value)                    params.set('sale', '1')
     params.set('page', page)
     if (params.toString())               url += '?' + params.toString()
 
@@ -157,6 +161,7 @@ const setCategory = (slug) => {
 const resetFilters = () => {
   searchQuery.value    = ''
   activeCategory.value = 'all'
+  isSale.value         = false
 }
 
 const formatNumber = (num) => {
@@ -183,6 +188,11 @@ watch(() => route.query.search, (newVal) => {
   if (newVal !== undefined && newVal !== searchQuery.value) {
     searchQuery.value = newVal
   }
+})
+
+watch(() => route.query.sale, (newVal) => {
+  isSale.value = newVal === 'true'
+  fetchProducts(1, false)
 })
 
 useSeoMeta({

@@ -10,6 +10,7 @@
         <nav class="nav-links">
           <NuxtLink to="/" active-class="active-nav">Home</NuxtLink>
           <NuxtLink to="/shop" active-class="active-nav">Shop Collection</NuxtLink>
+          <NuxtLink to="/shop?sale=true" active-class="active-nav" style="color: var(--primary-gold); font-weight: 700;"><i class="fa-solid fa-tags"></i> Sale</NuxtLink>
           <NuxtLink to="/about" active-class="active-nav">About Us</NuxtLink>
           <NuxtLink to="/orders" active-class="active-nav">My Orders</NuxtLink>
           <NuxtLink to="/contact" active-class="active-nav">Contact Us</NuxtLink>
@@ -125,6 +126,9 @@
             </NuxtLink>
             <NuxtLink to="/shop" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-bag-shopping"></i> Shop Collection
+            </NuxtLink>
+            <NuxtLink to="/shop?sale=true" @click="toggleDrawer" active-class="active-drawer-nav" style="color: var(--primary-gold);">
+              <i class="fa-solid fa-tags"></i> Special Sale
             </NuxtLink>
             <NuxtLink to="/about" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-circle-info"></i> About Us
