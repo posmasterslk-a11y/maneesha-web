@@ -116,8 +116,7 @@
   background: linear-gradient(135deg, #fdfbfb 0%, #fff0f5 100%);
   padding: 60px 40px;
   border-radius: 30px;
-  margin: 60px auto;
-  max-width: 1300px;
+  margin: 60px 5%;
   box-shadow: 0 15px 50px rgba(0,0,0,0.04);
   overflow: hidden;
   border: 1px solid rgba(244, 114, 182, 0.1);

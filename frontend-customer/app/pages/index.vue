@@ -50,7 +50,7 @@
     </section>
 
     <!-- Features Banner -->
-    <section class="features-banner container">
+    <section class="features-banner container-fluid">
       <div class="feature-item">
         <i class="fa-solid fa-truck-fast feature-icon"></i>
         <div class="feature-text">
@@ -82,7 +82,7 @@
     </section>
 
     <!-- Categories Showcase -->
-    <section class="categories-section container">
+    <section class="categories-section container-fluid">
       <div class="section-header">
         <h2 class="luxury-title">Browse Our <span class="gold-gradient-text">Categories</span></h2>
         <p>Curated designs ready to be stitched by hand.</p>
@@ -114,7 +114,7 @@
 
 
     <!-- Exclusive New Arrivals Section -->
-    <section class="featured-products container mb-20" v-if="exclusiveProducts && exclusiveProducts.length > 0" style="margin-top: -20px;">
+    <section class="featured-products container-fluid mb-20" v-if="exclusiveProducts && exclusiveProducts.length > 0" style="margin-top: -20px;">
       <div class="section-header-row">
         <div>
           <h2 class="luxury-title">Exclusive <span class="gold-gradient-text">New Arrivals</span></h2>
@@ -158,7 +158,7 @@
     </section>
 
     <!-- Featured Products Section -->
-    <section class="featured-products container" v-if="products && products.length > 0">
+    <section class="featured-products container-fluid" v-if="products && products.length > 0">
       <div class="section-header-row">
         <div>
           <h2 class="luxury-title">Featured <span class="gold-gradient-text">Creations</span></h2>
@@ -211,7 +211,7 @@
     <BehindTheBrand />
 
     <!-- Popular / Most Viewed Products Section -->
-    <section class="popular-products container mb-20" v-if="popularProducts.length > 0">
+    <section class="popular-products container-fluid mb-20" v-if="popularProducts.length > 0">
       <div class="section-header">
         <h2 class="luxury-title">Most <span class="gold-gradient-text">Viewed</span></h2>
         <p>Our customers' favorite picks.</p>
