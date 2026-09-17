@@ -10,13 +10,15 @@
         <nav class="nav-links">
           <NuxtLink to="/" active-class="active-nav">Home</NuxtLink>
           <NuxtLink to="/shop" active-class="active-nav">Shop Collection</NuxtLink>
-          <NuxtLink to="/shop?sale=true" active-class="active-nav" style="color: var(--primary-gold); font-weight: 700;"><i class="fa-solid fa-tags"></i> Sale</NuxtLink>
           <NuxtLink to="/about" active-class="active-nav">About Us</NuxtLink>
           <NuxtLink to="/orders" active-class="active-nav">My Orders</NuxtLink>
           <NuxtLink to="/contact" active-class="active-nav">Contact Us</NuxtLink>
           <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-nav">
             <i class="fa-brands fa-whatsapp"></i> 076 153 7772
           </a>
+          <NuxtLink to="/shop?sale=true" class="sale-animated-btn">
+            <i class="fa-solid fa-tags"></i> SALE
+          </NuxtLink>
         </nav>
         
         <div class="header-actions">
@@ -127,9 +129,6 @@
             <NuxtLink to="/shop" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-bag-shopping"></i> Shop Collection
             </NuxtLink>
-            <NuxtLink to="/shop?sale=true" @click="toggleDrawer" active-class="active-drawer-nav" style="color: var(--primary-gold);">
-              <i class="fa-solid fa-tags"></i> Special Sale
-            </NuxtLink>
             <NuxtLink to="/about" @click="toggleDrawer" active-class="active-drawer-nav">
               <i class="fa-solid fa-circle-info"></i> About Us
             </NuxtLink>
@@ -145,6 +144,9 @@
             <a href="https://wa.me/94761537772" target="_blank" class="whatsapp-btn-mobile">
               <i class="fa-brands fa-whatsapp"></i> 076 153 7772
             </a>
+            <NuxtLink to="/shop?sale=true" @click="toggleDrawer" class="sale-animated-btn" style="justify-content: center; margin-top: 10px;">
+              <i class="fa-solid fa-tags"></i> SALE
+            </NuxtLink>
           </nav>
           
           <div class="drawer-footer">
@@ -476,6 +478,29 @@ body.dark-mode .desktop-header {
 
 .nav-links a:hover, .active-nav {
   color: var(--primary-gold);
+}
+
+.sale-animated-btn {
+  background: linear-gradient(45deg, #ff0040, #ff7300, #ff0040);
+  background-size: 200% auto;
+  color: white !important;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  animation: shine 2s linear infinite;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(255, 0, 64, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
 }
 
 .header-actions {
